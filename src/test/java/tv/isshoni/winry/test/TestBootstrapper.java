@@ -8,6 +8,6 @@ public class TestBootstrapper {
 
     @Test
     public void testBootstrapper() {
-        Winry.bootstrap(TestBootstrappedClass.class);
+        Winry.bootstrap(TestBootstrappedClass.class, new TestCaseService());
     }
 }

@@ -6,8 +6,9 @@ import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Runner;
 import tv.isshoni.winry.entity.runner.RunnerOrder;
 import tv.isshoni.winry.logging.WinryLogger;
+import tv.isshoni.winry.test.TestCaseService;
 
-@Bootstrap
+@Bootstrap(manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
     @Logger("TestBootstrappedClass")
@@ -16,14 +17,15 @@ public class TestBootstrappedClass {
     @Inject
     private TestInjectedClass injectedClass;
 
+    @Inject
+    private TestCaseService testService;
+
     @Runner(RunnerOrder.ASAP)
     public void asapRun() {
         LOGGER.info("ASAP RUN");
 
-        if (this.injectedClass == null) {
-            LOGGER.info("Expected outcome!");
-        } else {
-            LOGGER.severe("Unexpected outcome!");
+        if (this.injectedClass != null) {
+            this.testService.fail("Default injected class is not null!");
         }
     }
 
