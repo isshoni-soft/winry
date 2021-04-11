@@ -6,7 +6,7 @@ public class Winry {
 
     private static final WinryLogger LOGGER = WinryLogger.create("Winry");
 
-    public static void bootstrap(Class<?> clazz) {
+    public static void bootstrap(Class<?> clazz, Object... provided) {
         LOGGER.info("Bootstrapping class: " + clazz.getName());
     }
 }
