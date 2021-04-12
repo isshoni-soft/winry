@@ -1,6 +1,6 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.bootstrap.ApplicationBootstrapper;
+import tv.isshoni.winry.bootstrap.SimpleBootstrapper;
 import tv.isshoni.winry.bootstrap.IBootstrapper;
 
 import java.lang.annotation.ElementType;
@@ -19,7 +19,7 @@ public @interface Bootstrap {
 
     Class<?>[] manualLoad() default { };
 
-    Class<? extends IBootstrapper> bootstrapper() default ApplicationBootstrapper.class;
+    Class<? extends IBootstrapper> bootstrapper() default SimpleBootstrapper.class;
 
     boolean injectable() default true;
 }

@@ -1,8 +1,8 @@
 package tv.isshoni.winry.bootstrap;
 
-import tv.isshoni.winry.entity.bootstrap.SimpleBootstrapContext;
+import tv.isshoni.winry.annotation.Bootstrap;
 
 public interface IBootstrapper {
 
-    void bootstrap(SimpleBootstrapContext context);
+    void bootstrap(Bootstrap bootstrap, Class<?> baseClazz, Object... provided);
 }

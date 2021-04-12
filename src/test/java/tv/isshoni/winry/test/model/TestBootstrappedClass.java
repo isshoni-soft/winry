@@ -8,7 +8,9 @@ import tv.isshoni.winry.entity.runner.RunnerOrder;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.test.TestCaseService;
 
-@Bootstrap(manualLoad = { TestInjectedClass.class })
+@Bootstrap(
+        loadPackage = { "tv.isshoni.winry.test.model.service" },
+        manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
     @Logger("TestBootstrappedClass")

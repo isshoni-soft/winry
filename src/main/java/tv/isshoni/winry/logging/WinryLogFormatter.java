@@ -15,6 +15,6 @@ public class WinryLogFormatter extends Formatter {
 
     @Override
     public synchronized String format(LogRecord record) {
-        return '[' + DATE_FORMATTER.format(Instant.now()) + "]: " + record.getLoggerName() + ' ' + record.getLevel().getLocalizedName() + " - " + record.getMessage();
+        return '[' + DATE_FORMATTER.format(Instant.now()) + "]: " + record.getLoggerName() + ' ' + record.getLevel().getLocalizedName() + " - " + record.getMessage() + '\n';
     }
 }
