@@ -22,6 +22,7 @@ public class Winry {
 
         IBootstrapper bootstrapper;
         try {
+            LOGGER.info("Instantiating bootstrapper...");
             bootstrapper = bootstrap.bootstrapper().getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.severe("Unable to instantiate new instance of bootstrapper class: " + bootstrap.bootstrapper().getName());

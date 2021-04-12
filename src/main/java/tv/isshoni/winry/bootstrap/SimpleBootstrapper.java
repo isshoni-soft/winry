@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("ApplicationBootstrapper");
+    private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> baseClazz, Object... provided) {
