@@ -9,7 +9,7 @@ import java.util.logging.LogRecord;
 
 public class WinryLogFormatter extends Formatter {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss:SS")
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss.SS")
             .withLocale(Locale.US)
             .withZone(ZoneId.systemDefault());
 

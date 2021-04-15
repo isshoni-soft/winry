@@ -7,6 +7,7 @@ import tv.isshoni.winry.annotation.Runner;
 import tv.isshoni.winry.entity.runner.RunnerOrder;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.test.TestCaseService;
+import tv.isshoni.winry.test.model.service.OneLastTestService;
 
 @Bootstrap(
         loadPackage = { "tv.isshoni.winry.test.model.service" },
@@ -21,6 +22,9 @@ public class TestBootstrappedClass {
 
     @Inject
     private TestCaseService testService;
+
+    @Inject
+    private OneLastTestService oneLastService;
 
     @Runner(RunnerOrder.ASAP)
     public void asapRun() {
