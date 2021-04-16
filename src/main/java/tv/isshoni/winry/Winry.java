@@ -5,7 +5,6 @@ import tv.isshoni.winry.bootstrap.IBootstrapper;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
 
 public class Winry {
 
@@ -31,8 +30,7 @@ public class Winry {
             return;
         }
 
-        LOGGER.info("Running bootstrapper class discovery...");
-        Set<Class<?>> clazzes = bootstrapper.discoverClasses(bootstrap, clazz);
-        LOGGER.info("Bootstrapper discovered " + clazzes.size() + " classes");
+        LOGGER.info("Handing off to bootstrapper...");
+        bootstrapper.bootstrap(bootstrap, clazz, provided);
     }
 }
