@@ -1,10 +1,21 @@
 package tv.isshoni.winry.entity.runner;
 
-// TODO: Make this extendable instead of an enum, allowing people to register their own types w/ independent weights
+import tv.isshoni.winry.annotation.Runner;
+
 public enum RunnerOrder {
-    ASAP,
-    PRE_INIT,
-    INIT,
-    POST_INIT,
-    LAST
+    ASAP(4),
+    PRE_INIT(3),
+    INIT(Runner.DEFAULT_WEIGHT),
+    POST_INIT(1),
+    LAST(0);
+
+    private final int weight;
+
+    RunnerOrder(int weight) {
+        this.weight = weight;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
 }

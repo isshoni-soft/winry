@@ -11,5 +11,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Runner {
 
+    int DEFAULT_WEIGHT = 2;
+
     RunnerOrder value() default RunnerOrder.INIT;
+
+    int weight() default DEFAULT_WEIGHT;
 }

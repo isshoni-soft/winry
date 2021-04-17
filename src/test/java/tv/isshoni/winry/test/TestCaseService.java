@@ -2,9 +2,8 @@ package tv.isshoni.winry.test;
 
 import junit.framework.TestCase;
 import tv.isshoni.winry.annotation.Injected;
-import tv.isshoni.winry.entity.inject.InjectedType;
 
-@Injected(InjectedType.SERVICE)
+@Injected
 public class TestCaseService {
 
     public void fail(String message) {

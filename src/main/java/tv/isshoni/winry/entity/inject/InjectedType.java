@@ -1,9 +1,19 @@
 package tv.isshoni.winry.entity.inject;
 
-// TODO: Make this extendable instead of an enum, allowing people to register their own types w/ independent weights
+import tv.isshoni.winry.annotation.Injected;
+
 public enum InjectedType {
-    DEFAULT,
-    DATABASE,
-    SERVICE,
-    LOGGER
+    DEFAULT(Injected.DEFAULT_WEIGHT),
+    DATABASE(7),
+    LOGGER(9);
+
+    private final int weight;
+
+    InjectedType(int weight) {
+        this.weight = weight;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
 }

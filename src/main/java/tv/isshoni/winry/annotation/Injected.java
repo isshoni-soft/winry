@@ -11,5 +11,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Injected {
 
+    int DEFAULT_WEIGHT = 5;
+
     InjectedType value() default InjectedType.DEFAULT;
+
+    int weight() default DEFAULT_WEIGHT;
 }

@@ -13,8 +13,28 @@ public class WinryLogFormatter extends Formatter {
             .withLocale(Locale.US)
             .withZone(ZoneId.systemDefault());
 
+    private int indent;
+
+    public WinryLogFormatter() {
+        this(0);
+    }
+
+    public WinryLogFormatter(int indent) {
+        this.indent = indent;
+    }
+
+    public void setIndent(int indent) {
+        this.indent = indent;
+    }
+
     @Override
     public synchronized String format(LogRecord record) {
-        return '[' + DATE_FORMATTER.format(Instant.now()) + "]: " + record.getLoggerName() + ' ' + record.getLevel().getLocalizedName() + " - " + record.getMessage() + '\n';
+        StringBuilder spaces = new StringBuilder();
+
+        for (int x = 0; x < this.indent; x++) {
+            spaces.append(' ');
+        }
+
+        return '[' + DATE_FORMATTER.format(Instant.now()) + "]: " + record.getLoggerName() + ' ' + record.getLevel().getLocalizedName() + " - " + spaces + record.getMessage() + '\n';
     }
 }

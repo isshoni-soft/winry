@@ -5,6 +5,8 @@ import tv.isshoni.winry.bootstrap.IBootstrapper;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Winry {
 
@@ -31,6 +33,6 @@ public class Winry {
         }
 
         LOGGER.info("Handing off to bootstrapper...");
-        bootstrapper.bootstrap(bootstrap, clazz, provided);
+        bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
     }
 }

@@ -2,15 +2,19 @@ package tv.isshoni.winry.bootstrap;
 
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.entity.bootstrap.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.IBootstrappedElement;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface IBootstrapper {
 
-    void bootstrap(Bootstrap bootstrap, Class<?> clazz, Object[] provided);
-    void finalizeClasses(Bootstrap bootstrap, Set<BootstrappedClass<?>> clazzes);
+    void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided);
+
+    List<IBootstrappedElement<?, ?>> finalizeClasses(Bootstrap bootstrap, Map<Class<?>, BootstrappedClass<?>> clazzes, Map<Class<?>, Object> provided);
 
     Set<Class<?>> discoverClasses(Bootstrap bootstrap, Class<?> baseClazz);
 
-    Set<BootstrappedClass<?>> prepareClasses(Bootstrap bootstrap, Set<Class<?>> clazzes);
+    Map<Class<?>, BootstrappedClass<?>> prepareClasses(Bootstrap bootstrap, Set<Class<?>> clazzes);
 }

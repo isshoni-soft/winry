@@ -7,52 +7,101 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Injected;
+import tv.isshoni.winry.annotation.Logger;
+import tv.isshoni.winry.annotation.Runner;
 import tv.isshoni.winry.entity.bootstrap.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.BootstrappedField;
+import tv.isshoni.winry.entity.bootstrap.BootstrappedMethod;
+import tv.isshoni.winry.entity.bootstrap.IBootstrappedElement;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
-    private static final Function<Class<?>, BiFunction<BootstrappedClass.Type, List<Class<?>>, List<Class<?>>>> ORGANIZE_MAP_COMPUTE = (c) -> (k, v) -> {
-        if (v == null) {
-            return new LinkedList<>() {{
-                add(c);
-            }};
-        }
-
-        v.add(c);
-        return v;
-    };
+    private static final List<Class<? extends Annotation>> bootstrappableAnnotations = new LinkedList<>() {{
+        add(Bootstrap.class);
+        add(Inject.class);
+        add(Injected.class);
+        add(Logger.class);
+        add(Runner.class);
+    }};
 
     private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
 
     @Override
-    public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Object[] provided) {
+    public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
         LOGGER.info("Beginning bootstrap process...");
         LOGGER.info("Bootstrapper class discovery...");
         Set<Class<?>> clazzes = this.discoverClasses(bootstrap, clazz);
+        clazzes.addAll(provided.keySet());
         LOGGER.info("Bootstrapper discovered " + clazzes.size() + " classes");
+        LOGGER.info("Introducing provided classes...");
         LOGGER.info("Preparing classes...");
-        Set<BootstrappedClass<?>> preparedClasses = this.prepareClasses(bootstrap, clazzes);
-        LOGGER.info("Finalizing classes...");
-        this.finalizeClasses(bootstrap, preparedClasses);
+        List<IBootstrappedElement<?, ?>> finalizedElements = this.finalizeClasses(bootstrap, this.prepareClasses(bootstrap, clazzes), provided);
+        LOGGER.info("Finished class discovery and instantiation...");
+        LOGGER.info("Boot order:");
+        LOGGER.setIndent(4);
+        finalizedElements.forEach(e -> LOGGER.info(e.toString()));
+        LOGGER.setIndent(0);
+        LOGGER.info("Executing:");
+        LOGGER.setIndent(4);
+        finalizedElements.forEach(e -> {
+            LOGGER.info("Executing: " + e.toString());
+
+            e.execute(provided);
+        });
+        LOGGER.setIndent(0);
     }
 
     @Override
-    public void finalizeClasses(Bootstrap bootstrap, Set<BootstrappedClass<?>> clazzes) {
-        clazzes.forEach(c -> {
-            // TODO: Iterate on class set and discover fields and methods then insert into BootstrappedClass object.
+    public List<IBootstrappedElement<?, ?>> finalizeClasses(Bootstrap bootstrap, Map<Class<?>, BootstrappedClass<?>> clazzes, Map<Class<?>, Object> provided) {
+        LOGGER.info("Finalizing classes...");
+        clazzes.values().forEach(c -> {
+            LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
+            LOGGER.setIndent(4);
+
+            c.addField(Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
+                    .filter(f -> getOurAnnotation(f) != null)
+                    .map(f -> new BootstrappedField<>(f, getOurAnnotation(f),  clazzes.get(f.getType())))
+                    .collect(Collectors.toSet()));
+            LOGGER.info("Discovered " + c.getFields().size() + " fields");
+
+            c.addMethod(Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
+                    .filter(m -> m.isAnnotationPresent(Runner.class))
+                    .map(m -> new BootstrappedMethod(m, m.getAnnotation(Runner.class)))
+                    .collect(Collectors.toSet()));
+            LOGGER.info("Discovered " + c.getMethods().size() + " methods");
+            LOGGER.setIndent(0);
         });
+
+        // TECHNICAL DEBT: This feels like it can be handled better than with just two streams
+        List<IBootstrappedElement<?, ?>> result = new LinkedList<>(clazzes.values());
+
+        result.addAll(clazzes.values().stream()
+                .flatMap(b -> b.getMethods().stream())
+                .collect(Collectors.toList()));
+
+        result.addAll(clazzes.values().stream()
+                .flatMap(b -> b.getFields().stream())
+                .collect(Collectors.toList()));
+
+        Collections.sort(result);
+
+        return result;
     }
 
     @Override
@@ -87,8 +136,8 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     @Override
-    public Set<BootstrappedClass<?>> prepareClasses(Bootstrap bootstrap, Set<Class<?>> clazzes) {
-        Set<BootstrappedClass<?>> result = new HashSet<>();
+    public Map<Class<?>, BootstrappedClass<?>> prepareClasses(Bootstrap bootstrap, Set<Class<?>> clazzes) {
+        Map<Class<?>, BootstrappedClass<?>> result = new HashMap<>();
 
         clazzes.forEach(c -> {
             Annotation annotation = getOurAnnotation(c);
@@ -97,38 +146,25 @@ public class SimpleBootstrapper implements IBootstrapper {
                 return; // No need to keep processing here
             }
 
-            if (annotation instanceof Bootstrap) {
-                result.add(new BootstrappedClass<>(c, (Bootstrap) annotation, BootstrappedClass.Type.BOOTSTRAP_CLASS));
-            } else if (annotation instanceof Injected) {
-                Injected injected = (Injected) annotation;
-
-                BootstrappedClass.Type type = null;
-                switch (injected.value()) {
-                    case DEFAULT:
-                        type = BootstrappedClass.Type.INJECTED_DEFAULT;
-                        break;
-                    case SERVICE:
-                        type = BootstrappedClass.Type.INJECTED_SERVICE;
-                        break;
-                    case DATABASE:
-                        type = BootstrappedClass.Type.INJECTED_DATABASE;
-                        break;
-                }
-
-                result.add(new BootstrappedClass<>(c, (Injected) annotation, type));
-            }
+            result.put(c, new BootstrappedClass<>(c, annotation));
         });
 
         return result;
     }
 
-    private Annotation getOurAnnotation(Class<?> clazz) {
-        Annotation result = clazz.getAnnotation(Bootstrap.class);
+    private Annotation getOurAnnotation(AnnotatedElement element) {
+        Annotation result = element.getAnnotation(Bootstrap.class);
 
         if (result != null) {
             return result;
         }
 
-        return clazz.getAnnotation(Injected.class);
+        result = element.getAnnotation(Logger.class);
+
+        if (result != null) {
+            return result;
+        }
+
+        return element.getAnnotation(Injected.class);
     }
 }
