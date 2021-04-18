@@ -46,6 +46,8 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     private final Set<ReflectedModifier> modifiers;
 
+    private boolean provided = false;
+
     public BootstrappedClass(Class<?> clazz, A annotation) {
         this.clazz = clazz;
         this.annotation = annotation;
@@ -70,6 +72,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
         this.methods.addAll(methods);
     }
 
+    public void setProvided(boolean provided) {
+        this.provided = provided;
+    }
+
     @Override
     public Class<?> getBootstrappedElement() {
         return this.clazz;
@@ -82,6 +88,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     @Override
     public int getWeight() {
+        if (this.isProvided()) {
+            return 10000;
+        }
+
         return ANNOTATION_WEIGHTS.getOrDefault(this.annotation.annotationType(), 10);
     }
 
@@ -101,6 +111,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     public Object getObject() {
         return this.object;
+    }
+
+    public boolean isProvided() {
+        return this.provided;
     }
 
     @Override

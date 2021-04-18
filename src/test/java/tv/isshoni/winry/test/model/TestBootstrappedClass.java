@@ -14,17 +14,11 @@ import tv.isshoni.winry.test.model.service.OneLastTestService;
         manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
-    @Logger("TestBootstrappedClass")
-    private static WinryLogger LOGGER;
+    @Logger("TestBootstrappedClass") private static WinryLogger LOGGER;
 
-    @Inject
-    private TestInjectedClass injectedClass;
-
-    @Inject
-    private TestCaseService testService;
-
-    @Inject
-    private OneLastTestService oneLastService;
+    @Inject private TestInjectedClass injectedClass;
+    @Inject private TestCaseService testService;
+    @Inject private OneLastTestService oneLastService;
 
     @Runner(RunnerOrder.ASAP)
     public void asapRun() {

@@ -59,7 +59,6 @@ public class SimpleBootstrapper implements IBootstrapper {
         Set<Class<?>> clazzes = this.discoverClasses(bootstrap, clazz);
         clazzes.addAll(provided.keySet());
         LOGGER.info("Bootstrapper discovered " + clazzes.size() + " classes");
-        LOGGER.info("Introducing provided classes...");
         LOGGER.info("Preparing classes...");
         List<IBootstrappedElement<?, ?>> finalizedElements = this.finalizeClasses(bootstrap, this.prepareClasses(bootstrap, clazzes), provided);
         LOGGER.info("Finished class discovery and instantiation...");
@@ -83,6 +82,11 @@ public class SimpleBootstrapper implements IBootstrapper {
         clazzes.values().forEach(c -> {
             LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
             LOGGER.setIndent(4);
+
+            if (provided.containsKey(c.getBootstrappedElement())) {
+                c.setProvided(true);
+                LOGGER.info("Provided Class");
+            }
 
             c.addField(Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
                     .filter(f -> Objects.nonNull(getOurAnnotation(f)))

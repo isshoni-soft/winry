@@ -90,6 +90,10 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
             return 7;
         }
 
+        if (this.target.isProvided()) {
+            return 8;
+        }
+
         if (this.target.getAnnotation() instanceof Bootstrap) {
             return 5;
         }

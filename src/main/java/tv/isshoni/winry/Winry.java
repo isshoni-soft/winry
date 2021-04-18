@@ -5,6 +5,8 @@ import tv.isshoni.winry.bootstrap.IBootstrapper;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,6 +15,8 @@ public class Winry {
     private static final WinryLogger LOGGER = WinryLogger.create("Winry");
 
     public static void bootstrap(Class<?> clazz, Object... provided) {
+        Instant start = Instant.now();
+
         Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
 
         if (bootstrap == null) {
@@ -34,5 +38,7 @@ public class Winry {
 
         LOGGER.info("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
+
+        LOGGER.info("Finished bootstrapping in " + Duration.between(start, Instant.now()).toMillis() + " ms");
     }
 }
