@@ -14,7 +14,7 @@ import tv.isshoni.winry.test.model.service.OneLastTestService;
         manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
-    @Logger("TestBootstrappedClass") private static WinryLogger LOGGER;
+    @Logger(value = "TestBootstrappedClass", indent = 4) private static WinryLogger LOGGER;
 
     @Inject private TestInjectedClass injectedClass;
     @Inject private TestCaseService testService;
