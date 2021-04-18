@@ -1,17 +1,20 @@
-package tv.isshoni.winry.entity.bootstrap;
+package tv.isshoni.winry.bootstrap.element;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.logging.WinryLogger;
+import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class BootstrappedClass<A extends Annotation> implements IBootstrappedElement<A, Class<?>> {
 
@@ -41,9 +44,12 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     private final List<BootstrappedMethod> methods;
 
+    private final Set<ReflectedModifier> modifiers;
+
     public BootstrappedClass(Class<?> clazz, A annotation) {
         this.clazz = clazz;
         this.annotation = annotation;
+        this.modifiers = ReflectedModifier.getModifiers(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
     }
@@ -70,23 +76,27 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     }
 
     @Override
+    public Set<ReflectedModifier> getModifiers() {
+        return ImmutableSet.copyOf(this.modifiers);
+    }
+
+    @Override
     public int getWeight() {
         return ANNOTATION_WEIGHTS.getOrDefault(this.annotation.annotationType(), 10);
     }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
-        try {
-            if (provided.containsKey(this.clazz)) {
-                LOGGER.info("Class: " + this.clazz.getName() + " is provided.");
-                this.object = provided.get(this.clazz);
-            } else {
-                LOGGER.info("Class: new " + this.clazz.getName() + "()");
-                this.object = this.clazz.getConstructor().newInstance();
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+        if (provided.containsKey(this.clazz)) {
+            LOGGER.info("Class: " + this.clazz.getName() + " is provided.");
+            this.object = provided.get(this.clazz);
+        } else {
+            LOGGER.info("Class: new " + this.clazz.getName() + "()");
+            this.object = ReflectionManager.construct(this);
         }
+
+        LOGGER.info("Registered to class registry");
+        ReflectionManager.registerClass(this);
     }
 
     public Object getObject() {
@@ -112,6 +122,6 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     @Override
     public String toString() {
-        return "BootstrappedClass[class=" + this.clazz.getName() + ",annotation=" + this.annotation.annotationType().getName() + ",weight=" + this.getWeight() + "]";
+        return "BootstrappedClass[class=" + this.clazz.getName() + ",annotation=" + this.annotation.annotationType().getName() + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
     }
 }

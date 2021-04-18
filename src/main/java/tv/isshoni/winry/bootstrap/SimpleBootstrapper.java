@@ -11,10 +11,10 @@ import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Injected;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Runner;
-import tv.isshoni.winry.entity.bootstrap.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.BootstrappedField;
-import tv.isshoni.winry.entity.bootstrap.BootstrappedMethod;
-import tv.isshoni.winry.entity.bootstrap.IBootstrappedElement;
+import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.annotation.Annotation;
@@ -32,13 +32,23 @@ import java.util.stream.Collectors;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
-    private static final List<Class<? extends Annotation>> bootstrappableAnnotations = new LinkedList<>() {{
-        add(Bootstrap.class);
-        add(Inject.class);
-        add(Injected.class);
-        add(Logger.class);
-        add(Runner.class);
-    }};
+    private static final List<Class<? extends Annotation>> BOOTSTRAPPABLE_ANNOTATIONS = new LinkedList<>();
+
+    static {
+        registerBootstrappableAnnotation(Bootstrap.class);
+        registerBootstrappableAnnotation(Inject.class);
+        registerBootstrappableAnnotation(Injected.class);
+        registerBootstrappableAnnotation(Logger.class);
+        registerBootstrappableAnnotation(Runner.class);
+    }
+
+    public static void registerBootstrappableAnnotation(Class<? extends Annotation> annotation) {
+        if (BOOTSTRAPPABLE_ANNOTATIONS.contains(annotation)) {
+            throw new IllegalStateException("This annotation is already registered!");
+        }
+
+        BOOTSTRAPPABLE_ANNOTATIONS.add(annotation);
+    }
 
     private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
 
@@ -75,7 +85,7 @@ public class SimpleBootstrapper implements IBootstrapper {
             LOGGER.setIndent(4);
 
             c.addField(Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
-                    .filter(f -> getOurAnnotation(f) != null)
+                    .filter(f -> Objects.nonNull(getOurAnnotation(f)))
                     .map(f -> new BootstrappedField<>(f, getOurAnnotation(f),  clazzes.get(f.getType())))
                     .collect(Collectors.toSet()));
             LOGGER.info("Discovered " + c.getFields().size() + " fields");
@@ -153,18 +163,12 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     private Annotation getOurAnnotation(AnnotatedElement element) {
-        Annotation result = element.getAnnotation(Bootstrap.class);
-
-        if (result != null) {
-            return result;
+        for (Class<? extends Annotation> annotation : BOOTSTRAPPABLE_ANNOTATIONS) {
+            if (element.isAnnotationPresent(annotation)) {
+                return element.getAnnotation(annotation);
+            }
         }
 
-        result = element.getAnnotation(Logger.class);
-
-        if (result != null) {
-            return result;
-        }
-
-        return element.getAnnotation(Injected.class);
+        return null;
     }
 }

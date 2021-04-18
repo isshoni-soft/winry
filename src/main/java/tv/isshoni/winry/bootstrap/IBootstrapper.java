@@ -1,8 +1,8 @@
 package tv.isshoni.winry.bootstrap;
 
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.entity.bootstrap.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.IBootstrappedElement;
+import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.bootstrap.element.IBootstrappedElement;
 
 import java.util.List;
 import java.util.Map;

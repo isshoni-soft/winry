@@ -27,6 +27,10 @@ public class WinryLogFormatter extends Formatter {
         this.indent = indent;
     }
 
+    public int getIndent() {
+        return this.indent;
+    }
+
     @Override
     public synchronized String format(LogRecord record) {
         StringBuilder spaces = new StringBuilder();

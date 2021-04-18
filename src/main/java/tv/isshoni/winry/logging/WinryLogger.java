@@ -9,7 +9,7 @@ public class WinryLogger extends Logger {
         return create(name, 0);
     }
 
-    public static WinryLogger create(String name, int indent) {
+    public static WinryLogger create(String name, Integer indent) {
         return new WinryLogger(name, indent);
     }
 
@@ -28,5 +28,10 @@ public class WinryLogger extends Logger {
 
     public void setIndent(int indent) {
         this.formatter.setIndent(indent);
+    }
+
+    @Override
+    public String toString() {
+        return "WinryLogger[name=" + this.getName() + ",indent=" + this.formatter.getIndent() + "]";
     }
 }
