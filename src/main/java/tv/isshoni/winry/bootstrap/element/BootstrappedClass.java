@@ -3,11 +3,13 @@ package tv.isshoni.winry.bootstrap.element;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,6 +37,7 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     }
 
     private final Class<?> clazz;
+    private final Class<?> wrappedClazz;
 
     private Object object;
 
@@ -54,6 +57,11 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
         this.modifiers = ReflectedModifier.getModifiers(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
+        this.wrappedClazz = ByteBuddyUtil.wrapClass(this)
+                .name("WinryWrapped" + this.clazz.getSimpleName())
+                .make()
+                .load(BootstrappedClass.class.getClassLoader())
+                .getLoaded();
     }
 
     public void addField(BootstrappedField<?> field) {
@@ -107,6 +115,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
         LOGGER.info("Registered to class registry");
         ReflectionManager.registerClass(this);
+
+        LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
+
+        Arrays.stream(this.wrappedClazz.getDeclaredMethods()).forEach(m -> LOGGER.info(m.toString()));
     }
 
     public Object getObject() {
@@ -129,6 +141,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     public List<BootstrappedMethod> getMethods() {
         return ImmutableList.copyOf(this.methods);
     }
+
+//    public Class<?> getWrappedClazz() {
+//        return this.wrappedClazz;
+//    }
 
     public boolean hasObject() {
         return Objects.nonNull(this.object);

@@ -39,6 +39,7 @@ public class TestBootstrappedClass {
     public void postInitRun() {
         LOGGER.info("Post-init run");
         LOGGER.info("Running test: " + this.injectedClass.getNumCalled());
+        LOGGER.info("Getting other: " + this.oneLastService.getInjectedClassVal());
     }
 
     @Runner(RunnerOrder.LAST)
