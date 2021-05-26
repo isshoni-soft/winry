@@ -3,7 +3,7 @@ Isshoni Winry Bootstrapper
 
 Table Of Contents
 -----------------
-- About
+- [About](#About)
 - How it Works
 - Basic Usage
 - Advanced Usage
