@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Logger {
 
-    String value();
+    String value() default "Logger";
 
     int indent() default 0;
 }

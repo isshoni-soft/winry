@@ -9,6 +9,8 @@ import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
 
+import static org.junit.Assert.assertEquals;
+
 @Bootstrap(
         loadPackage = { "tv.isshoni.winry.test.model.service" },
         manualLoad = { TestInjectedClass.class })
@@ -22,7 +24,7 @@ public class TestBootstrappedClass {
 
     @Runner(RunnerOrder.ASAP)
     public void asapRun() {
-        LOGGER.info("ASAP RUN");
+        LOGGER.info("Logger test!");
 
         if (this.injectedClass != null) {
             this.testService.fail("Default injected class is not null!");
@@ -31,21 +33,18 @@ public class TestBootstrappedClass {
 
     @Runner
     public void initRun() {
-        LOGGER.info("Init run");
-        LOGGER.info("Running test: " + this.injectedClass.getNumCalled());
-        LOGGER.info("Running async test: " + this.injectedClass.getTest());
+        assertEquals(0, this.injectedClass.getNumCalled());
+        assertEquals(5, this.injectedClass.getTest());
     }
 
     @Runner(RunnerOrder.POST_INIT)
     public void postInitRun() {
-        LOGGER.info("Post-init run");
-        LOGGER.info("Running test: " + this.injectedClass.getNumCalled());
-        LOGGER.info("Getting other: " + this.oneLastService.getInjectedClassVal());
+        assertEquals(1, this.injectedClass.getNumCalled());
+        assertEquals(2, this.oneLastService.getInjectedClassVal());
     }
 
     @Runner(RunnerOrder.LAST)
     public void lastRun() {
-        LOGGER.info("LAST!!!");
-        LOGGER.info("Running test: " + this.injectedClass.getNumCalled());
+        assertEquals(3, this.injectedClass.getNumCalled());
     }
 }

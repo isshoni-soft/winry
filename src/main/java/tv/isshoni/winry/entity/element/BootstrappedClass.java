@@ -59,11 +59,11 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         this.methods = new LinkedList<>();
     }
 
-    public void addField(BootstrappedField<?> field) {
+    public void addField(BootstrappedField field) {
         this.fields.add(field);
     }
 
-    public void addField(Collection<BootstrappedField<?>> fields) {
+    public void addField(Collection<BootstrappedField> fields) {
         this.fields.addAll(fields);
     }
 
@@ -143,7 +143,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         return this.annotations;
     }
 
-    public List<BootstrappedField<?>> getFields() {
+    public List<BootstrappedField> getFields() {
         return ImmutableList.copyOf(this.fields);
     }
 

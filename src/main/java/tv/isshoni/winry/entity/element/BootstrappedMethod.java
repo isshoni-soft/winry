@@ -2,30 +2,35 @@ package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Runner;
+import tv.isshoni.winry.entity.util.Pair;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionManager;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class BootstrappedMethod implements IBootstrappedElement<Runner, Method> {
+public class BootstrappedMethod implements IBootstrappedElement<Method> {
 
     private final Method method;
 
-    private final Runner runner;
+    private final Collection<Annotation> annotations;
 
     private final Set<ReflectedModifier> modifiers;
 
-    public BootstrappedMethod(Method method, Runner runner) {
+    public BootstrappedMethod(Method method, Collection<Annotation> annotations) {
         this.method = method;
-        this.runner = runner;
+        this.annotations = annotations;
         this.modifiers = ReflectedModifier.getModifiers(method);
     }
 
     @Override
-    public Runner getAnnotation() {
-        return this.runner;
+    public Collection<Annotation> getAnnotations() {
+        return this.annotations;
     }
 
     @Override
@@ -40,11 +45,27 @@ public class BootstrappedMethod implements IBootstrappedElement<Runner, Method> 
 
     @Override
     public int getWeight() {
-        if (this.runner.weight() == Runner.DEFAULT_WEIGHT) {
-            return this.runner.value().getWeight();
+        List<Pair<Class<? extends Annotation>, Annotation>> annotationTypes = this.annotations.stream()
+                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
+                .collect(Collectors.toList());
+
+        Runner runner = null;
+        for (Pair<Class<? extends Annotation>, Annotation> pair : annotationTypes) {
+            if (pair.getFirst().equals(Runner.class)) {
+                runner = (Runner) pair.getSecond();
+                break;
+            }
         }
 
-        return this.runner.weight();
+        if (runner == null) {
+            throw new IllegalStateException("Runner annotation not found!");
+        }
+
+        if (runner.weight() == Runner.DEFAULT_WEIGHT) {
+            return runner.value().getWeight();
+        }
+
+        return runner.weight();
     }
 
     @Override
