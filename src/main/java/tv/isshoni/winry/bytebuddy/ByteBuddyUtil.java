@@ -34,7 +34,7 @@ public class ByteBuddyUtil {
                     builderReference.set(builder.method(named(m.getName())
                             .and(isDeclaredBy(m.getDeclaringClass()))
                             .and(returns(m.getReturnType())))
-                            .intercept(to(AsyncManager.class)));
+                            .intercept(to(AsyncDelegator.class)));
                 });
 
 
