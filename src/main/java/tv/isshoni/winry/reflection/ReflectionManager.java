@@ -57,10 +57,6 @@ public class ReflectionManager {
         }
     }
 
-    public static <T> T construct(BootstrappedClass<?> bootstrapped) {
-        return (T) construct(bootstrapped.getBootstrappedElement());
-    }
-
     public static void injectField(Field field, Object target, Object injected) {
         boolean couldAccess = field.canAccess(target);
 

@@ -3,7 +3,6 @@ package tv.isshoni.winry.bootstrap.element;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionManager;
@@ -37,7 +36,7 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     }
 
     private final Class<?> clazz;
-    private final Class<?> wrappedClazz;
+    private Class<?> wrappedClazz;
 
     private Object object;
 
@@ -57,11 +56,6 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
         this.modifiers = ReflectedModifier.getModifiers(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
-        this.wrappedClazz = ByteBuddyUtil.wrapClass(this)
-                .name("WinryWrapped" + this.clazz.getSimpleName())
-                .make()
-                .load(BootstrappedClass.class.getClassLoader())
-                .getLoaded();
     }
 
     public void addField(BootstrappedField<?> field) {
@@ -82,6 +76,10 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     public void setProvided(boolean provided) {
         this.provided = provided;
+    }
+
+    public void setWrappedClass(Class<?> wrappedClazz) {
+        this.wrappedClazz = wrappedClazz;
     }
 
     @Override
@@ -108,17 +106,23 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
         if (provided.containsKey(this.clazz)) {
             LOGGER.info("Class: " + this.clazz.getName() + " is provided.");
             this.object = provided.get(this.clazz);
+        } else if (hasWrappedClass()) {
+            LOGGER.info("Class: new " + this.wrappedClazz.getName() + "()");
+            this.object = ReflectionManager.construct(this.wrappedClazz);
         } else {
             LOGGER.info("Class: new " + this.clazz.getName() + "()");
-            this.object = ReflectionManager.construct(this);
+            this.object = ReflectionManager.construct(this.clazz);
         }
 
         LOGGER.info("Registered to class registry");
         ReflectionManager.registerClass(this);
 
-        LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
+        if (hasWrappedClass()) {
+            LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
 
-        Arrays.stream(this.wrappedClazz.getDeclaredMethods()).forEach(m -> LOGGER.info(m.toString()));
+            Arrays.stream(this.wrappedClazz.getDeclaredMethods())
+                    .forEach(m -> LOGGER.info(m.toString()));
+        }
     }
 
     public Object getObject() {
@@ -142,9 +146,13 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
         return ImmutableList.copyOf(this.methods);
     }
 
-//    public Class<?> getWrappedClazz() {
-//        return this.wrappedClazz;
-//    }
+    public Class<?> getWrappedClass() {
+        return this.wrappedClazz;
+    }
+
+    public boolean hasWrappedClass() {
+        return Objects.nonNull(this.wrappedClazz);
+    }
 
     public boolean hasObject() {
         return Objects.nonNull(this.object);

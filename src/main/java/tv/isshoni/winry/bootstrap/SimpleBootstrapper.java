@@ -15,6 +15,7 @@ import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.annotation.Annotation;
@@ -99,6 +100,12 @@ public class SimpleBootstrapper implements IBootstrapper {
                     .map(m -> new BootstrappedMethod(m, m.getAnnotation(Runner.class)))
                     .collect(Collectors.toSet()));
             LOGGER.info("Discovered " + c.getMethods().size() + " methods");
+            LOGGER.info("Wrapping class...");
+            c.setWrappedClass(ByteBuddyUtil.wrapClass(c)
+                    .name("WinryWrapped" + c.getBootstrappedElement().getSimpleName())
+                    .make()
+                    .load(ClassLoader.getSystemClassLoader())
+                    .getLoaded());
             LOGGER.setIndent(0);
         });
 

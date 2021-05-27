@@ -33,6 +33,7 @@ public class TestBootstrappedClass {
     public void initRun() {
         LOGGER.info("Init run");
         LOGGER.info("Running test: " + this.injectedClass.getNumCalled());
+        LOGGER.info("Running async test: " + this.injectedClass.getTest());
     }
 
     @Runner(RunnerOrder.POST_INIT)

@@ -5,9 +5,9 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
 import tv.isshoni.winry.annotation.Async;
 import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.bootstrap.element.IBootstrappedElement;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static net.bytebuddy.implementation.MethodDelegation.to;
@@ -26,8 +26,7 @@ public class ByteBuddyUtil {
 
         AtomicReference<DynamicType.Builder<?>> builderReference = new AtomicReference<>(result);
 
-        bootstrappedClass.getMethods().stream()
-                .map(IBootstrappedElement::getBootstrappedElement)
+        Arrays.stream(bootstrappedClass.getBootstrappedElement().getMethods())
                 .filter(m -> m.isAnnotationPresent(Async.class))
                 .forEach(m -> {
                     DynamicType.Builder<?> builder = builderReference.get();
@@ -39,12 +38,6 @@ public class ByteBuddyUtil {
                 });
 
 
-        return result;
+        return builderReference.get();
     }
-
-//    public <T> DynamicType.Builder<T> createWrappedClass(Class<T> subclass) {
-//        DynamicType.Builder<T> builder = BYTE_BUDDY.subclass(subclass);
-//
-//        return builder;
-//    }
 }
