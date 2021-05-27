@@ -1,4 +1,4 @@
-package tv.isshoni.winry.bootstrap.element;
+package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Runner;

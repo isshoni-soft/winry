@@ -1,4 +1,4 @@
-package tv.isshoni.winry.bootstrap.element;
+package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.Bootstrap;
@@ -10,16 +10,20 @@ import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
-public class BootstrappedField<A extends Annotation> implements IBootstrappedElement<A, Field> {
+public class BootstrappedField implements IBootstrappedElement<Field> {
 
     private static final WinryLogger LOGGER = WinryLogger.create("BootstrapField", 11);
 
-    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField<?>>> ANNOTATION_PROCEDURE = new HashMap<>();
+    @Deprecated
+    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField>> ANNOTATION_PROCEDURE = new HashMap<>();
 
     static {
         registerAnnotationProcedure(Logger.class, (provided, field) -> {
@@ -42,7 +46,8 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
         });
     }
 
-    public static void registerAnnotationProcedure(Class<? extends Annotation> annotation, BiConsumer<Map<Class<?>, Object>, BootstrappedField<?>> consumer) {
+    @Deprecated
+    public static void registerAnnotationProcedure(Class<? extends Annotation> annotation, BiConsumer<Map<Class<?>, Object>, BootstrappedField> consumer) {
         if (ANNOTATION_PROCEDURE.containsKey(annotation)) {
             throw new IllegalStateException(annotation.getName() + " already has a procedure registered!");
         }
@@ -54,11 +59,11 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
 
     private final Set<ReflectedModifier> modifiers;
 
-    private final A annotation;
+    private final Collection<Annotation> annotation;
 
-    private final BootstrappedClass<?> target;
+    private final BootstrappedClass target;
 
-    public BootstrappedField(Field field, A annotation, BootstrappedClass<?> target) {
+    public BootstrappedField(Field field, Collection<Annotation> annotation, BootstrappedClass target) {
         this.field = field;
         this.annotation = annotation;
         this.target = target;
@@ -66,7 +71,7 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
     }
 
     @Override
-    public A getAnnotation() {
+    public Collection<Annotation> getAnnotations() {
         return this.annotation;
     }
 
@@ -80,7 +85,7 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
         return ImmutableSet.copyOf(this.modifiers);
     }
 
-    public BootstrappedClass<?> getTarget() {
+    public BootstrappedClass getTarget() {
         return this.target;
     }
 
@@ -94,11 +99,15 @@ public class BootstrappedField<A extends Annotation> implements IBootstrappedEle
             return 8;
         }
 
-        if (this.target.getAnnotation() instanceof Bootstrap) {
+        List<Class<? extends Annotation>> targetAnnotationTypes = this.target.getAnnotations().stream()
+                .map(Annotation::annotationType)
+                .collect(Collectors.toList());
+
+        if (targetAnnotationTypes.contains(Bootstrap.class)) {
             return 5;
         }
 
-        if (this.target.getAnnotation() instanceof Injected) {
+        if (targetAnnotationTypes.contains(Injected.class)) {
             Injected injected = (Injected) this.target.getAnnotation();
 
             if (injected.weight() == Injected.DEFAULT_WEIGHT) {

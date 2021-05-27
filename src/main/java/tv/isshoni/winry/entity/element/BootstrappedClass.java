@@ -1,4 +1,4 @@
-package tv.isshoni.winry.bootstrap.element;
+package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -8,7 +8,6 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,16 +16,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class BootstrappedClass<A extends Annotation> implements IBootstrappedElement<A, Class<?>> {
+public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     private static final WinryLogger LOGGER = WinryLogger.create("BootstrappedClass", 8);
 
+    @Deprecated
     private static final Map<Class<? extends Annotation>, Integer> ANNOTATION_WEIGHTS = new HashMap<>();
 
     static {
         registerBootstrapClassAnnotationWeight(Bootstrap.class, Integer.MAX_VALUE);
     }
 
+    @Deprecated
     public static void registerBootstrapClassAnnotationWeight(Class<? extends Annotation> annotation, int weight) {
         if (ANNOTATION_WEIGHTS.containsKey(annotation)) {
             throw new IllegalStateException(annotation.getName() + " is already registered!");
@@ -40,9 +41,9 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     private Object object;
 
-    private final A annotation;
+    private final Collection<Annotation> annotations;
 
-    private final List<BootstrappedField<?>> fields;
+    private final List<BootstrappedField> fields;
 
     private final List<BootstrappedMethod> methods;
 
@@ -50,9 +51,9 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     private boolean provided = false;
 
-    public BootstrappedClass(Class<?> clazz, A annotation) {
+    public BootstrappedClass(Class<?> clazz, Collection<Annotation> annotations) {
         this.clazz = clazz;
-        this.annotation = annotation;
+        this.annotations = annotations;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
@@ -95,14 +96,25 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     @Override
     public int getWeight() {
         if (this.isProvided()) {
-            return 10000;
+            return Integer.MAX_VALUE - 500;
         }
 
-        return ANNOTATION_WEIGHTS.getOrDefault(this.annotation.annotationType(), 10);
+        // TODO: UPDATE ME TO USE @WEIGHT
+        int result = 0;
+
+        for (Annotation annotation : this.annotations) {
+            result += ANNOTATION_WEIGHTS.getOrDefault(annotation.annotationType(), 10);
+        }
+
+        return result;
     }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
+        if (hasWrappedClass()) {
+            LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
+        }
+
         if (provided.containsKey(this.clazz)) {
             LOGGER.info("Class: " + this.clazz.getName() + " is provided.");
             this.object = provided.get(this.clazz);
@@ -116,13 +128,6 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
         LOGGER.info("Registered to class registry");
         ReflectionManager.registerClass(this);
-
-        if (hasWrappedClass()) {
-            LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
-
-            Arrays.stream(this.wrappedClazz.getDeclaredMethods())
-                    .forEach(m -> LOGGER.info(m.toString()));
-        }
     }
 
     public Object getObject() {
@@ -134,8 +139,8 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
     }
 
     @Override
-    public A getAnnotation() {
-        return this.annotation;
+    public Collection<Annotation> getAnnotations() {
+        return this.annotations;
     }
 
     public List<BootstrappedField<?>> getFields() {
@@ -160,6 +165,6 @@ public class BootstrappedClass<A extends Annotation> implements IBootstrappedEle
 
     @Override
     public String toString() {
-        return "BootstrappedClass[class=" + this.clazz.getName() + ",annotation=" + this.annotation.annotationType().getName() + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
+        return "BootstrappedClass[class=" + this.clazz.getName() + ",annotation=" + this.annotations + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
     }
 }

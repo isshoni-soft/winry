@@ -36,9 +36,12 @@ public class Winry {
             return;
         }
 
+        LOGGER.info("Preparing bootstrapper...");
+        bootstrapper.prepare();
+
         LOGGER.info("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
-        LOGGER.info("Finished bootstrapping in " + Duration.between(start, Instant.now()).toMillis() + " ms");
+        LOGGER.info("Finished in " + Duration.between(start, Instant.now()).toMillis() + " ms");
     }
 }

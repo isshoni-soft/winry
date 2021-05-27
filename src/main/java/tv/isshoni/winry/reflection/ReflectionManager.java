@@ -1,9 +1,9 @@
 package tv.isshoni.winry.reflection;
 
 import com.google.common.base.Preconditions;
-import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.element.BootstrappedClass;
+import tv.isshoni.winry.entity.element.BootstrappedField;
+import tv.isshoni.winry.entity.element.BootstrappedMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

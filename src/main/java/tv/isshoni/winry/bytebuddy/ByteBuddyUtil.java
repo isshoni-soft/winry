@@ -4,7 +4,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
 import tv.isshoni.winry.annotation.Async;
-import tv.isshoni.winry.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.entity.element.BootstrappedClass;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

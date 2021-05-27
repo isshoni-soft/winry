@@ -1,15 +1,16 @@
-package tv.isshoni.winry.bootstrap.element;
+package tv.isshoni.winry.entity.element;
 
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public interface IBootstrappedElement<A extends Annotation, E extends AnnotatedElement> extends Comparable<IBootstrappedElement<?, ?>> {
+public interface IBootstrappedElement<E extends AnnotatedElement> extends Comparable<IBootstrappedElement<?>> {
 
-    A getAnnotation();
+    Collection<Annotation> getAnnotations();
 
     E getBootstrappedElement();
 
@@ -19,7 +20,7 @@ public interface IBootstrappedElement<A extends Annotation, E extends AnnotatedE
 
     void execute(Map<Class<?>, Object> provided);
 
-    default int compareTo(IBootstrappedElement<?, ?> value) {
+    default int compareTo(IBootstrappedElement<?> value) {
         return Integer.compare(value.getWeight(), this.getWeight());
     }
 }
