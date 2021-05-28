@@ -19,15 +19,15 @@ public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotatio
     }
 
     public void executeClass(BootstrappedClass bootstrappedClass, Map<Class<?>, Object> provided) {
-        this.processor.onClass(bootstrappedClass, this.annotation, provided);
+        this.processor.executeClass(bootstrappedClass, this.annotation, provided);
     }
 
     public void executeMethod(BootstrappedMethod bootstrappedMethod, Map<Class<?>, Object> provided) {
-        this.processor.onMethod(bootstrappedMethod, this.annotation, provided);
+        this.processor.executeMethod(bootstrappedMethod, this.annotation, provided);
     }
 
     public void executeField(BootstrappedField bootstrappedField, Map<Class<?>, Object> provided) {
-        this.processor.onField(bootstrappedField, this.annotation, provided);
+        this.processor.executeField(bootstrappedField, this.annotation, provided);
     }
 
     @Override

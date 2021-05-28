@@ -14,11 +14,11 @@ public interface AnnotationProcessor<A extends Annotation> {
 
     WeightCalculator WEIGHT_CALCULATOR = new WeightCalculator();
 
-    default void onClass(BootstrappedClass clazz, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeClass(BootstrappedClass clazz, A annotation, Map<Class<?>, Object> provided) { }
 
-    default void onField(BootstrappedField field, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeField(BootstrappedField field, A annotation, Map<Class<?>, Object> provided) { }
 
-    default void onMethod(BootstrappedMethod method, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeMethod(BootstrappedMethod method, A annotation, Map<Class<?>, Object> provided) { }
 
     default int getWeight(A annotation) {
         return WEIGHT_CALCULATOR.calculateWeight(annotation);

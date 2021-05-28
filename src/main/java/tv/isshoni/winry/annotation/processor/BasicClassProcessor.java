@@ -13,7 +13,7 @@ public class BasicClassProcessor implements AnnotationProcessor<Annotation> {
     private final static WinryLogger LOGGER = WinryLogger.create("BasicClassProcessor");
 
     @Override
-    public void onClass(BootstrappedClass bootstrappedClass, Annotation annotation, Map<Class<?>, Object> provided) {
+    public void executeClass(BootstrappedClass bootstrappedClass, Annotation annotation, Map<Class<?>, Object> provided) {
         if (bootstrappedClass.hasObject()) {
             LOGGER.warning("Two basic class processors present on type " + bootstrappedClass.getBootstrappedElement().getName());
             return;

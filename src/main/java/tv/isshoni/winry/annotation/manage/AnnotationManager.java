@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO: Add functionality for annotations to effect class wrapping (i.e. before instantiation & execution)
 public class AnnotationManager {
 
     private final Map<Class<? extends Annotation>, List<AnnotationProcessor<?>>> annotationProcessors;
