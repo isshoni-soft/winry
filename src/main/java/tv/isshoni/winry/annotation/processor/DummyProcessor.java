@@ -1,5 +1,7 @@
 package tv.isshoni.winry.annotation.processor;
 
-import tv.isshoni.winry.entity.annotation.AnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 
-public class DummyProcessor implements AnnotationProcessor { }
+import java.lang.annotation.Annotation;
+
+public class DummyProcessor implements IAnnotationProcessor<Annotation> { }

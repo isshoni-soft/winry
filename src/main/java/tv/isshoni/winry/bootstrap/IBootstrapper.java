@@ -10,8 +10,6 @@ import java.util.Set;
 
 public interface IBootstrapper {
 
-    void prepare();
-
     void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided);
 
     List<IBootstrappedElement<?>> finalizeClasses(Bootstrap bootstrap, Map<Class<?>, BootstrappedClass> clazzes, Map<Class<?>, Object> provided);

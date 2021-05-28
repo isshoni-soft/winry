@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public interface AnnotationProcessor<A extends Annotation> {
+public interface IAnnotationProcessor<A extends Annotation> {
 
     WeightCalculator WEIGHT_CALCULATOR = new WeightCalculator();
 

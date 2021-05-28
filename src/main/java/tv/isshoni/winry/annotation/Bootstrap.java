@@ -1,7 +1,8 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.bootstrap.SimpleBootstrapper;
+import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
 import tv.isshoni.winry.bootstrap.IBootstrapper;
+import tv.isshoni.winry.bootstrap.SimpleBootstrapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,6 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Weight(Integer.MAX_VALUE - 50000)
+@Processor(BasicClassProcessor.class)
 public @interface Bootstrap {
 
     /**

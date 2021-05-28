@@ -1,57 +1,51 @@
 package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
-import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
-import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
 
     private static final WinryLogger LOGGER = WinryLogger.create("BootstrapField", 11);
 
-    @Deprecated
-    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField>> ANNOTATION_PROCEDURE = new HashMap<>();
-
-    static {
-        registerAnnotationProcedure(Logger.class, (provided, field) -> {
-            if (!field.field.getType().equals(WinryLogger.class)) {
-                LOGGER.severe(field.getDisplay() + " is not of type WinryLogger, skipping...");
-                return;
-            }
-
-            if (field.modifiers.contains(ReflectedModifier.FINAL)) {
-                LOGGER.severe(field.getDisplay() + " has modifier final, Winry is currently unable to inject into final fields, skipping...");
-                return;
-            }
-
-            Logger annotation = (Logger) field.annotations;
-
-            WinryLogger logger = ReflectionManager.executeMethod(WinryLogger.class, null, "create", annotation.value(), annotation.indent());
-
-            LOGGER.info("Injecting: " + logger);
-            ReflectionManager.injectField(field, logger);
-        });
-    }
-
-    @Deprecated
-    public static void registerAnnotationProcedure(Class<? extends Annotation> annotation, BiConsumer<Map<Class<?>, Object>, BootstrappedField> consumer) {
-        if (ANNOTATION_PROCEDURE.containsKey(annotation)) {
-            throw new IllegalStateException(annotation.getName() + " already has a procedure registered!");
-        }
-
-        ANNOTATION_PROCEDURE.put(annotation, consumer);
-    }
+//    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField>> ANNOTATION_PROCEDURE = new HashMap<>();
+//
+//    static {
+//        registerAnnotationProcedure(Logger.class, (provided, field) -> {
+//            if (!field.field.getType().equals(WinryLogger.class)) {
+//                LOGGER.severe(field.getDisplay() + " is not of type WinryLogger, skipping...");
+//                return;
+//            }
+//
+//            if (field.modifiers.contains(ReflectedModifier.FINAL)) {
+//                LOGGER.severe(field.getDisplay() + " has modifier final, Winry is currently unable to inject into final fields, skipping...");
+//                return;
+//            }
+//
+//            Logger annotation = (Logger) field.annotations;
+//
+//            WinryLogger logger = ReflectionManager.executeMethod(WinryLogger.class, null, "create", annotation.value(), annotation.indent());
+//
+//            LOGGER.info("Injecting: " + logger);
+//            ReflectionManager.injectField(field, logger);
+//        });
+//    }
+//
+//    public static void registerAnnotationProcedure(Class<? extends Annotation> annotation, BiConsumer<Map<Class<?>, Object>, BootstrappedField> consumer) {
+//        if (ANNOTATION_PROCEDURE.containsKey(annotation)) {
+//            throw new IllegalStateException(annotation.getName() + " already has a procedure registered!");
+//        }
+//
+//        ANNOTATION_PROCEDURE.put(annotation, consumer);
+//    }
 
     private final AnnotationManager annotationManager;
 

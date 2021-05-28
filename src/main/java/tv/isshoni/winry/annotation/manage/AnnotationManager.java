@@ -1,40 +1,99 @@
 package tv.isshoni.winry.annotation.manage;
 
-import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
-import tv.isshoni.winry.entity.annotation.AnnotationProcessor;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ConfigurationBuilder;
+import tv.isshoni.winry.Winry;
+import tv.isshoni.winry.annotation.AttachTo;
+import tv.isshoni.winry.annotation.Processor;
+import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.util.Pair;
+import tv.isshoni.winry.logging.WinryLogger;
+import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO: Add functionality for annotations to effect class wrapping (i.e. before instantiation & execution)
 public class AnnotationManager {
 
-    private final Map<Class<? extends Annotation>, List<AnnotationProcessor<?>>> annotationProcessors;
+    private static final WinryLogger LOGGER = WinryLogger.create("AnnotationManager");
+
+    private final Map<Class<? extends Annotation>, List<IAnnotationProcessor<?>>> annotationProcessors;
 
     public AnnotationManager() {
+        LOGGER.info("Initializing...");
         this.annotationProcessors = new HashMap<>();
 
-        register(Bootstrap.class, new BasicClassProcessor()); // This is one of the few hard codes i will enforce
+        ArrayList<String> packages = new ArrayList<>(Arrays.asList(Winry.getPackages()));
+        packages.add("tv.isshoni.winry.annotation");
+
+        LOGGER.info("Performing annotation discovery...");
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false))
+                .forPackages(packages.toArray(new String[0])));
+
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Processor.class);
+
+        classes.stream()
+                .map(c -> (Class<? extends Annotation>) c)
+                .filter(c -> c.isAnnotationPresent(Processor.class))
+                .forEach(c -> register(c, c.getAnnotation(Processor.class).value()));
+
+        classes = reflections.getTypesAnnotatedWith(AttachTo.class);
+
+        classes.stream()
+                .filter(c -> c.isAnnotationPresent(AttachTo.class))
+                .filter(IAnnotationProcessor.class::isAssignableFrom)
+                .map(c -> (Class<IAnnotationProcessor<?>>) c)
+                .forEach(c -> register(c.getAnnotation(AttachTo.class).value(), c));
+
+        LOGGER.info("Discovered " + getTotalProcessors() + " annotation processors.");
     }
 
-    public final <T extends Annotation> void register(Class<T> annotation, AnnotationProcessor<?>... processor) {
-        annotationProcessors.compute(annotation, (a, v) -> {
+    public final <T extends Annotation> void unregister(Class<T> annotation) {
+        this.annotationProcessors.remove(annotation);
+    }
+
+    @SafeVarargs
+    public final void register(Class<? extends Annotation>[] annotations, Class<? extends IAnnotationProcessor<?>>... processors) {
+        for (Class<? extends Annotation> annotation : annotations) {
+            register(annotation, processors);
+        }
+    }
+
+    public final void register(Class<? extends Annotation>[] annotations, IAnnotationProcessor<?>... processors) {
+        for (Class<? extends Annotation> annotation : annotations) {
+            register(annotation, processors);
+        }
+    }
+
+    @SafeVarargs
+    public final void register(Class<? extends Annotation> annotation, Class<? extends IAnnotationProcessor<?>>... processors) {
+        register(annotation, Arrays.stream(processors)
+                .map(ReflectionManager::construct)
+                .toArray(IAnnotationProcessor<?>[]::new));
+    }
+
+    public final <T extends Annotation> void register(Class<T> annotation, IAnnotationProcessor<?>... processors) {
+        this.annotationProcessors.compute(annotation, (a, v) -> {
             if (v == null) {
                 v = new LinkedList<>();
             }
 
-            v.addAll(Arrays.asList(processor));
+            v.addAll(Arrays.asList(processors));
 
             return v;
         });
@@ -46,7 +105,7 @@ public class AnnotationManager {
                 .sum();
     }
 
-    public List<AnnotationProcessor<?>> get(Class<? extends Annotation> annotation) {
+    public List<IAnnotationProcessor<?>> get(Class<? extends Annotation> annotation) {
         return this.annotationProcessors.getOrDefault(annotation, new LinkedList<>());
     }
 
@@ -97,9 +156,15 @@ public class AnnotationManager {
                         .anyMatch(c -> annotations.stream().map(Annotation::annotationType).anyMatch(c::equals)));
     }
 
-    private <A extends Annotation> Stream<Pair<A, AnnotationProcessor<A>>> convertCollectionToProcessorStream(Collection<A> annotations) {
+    public int getTotalProcessors() {
+        return this.annotationProcessors.values().stream()
+                .mapToInt(Collection::size)
+                .sum();
+    }
+
+    private <A extends Annotation> Stream<Pair<A, IAnnotationProcessor<A>>> convertCollectionToProcessorStream(Collection<A> annotations) {
         return annotations.stream()
                 .flatMap(a -> get(a.annotationType()).stream()
-                        .map(p -> new Pair<>(a, (AnnotationProcessor<A>) p)));
+                        .map(p -> new Pair<>(a, (IAnnotationProcessor<A>) p)));
     }
 }

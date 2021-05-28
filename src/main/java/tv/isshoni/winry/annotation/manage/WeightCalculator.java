@@ -1,7 +1,7 @@
 package tv.isshoni.winry.annotation.manage;
 
 import tv.isshoni.winry.annotation.Weight;
-import tv.isshoni.winry.entity.annotation.AnnotationWeightEnum;
+import tv.isshoni.winry.entity.annotation.IAnnotationWeightEnum;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -49,8 +49,8 @@ public class WeightCalculator {
         try {
             Method valueMethod = annotation.annotationType().getMethod(weight.weightEnum());
 
-            if (valueMethod.getReturnType().isEnum() && AnnotationWeightEnum.class.isAssignableFrom(valueMethod.getReturnType())) {
-                AnnotationWeightEnum type = (AnnotationWeightEnum) valueMethod.invoke(annotation);
+            if (valueMethod.getReturnType().isEnum() && IAnnotationWeightEnum.class.isAssignableFrom(valueMethod.getReturnType())) {
+                IAnnotationWeightEnum type = (IAnnotationWeightEnum) valueMethod.invoke(annotation);
 
                 return type.getWeight();
             } else {

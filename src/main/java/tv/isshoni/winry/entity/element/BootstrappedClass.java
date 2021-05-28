@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -16,8 +15,6 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
-
-    private static final WinryLogger LOGGER = WinryLogger.create("BootstrappedClass", 8);
 
     private final AnnotationManager annotationManager;
 

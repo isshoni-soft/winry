@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.annotation;
 
-public interface AnnotationWeightEnum {
+public interface IAnnotationWeightEnum {
 
     int getWeight();
 }

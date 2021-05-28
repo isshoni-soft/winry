@@ -7,15 +7,14 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.Injected;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
-import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
 import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.entity.element.BootstrappedClass;
 import tv.isshoni.winry.entity.element.BootstrappedField;
 import tv.isshoni.winry.entity.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.element.IBootstrappedElement;
 import tv.isshoni.winry.logging.WinryLogger;
+import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,13 +32,12 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private final AnnotationManager annotationManager;
 
+    // TODO: make reflection manager less of a singleton
+    private final ReflectionManager reflectionManager;
+
     public SimpleBootstrapper() {
         this.annotationManager = new AnnotationManager();
-    }
-
-    @Override
-    public void prepare() {
-        this.annotationManager.register(Injected.class, new BasicClassProcessor());
+        this.reflectionManager = new ReflectionManager();
     }
 
     @Override

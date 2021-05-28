@@ -11,9 +11,9 @@ public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotatio
 
     private final Annotation annotation;
 
-    private final AnnotationProcessor<Annotation> processor;
+    private final IAnnotationProcessor<Annotation> processor;
 
-    public PreparedAnnotationProcessor(Annotation annotation, AnnotationProcessor<Annotation> processor) {
+    public PreparedAnnotationProcessor(Annotation annotation, IAnnotationProcessor<Annotation> processor) {
         this.annotation = annotation;
         this.processor = processor;
     }

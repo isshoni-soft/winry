@@ -1,6 +1,6 @@
 package tv.isshoni.winry.annotation.processor;
 
-import tv.isshoni.winry.entity.annotation.AnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.element.BootstrappedClass;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectionManager;
@@ -8,7 +8,7 @@ import tv.isshoni.winry.reflection.ReflectionManager;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class BasicClassProcessor implements AnnotationProcessor<Annotation> {
+public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
 
     private final static WinryLogger LOGGER = WinryLogger.create("BasicClassProcessor");
 

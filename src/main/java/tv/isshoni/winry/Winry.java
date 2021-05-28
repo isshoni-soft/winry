@@ -14,6 +14,8 @@ public class Winry {
 
     private static final WinryLogger LOGGER = WinryLogger.create("Winry");
 
+    private static String[] packages;
+
     public static void bootstrap(Class<?> clazz, Object... provided) {
         Instant start = Instant.now();
 
@@ -23,6 +25,8 @@ public class Winry {
             LOGGER.severe(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return;
         }
+
+        packages = bootstrap.loadPackage();
 
         LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
 
@@ -36,12 +40,13 @@ public class Winry {
             return;
         }
 
-        LOGGER.info("Preparing bootstrapper...");
-        bootstrapper.prepare();
-
         LOGGER.info("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
         LOGGER.info("Finished in " + Duration.between(start, Instant.now()).toMillis() + " ms");
+    }
+
+    public static String[] getPackages() {
+        return packages;
     }
 }
