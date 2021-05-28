@@ -9,5 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Weight {
 
+    String NOT_DYNAMIC = "111111";
+
     int value();
+
+    String weightEnum() default "value";
+    String dynamic() default NOT_DYNAMIC;
 }

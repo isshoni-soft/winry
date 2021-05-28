@@ -19,7 +19,7 @@ public class ByteBuddyUtil {
 
     private static final ByteBuddy BYTE_BUDDY = new ByteBuddy();
 
-    public static DynamicType.Builder<?> wrapClass(BootstrappedClass<?> bootstrappedClass) {
+    public static DynamicType.Builder<?> wrapClass(BootstrappedClass bootstrappedClass) {
         DynamicType.Builder<?> result = BYTE_BUDDY.subclass(bootstrappedClass.getBootstrappedElement())
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));

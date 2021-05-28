@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class ReflectionManager {
 
-    private static final Map<Class<?>, BootstrappedClass<?>> CLASS_REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, BootstrappedClass> CLASS_REGISTRY = new HashMap<>();
 
-    public static void registerClass(BootstrappedClass<?> bootstrapped) {
+    public static void registerClass(BootstrappedClass bootstrapped) {
         Class<?> clazz = bootstrapped.getBootstrappedElement();
 
         if (CLASS_REGISTRY.containsKey(clazz)) {
@@ -75,7 +75,7 @@ public class ReflectionManager {
         }
     }
 
-    public static void injectField(BootstrappedField<?> bootstrapped, Object injected) {
+    public static void injectField(BootstrappedField bootstrapped, Object injected) {
         Object target = null;
         Field field = bootstrapped.getBootstrappedElement();
 
@@ -86,7 +86,7 @@ public class ReflectionManager {
         injectField(field, target, injected);
     }
 
-    public static void injectField(BootstrappedField<?> bootstrapped) {
+    public static void injectField(BootstrappedField bootstrapped) {
         Preconditions.checkNotNull(bootstrapped);
         Preconditions.checkNotNull(bootstrapped.getTarget());
         Preconditions.checkNotNull(bootstrapped.getTarget().getObject());
@@ -94,8 +94,8 @@ public class ReflectionManager {
         injectField(bootstrapped, bootstrapped.getTarget().getObject());
     }
 
-    public static BootstrappedClass<?> findDeclaringClassInRegistry(Member member) {
-        BootstrappedClass<?> bootstrappedClass = CLASS_REGISTRY.get(member.getDeclaringClass());
+    public static BootstrappedClass findDeclaringClassInRegistry(Member member) {
+        BootstrappedClass bootstrappedClass = CLASS_REGISTRY.get(member.getDeclaringClass());
 
         if (bootstrappedClass == null) {
             throw new IllegalStateException("Unable to find " + member.getDeclaringClass() + " in class registry!");

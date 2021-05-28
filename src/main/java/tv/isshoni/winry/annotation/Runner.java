@@ -1,6 +1,6 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.entity.runner.RunnerOrder;
+import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Weight(value = Runner.DEFAULT_WEIGHT, dynamic = "weight")
 public @interface Runner {
 
     int DEFAULT_WEIGHT = 2;

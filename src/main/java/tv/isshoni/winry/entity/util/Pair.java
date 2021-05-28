@@ -26,6 +26,11 @@ public class Pair<F, S> {
     }
 
     @Override
+    public String toString() {
+        return "Pair[first=" + this.first.toString() + ",second=" + this.second.toString() + "]";
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof Pair)) {
             return false;

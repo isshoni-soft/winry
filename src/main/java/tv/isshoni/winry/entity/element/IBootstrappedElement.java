@@ -1,5 +1,6 @@
 package tv.isshoni.winry.entity.element;
 
+import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -16,7 +17,11 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
 
     Set<ReflectedModifier> getModifiers();
 
-    int getWeight();
+    AnnotationManager getAnnotationManager();
+
+    default int getWeight() {
+        return this.getAnnotationManager().calculateWeight(this.getAnnotations());
+    }
 
     void execute(Map<Class<?>, Object> provided);
 

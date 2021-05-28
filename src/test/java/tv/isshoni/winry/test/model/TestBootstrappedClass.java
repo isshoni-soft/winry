@@ -4,7 +4,7 @@ import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Runner;
-import tv.isshoni.winry.entity.runner.RunnerOrder;
+import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;

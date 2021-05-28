@@ -1,20 +1,19 @@
 package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
-import tv.isshoni.winry.annotation.Runner;
-import tv.isshoni.winry.entity.util.Pair;
+import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.reflection.ReflectedModifier;
-import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BootstrappedMethod implements IBootstrappedElement<Method> {
+
+    private final AnnotationManager annotationManager;
 
     private final Method method;
 
@@ -22,10 +21,15 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
 
     private final Set<ReflectedModifier> modifiers;
 
-    public BootstrappedMethod(Method method, Collection<Annotation> annotations) {
+    public BootstrappedMethod(Method method, AnnotationManager annotationManager) {
         this.method = method;
-        this.annotations = annotations;
+        this.annotationManager = annotationManager;
         this.modifiers = ReflectedModifier.getModifiers(method);
+        this.annotations = this.annotationManager.getManagedAnnotationsOn(method);
+
+        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.method.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        }
     }
 
     @Override
@@ -44,37 +48,40 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
     }
 
     @Override
-    public int getWeight() {
-        List<Pair<Class<? extends Annotation>, Annotation>> annotationTypes = this.annotations.stream()
-                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
-                .collect(Collectors.toList());
-
-        Runner runner = null;
-        for (Pair<Class<? extends Annotation>, Annotation> pair : annotationTypes) {
-            if (pair.getFirst().equals(Runner.class)) {
-                runner = (Runner) pair.getSecond();
-                break;
-            }
-        }
-
-        if (runner == null) {
-            throw new IllegalStateException("Runner annotation not found!");
-        }
-
-        if (runner.weight() == Runner.DEFAULT_WEIGHT) {
-            return runner.value().getWeight();
-        }
-
-        return runner.weight();
+    public AnnotationManager getAnnotationManager() {
+        return this.annotationManager;
     }
+
+//    @Override
+//    public int getWeight() {
+//        Optional<Runner> runner = this.annotations.stream()
+//                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
+//                .filter(p -> p.getFirst().equals(Runner.class))
+//                .map(p -> (Runner) p.getSecond())
+//                .findFirst();
+//
+//        Optional<Integer> weight = runner.map(Runner::weight);
+//
+//        if (!runner.isPresent()) {
+//            throw new IllegalStateException("Runner annotation not found!");
+//        }
+//
+//        if (weight.get() == Runner.DEFAULT_WEIGHT) {
+//            return runner.get().value().getWeight();
+//        }
+//
+//        return weight.get();
+//    }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
-        ReflectionManager.executeMethod(this);
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.executeMethod(this, provided);
+        }
     }
 
     @Override
     public String toString() {
-        return "BootstrappedMethod[method=" + this.method.getName() + ",runner=" + this.runner.value() + ",weight=" + this.getWeight() + "]";
+        return "BootstrappedMethod[method=" + this.method.getName() + ",weight=" + this.getWeight() + "]";
     }
 }

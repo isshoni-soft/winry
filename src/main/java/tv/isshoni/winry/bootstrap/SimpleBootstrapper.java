@@ -7,12 +7,14 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.Runner;
+import tv.isshoni.winry.annotation.Injected;
+import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
+import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.entity.element.BootstrappedClass;
 import tv.isshoni.winry.entity.element.BootstrappedField;
 import tv.isshoni.winry.entity.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.element.IBootstrappedElement;
-import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.util.Arrays;
@@ -22,7 +24,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,15 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
 
+    private final AnnotationManager annotationManager;
+
+    public SimpleBootstrapper() {
+        this.annotationManager = new AnnotationManager();
+    }
+
     @Override
     public void prepare() {
-
+        this.annotationManager.register(Injected.class, new BasicClassProcessor());
     }
 
     @Override
@@ -72,14 +79,14 @@ public class SimpleBootstrapper implements IBootstrapper {
             }
 
             c.addField(Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
-                    .filter(BootstrapAnnotationManager::hasBootstrapAnnotation)
-                    .map(f -> new BootstrappedField(f, BootstrapAnnotationManager.getBootstrapAnnotationsOn(f),  clazzes.get(f.getType())))
+                    .filter(this.annotationManager::hasManagedAnnotation)
+                    .map(f -> new BootstrappedField(f, clazzes.get(f.getType()), this.annotationManager))
                     .collect(Collectors.toSet()));
             LOGGER.info("Discovered " + c.getFields().size() + " fields");
 
             c.addMethod(Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
-                    .filter(m -> m.isAnnotationPresent(Runner.class))
-                    .map(m -> new BootstrappedMethod(m, m.getAnnotation(Runner.class)))
+                    .filter(this.annotationManager::hasManagedAnnotation)
+                    .map(m -> new BootstrappedMethod(m, this.annotationManager))
                     .collect(Collectors.toSet()));
             LOGGER.info("Discovered " + c.getMethods().size() + " methods");
             LOGGER.info("Wrapping class...");
@@ -132,7 +139,7 @@ public class SimpleBootstrapper implements IBootstrapper {
                     .forPackages(packages)
                     .filterInputsBy(filter));
 
-            BootstrapAnnotationManager.getBootstrapAnnotations().forEach(a -> clazzes.addAll(reflections.getTypesAnnotatedWith(a)));
+            this.annotationManager.getManagedAnnotations().forEach(a -> clazzes.addAll(reflections.getTypesAnnotatedWith(a)));
         }
 
         return clazzes;
@@ -143,11 +150,11 @@ public class SimpleBootstrapper implements IBootstrapper {
         Map<Class<?>, BootstrappedClass> result = new HashMap<>();
 
         clazzes.forEach(c -> {
-            if (BootstrapAnnotationManager.hasBootstrapAnnotation(c)) {
+            if (!this.annotationManager.hasManagedAnnotation(c)) {
                 return; // No need to keep processing here
             }
 
-            result.put(c, new BootstrappedClass(c, BootstrapAnnotationManager.getBootstrapAnnotationsOn(c)));
+            result.put(c, new BootstrappedClass(c, this.annotationManager));
         });
 
         return result;

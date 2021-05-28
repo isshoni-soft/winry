@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Weight(Integer.MAX_VALUE)
+@Weight(Integer.MAX_VALUE - 50000)
 public @interface Bootstrap {
 
     /**

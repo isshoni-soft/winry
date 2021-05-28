@@ -1,8 +1,9 @@
-package tv.isshoni.winry.entity.runner;
+package tv.isshoni.winry.entity.annotation.runner;
 
 import tv.isshoni.winry.annotation.Runner;
+import tv.isshoni.winry.entity.annotation.AnnotationWeightEnum;
 
-public enum RunnerOrder {
+public enum RunnerOrder implements AnnotationWeightEnum {
     ASAP(6),
     PRE_INIT(3),
     INIT(Runner.DEFAULT_WEIGHT),
@@ -15,6 +16,7 @@ public enum RunnerOrder {
         this.weight = weight;
     }
 
+    @Override
     public int getWeight() {
         return this.weight;
     }

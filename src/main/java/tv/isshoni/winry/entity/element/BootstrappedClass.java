@@ -2,14 +2,13 @@ package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
-import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,21 +19,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     private static final WinryLogger LOGGER = WinryLogger.create("BootstrappedClass", 8);
 
-    @Deprecated
-    private static final Map<Class<? extends Annotation>, Integer> ANNOTATION_WEIGHTS = new HashMap<>();
-
-    static {
-        registerBootstrapClassAnnotationWeight(Bootstrap.class, Integer.MAX_VALUE);
-    }
-
-    @Deprecated
-    public static void registerBootstrapClassAnnotationWeight(Class<? extends Annotation> annotation, int weight) {
-        if (ANNOTATION_WEIGHTS.containsKey(annotation)) {
-            throw new IllegalStateException(annotation.getName() + " is already registered!");
-        }
-
-        ANNOTATION_WEIGHTS.put(annotation, weight);
-    }
+    private final AnnotationManager annotationManager;
 
     private final Class<?> clazz;
     private Class<?> wrappedClazz;
@@ -50,13 +35,19 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     private final Set<ReflectedModifier> modifiers;
 
     private boolean provided = false;
+    private boolean injectable = true;
 
-    public BootstrappedClass(Class<?> clazz, Collection<Annotation> annotations) {
+    public BootstrappedClass(Class<?> clazz, AnnotationManager annotationManager) {
         this.clazz = clazz;
-        this.annotations = annotations;
+        this.annotationManager = annotationManager;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
+        this.annotations = this.annotationManager.getManagedAnnotationsOn(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
+
+        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.clazz.getSimpleName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        }
     }
 
     public void addField(BootstrappedField field) {
@@ -83,6 +74,14 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         this.wrappedClazz = wrappedClazz;
     }
 
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    public void setInjectable(boolean injectable) {
+        this.injectable = injectable;
+    }
+
     @Override
     public Class<?> getBootstrappedElement() {
         return this.clazz;
@@ -94,40 +93,24 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     @Override
+    public AnnotationManager getAnnotationManager() {
+        return this.annotationManager;
+    }
+
+    @Override
     public int getWeight() {
         if (this.isProvided()) {
-            return Integer.MAX_VALUE - 500;
+            return Integer.MAX_VALUE - 50500;
         }
 
-        // TODO: UPDATE ME TO USE @WEIGHT
-        int result = 0;
-
-        for (Annotation annotation : this.annotations) {
-            result += ANNOTATION_WEIGHTS.getOrDefault(annotation.annotationType(), 10);
-        }
-
-        return result;
+        return IBootstrappedElement.super.getWeight();
     }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
-        if (hasWrappedClass()) {
-            LOGGER.info("Produced wrapped class: " + this.wrappedClazz.getName());
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.executeClass(this, provided);
         }
-
-        if (provided.containsKey(this.clazz)) {
-            LOGGER.info("Class: " + this.clazz.getName() + " is provided.");
-            this.object = provided.get(this.clazz);
-        } else if (hasWrappedClass()) {
-            LOGGER.info("Class: new " + this.wrappedClazz.getName() + "()");
-            this.object = ReflectionManager.construct(this.wrappedClazz);
-        } else {
-            LOGGER.info("Class: new " + this.clazz.getName() + "()");
-            this.object = ReflectionManager.construct(this.clazz);
-        }
-
-        LOGGER.info("Registered to class registry");
-        ReflectionManager.registerClass(this);
     }
 
     public Object getObject() {
@@ -136,6 +119,10 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     public boolean isProvided() {
         return this.provided;
+    }
+
+    public boolean isInjectable() {
+        return this.injectable;
     }
 
     @Override
@@ -165,6 +152,6 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     @Override
     public String toString() {
-        return "BootstrappedClass[class=" + this.clazz.getName() + ",annotation=" + this.annotations + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
+        return "BootstrappedClass[class=" + this.clazz.getName() + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
     }
 }

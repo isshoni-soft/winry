@@ -1,9 +1,9 @@
 package tv.isshoni.winry.entity.element;
 
 import com.google.common.collect.ImmutableSet;
-import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.Injected;
 import tv.isshoni.winry.annotation.Logger;
+import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionManager;
@@ -12,11 +12,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
 
@@ -37,7 +35,7 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
                 return;
             }
 
-            Logger annotation = (Logger) field.annotation;
+            Logger annotation = (Logger) field.annotations;
 
             WinryLogger logger = ReflectionManager.executeMethod(WinryLogger.class, null, "create", annotation.value(), annotation.indent());
 
@@ -55,24 +53,31 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         ANNOTATION_PROCEDURE.put(annotation, consumer);
     }
 
+    private final AnnotationManager annotationManager;
+
     private final Field field;
 
     private final Set<ReflectedModifier> modifiers;
 
-    private final Collection<Annotation> annotation;
+    private final Collection<Annotation> annotations;
 
     private final BootstrappedClass target;
 
-    public BootstrappedField(Field field, Collection<Annotation> annotation, BootstrappedClass target) {
+    public BootstrappedField(Field field, BootstrappedClass target, AnnotationManager annotationManager) {
         this.field = field;
-        this.annotation = annotation;
+        this.annotationManager = annotationManager;
         this.target = target;
         this.modifiers = ReflectedModifier.getModifiers(field);
+        this.annotations = this.annotationManager.getManagedAnnotationsOn(field);
+
+        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.field.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        }
     }
 
     @Override
     public Collection<Annotation> getAnnotations() {
-        return this.annotation;
+        return this.annotations;
     }
 
     @Override
@@ -85,56 +90,64 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         return ImmutableSet.copyOf(this.modifiers);
     }
 
+    @Override
+    public AnnotationManager getAnnotationManager() {
+        return this.annotationManager;
+    }
+
     public BootstrappedClass getTarget() {
         return this.target;
     }
 
-    @Override
-    public int getWeight() {
-        if (this.annotation instanceof Logger) {
-            return 7;
-        }
-
-        if (this.target.isProvided()) {
-            return 8;
-        }
-
-        List<Class<? extends Annotation>> targetAnnotationTypes = this.target.getAnnotations().stream()
-                .map(Annotation::annotationType)
-                .collect(Collectors.toList());
-
-        if (targetAnnotationTypes.contains(Bootstrap.class)) {
-            return 5;
-        }
-
-        if (targetAnnotationTypes.contains(Injected.class)) {
-            Injected injected = (Injected) this.target.getAnnotation();
-
-            if (injected.weight() == Injected.DEFAULT_WEIGHT) {
-                return injected.value().getWeight();
-            }
-
-            return injected.weight();
-        }
-
-        return 3;
-    }
+//    @Override
+//    public int getWeight() {
+//        if (this.annotations instanceof Logger) {
+//            return 7;
+//        }
+//
+//        if (this.target.isProvided()) {
+//            return 8;
+//        }
+//
+//        List<Pair<Class<? extends Annotation>, Annotation>> targetAnnotationTypes = this.target.getAnnotations().stream()
+//                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
+//                .collect(Collectors.toList());
+//
+//        if (targetAnnotationTypes.contains(Bootstrap.class)) {
+//            return 5;
+//        }
+//
+//        if (targetAnnotationTypes.contains(Injected.class)) {
+//            Injected injected = (Injected) targetAnnotationTypes;
+//
+//            if (injected.weight() == Injected.DEFAULT_WEIGHT) {
+//                return injected.value().getWeight();
+//            }
+//
+//            return injected.weight();
+//        }
+//
+//        return 3;
+//    }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
-        if (ANNOTATION_PROCEDURE.containsKey(this.annotation.annotationType())) {
-            LOGGER.info("Executing Procedure: " + this.annotation.annotationType());
-            ANNOTATION_PROCEDURE.get(this.annotation.annotationType()).accept(provided, this);
-            return;
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.executeField(this, provided);
         }
-
-        if (this.target == null) {
-            LOGGER.severe("Unable to inject class for " + getDisplay() + ", can't find the target!");
-            return;
-        }
-
-        LOGGER.info("Injecting: " + this.target);
-        ReflectionManager.injectField(this);
+//        if (ANNOTATION_PROCEDURE.containsKey(this.annotation.annotationType())) {
+//            LOGGER.info("Executing Procedure: " + this.annotation.annotationType());
+//            ANNOTATION_PROCEDURE.get(this.annotation.annotationType()).accept(provided, this);
+//            return;
+//        }
+//
+//        if (this.target == null) {
+//            LOGGER.severe("Unable to inject class for " + getDisplay() + ", can't find the target!");
+//            return;
+//        }
+//
+//        LOGGER.info("Injecting: " + this.target);
+//        ReflectionManager.injectField(this);
     }
 
     public String getDisplay() {
