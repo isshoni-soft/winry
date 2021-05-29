@@ -1,11 +1,11 @@
 package tv.isshoni.winry.bootstrap;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import org.reflections8.Reflections;
+import org.reflections8.scanners.ResourcesScanner;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
+import org.reflections8.util.FilterBuilder;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Injected;
