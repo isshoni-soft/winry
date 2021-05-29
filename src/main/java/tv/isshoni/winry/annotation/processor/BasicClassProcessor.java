@@ -15,7 +15,7 @@ public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
     @Override
     public void executeClass(BootstrappedClass bootstrappedClass, Annotation annotation, Map<Class<?>, Object> provided) {
         if (bootstrappedClass.hasObject()) {
-            LOGGER.warning("Two basic class processors present on type " + bootstrappedClass.getBootstrappedElement().getName());
+            LOGGER.warning("Two basic class processors present on type " + bootstrappedClass.getDisplay());
             return;
         }
 
@@ -27,7 +27,7 @@ public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
         Class<?> constructed = (bootstrappedClass.hasWrappedClass() ? bootstrappedClass.getWrappedClass() : clazz);
 
         if (provided.containsKey(clazz)) {
-            LOGGER.info("Class: " + clazz.getName() + " is provided.");
+            LOGGER.info("Class: " + bootstrappedClass.getDisplay() + " is provided.");
             bootstrappedClass.setObject(provided.get(clazz));
         } else {
             LOGGER.info("Class: new " + constructed.getName() + "()");

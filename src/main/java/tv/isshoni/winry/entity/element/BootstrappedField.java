@@ -3,7 +3,6 @@ package tv.isshoni.winry.entity.element;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
-
-    private static final WinryLogger LOGGER = WinryLogger.create("BootstrapField", 11);
 
 //    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField>> ANNOTATION_PROCEDURE = new HashMap<>();
 //
@@ -57,6 +54,8 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
 
     private final BootstrappedClass target;
 
+    private boolean injected = false;
+
     public BootstrappedField(Field field, BootstrappedClass target, AnnotationManager annotationManager) {
         this.field = field;
         this.annotationManager = annotationManager;
@@ -67,6 +66,10 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
             throw new IllegalStateException(this.field.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
         }
+    }
+
+    public void setInjected(boolean injected) {
+        this.injected = injected;
     }
 
     @Override
@@ -93,57 +96,27 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         return this.target;
     }
 
-//    @Override
-//    public int getWeight() {
-//        if (this.annotations instanceof Logger) {
-//            return 7;
-//        }
-//
-//        if (this.target.isProvided()) {
-//            return 8;
-//        }
-//
-//        List<Pair<Class<? extends Annotation>, Annotation>> targetAnnotationTypes = this.target.getAnnotations().stream()
-//                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
-//                .collect(Collectors.toList());
-//
-//        if (targetAnnotationTypes.contains(Bootstrap.class)) {
-//            return 5;
-//        }
-//
-//        if (targetAnnotationTypes.contains(Injected.class)) {
-//            Injected injected = (Injected) targetAnnotationTypes;
-//
-//            if (injected.weight() == Injected.DEFAULT_WEIGHT) {
-//                return injected.value().getWeight();
-//            }
-//
-//            return injected.weight();
-//        }
-//
-//        return 3;
-//    }
+    public boolean isInjected() {
+        return this.injected;
+    }
+
+    @Override
+    public int getWeight() {
+        if (this.target != null && this.target.isProvided()) {
+            return 8; // TODO: Revisit these values
+        }
+
+        return IBootstrappedElement.super.getWeight();
+    }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
             processor.executeField(this, provided);
         }
-//        if (ANNOTATION_PROCEDURE.containsKey(this.annotation.annotationType())) {
-//            LOGGER.info("Executing Procedure: " + this.annotation.annotationType());
-//            ANNOTATION_PROCEDURE.get(this.annotation.annotationType()).accept(provided, this);
-//            return;
-//        }
-//
-//        if (this.target == null) {
-//            LOGGER.severe("Unable to inject class for " + getDisplay() + ", can't find the target!");
-//            return;
-//        }
-//
-//        LOGGER.info("Injecting: " + this.target);
-//        ReflectionManager.injectField(this);
     }
 
+    @Override
     public String getDisplay() {
         return ReflectedModifier.toString(this.field) + " " + this.field.getDeclaringClass().getSimpleName() + "." + this.field.getName();
     }

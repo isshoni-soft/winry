@@ -19,6 +19,8 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
 
     AnnotationManager getAnnotationManager();
 
+    String getDisplay();
+
     default int getWeight() {
         return this.getAnnotationManager().calculateWeight(this.getAnnotations());
     }

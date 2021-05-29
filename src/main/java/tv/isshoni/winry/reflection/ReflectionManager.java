@@ -43,7 +43,11 @@ public class ReflectionManager {
         }
 
         try {
-            return (T) method.invoke(target);
+            T result = (T) method.invoke(target);
+
+            bootstrapped.setExecuted(true);
+
+            return result;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -84,6 +88,7 @@ public class ReflectionManager {
         }
 
         injectField(field, target, injected);
+        bootstrapped.setInjected(true);
     }
 
     public static void injectField(BootstrappedField bootstrapped) {

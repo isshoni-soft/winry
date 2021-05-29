@@ -95,6 +95,11 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     @Override
+    public String getDisplay() {
+        return this.clazz.getName();
+    }
+
+    @Override
     public int getWeight() {
         if (this.isProvided()) {
             return Integer.MAX_VALUE - 50500;

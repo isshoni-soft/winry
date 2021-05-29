@@ -21,15 +21,22 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
 
     private final Set<ReflectedModifier> modifiers;
 
+    private boolean executed;
+
     public BootstrappedMethod(Method method, AnnotationManager annotationManager) {
         this.method = method;
         this.annotationManager = annotationManager;
         this.modifiers = ReflectedModifier.getModifiers(method);
         this.annotations = this.annotationManager.getManagedAnnotationsOn(method);
+        this.executed = false;
 
         if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
             throw new IllegalStateException(this.method.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
         }
+    }
+
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
     }
 
     @Override
@@ -52,26 +59,14 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
         return this.annotationManager;
     }
 
-//    @Override
-//    public int getWeight() {
-//        Optional<Runner> runner = this.annotations.stream()
-//                .map(a -> new Pair<Class<? extends Annotation>, Annotation>(a.annotationType(), a))
-//                .filter(p -> p.getFirst().equals(Runner.class))
-//                .map(p -> (Runner) p.getSecond())
-//                .findFirst();
-//
-//        Optional<Integer> weight = runner.map(Runner::weight);
-//
-//        if (!runner.isPresent()) {
-//            throw new IllegalStateException("Runner annotation not found!");
-//        }
-//
-//        if (weight.get() == Runner.DEFAULT_WEIGHT) {
-//            return runner.get().value().getWeight();
-//        }
-//
-//        return weight.get();
-//    }
+    @Override
+    public String getDisplay() {
+        return this.method.toString();
+    }
+
+    public boolean isExecuted() {
+        return this.executed;
+    }
 
     @Override
     public void execute(Map<Class<?>, Object> provided) {
