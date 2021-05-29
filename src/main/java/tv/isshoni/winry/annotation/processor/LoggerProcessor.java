@@ -5,17 +5,15 @@ import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.element.BootstrappedField;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
-import tv.isshoni.winry.reflection.ReflectionManager;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
 public class LoggerProcessor implements IAnnotationProcessor<Logger> {
 
     private static final WinryLogger LOGGER = WinryLogger.create("LoggerProcessor");
 
     @Override
-    public void executeField(BootstrappedField bootstrappedField, Logger annotation, Map<Class<?>, Object> provided) {
+    public void executeField(BootstrappedField bootstrappedField, Logger annotation) {
         Field field = bootstrappedField.getBootstrappedElement();
 
         if (!field.getType().equals(WinryLogger.class)) {
@@ -28,9 +26,9 @@ public class LoggerProcessor implements IAnnotationProcessor<Logger> {
             return;
         }
 
-        WinryLogger logger = ReflectionManager.executeMethod(WinryLogger.class, null, "create", annotation.value(), annotation.indent());
+        WinryLogger logger = WinryLogger.create(annotation.value(), annotation.indent());
 
         LOGGER.info("Injecting: " + logger);
-        ReflectionManager.injectField(bootstrappedField, logger);
+        bootstrappedField.getBootstrapper().inject(bootstrappedField, logger);
     }
 }

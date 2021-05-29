@@ -7,11 +7,12 @@ import org.reflections8.util.ConfigurationBuilder;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.annotation.AttachTo;
 import tv.isshoni.winry.annotation.Processor;
+import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.util.Pair;
 import tv.isshoni.winry.logging.WinryLogger;
-import tv.isshoni.winry.reflection.ReflectionManager;
+import tv.isshoni.winry.reflection.ReflectionUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO: Add functionality for annotations to effect class wrapping (i.e. before instantiation & execution)
-public class AnnotationManager {
+public class AnnotationManager implements IAnnotationManager {
 
     private static final WinryLogger LOGGER = WinryLogger.create("AnnotationManager");
 
@@ -37,7 +38,7 @@ public class AnnotationManager {
         LOGGER.info("Initializing...");
         this.annotationProcessors = new HashMap<>();
 
-        ArrayList<String> packages = new ArrayList<>(Arrays.asList(Winry.getPackages()));
+        ArrayList<String> packages = new ArrayList<>(Arrays.asList(Winry.getBootstrap().loadPackage()));
         packages.add("tv.isshoni.winry.annotation");
 
         LOGGER.info("Performing annotation discovery...");
@@ -63,31 +64,34 @@ public class AnnotationManager {
         LOGGER.info("Discovered " + getTotalProcessors() + " annotation processors.");
     }
 
-    public final <T extends Annotation> void unregister(Class<T> annotation) {
+    @Override
+    public <T extends Annotation> void unregister(Class<T> annotation) {
         this.annotationProcessors.remove(annotation);
     }
 
-    @SafeVarargs
-    public final void register(Class<? extends Annotation>[] annotations, Class<? extends IAnnotationProcessor<?>>... processors) {
+    @Override
+    public void register(Class<? extends Annotation>[] annotations, Class<? extends IAnnotationProcessor<?>>... processors) {
         for (Class<? extends Annotation> annotation : annotations) {
             register(annotation, processors);
         }
     }
 
-    public final void register(Class<? extends Annotation>[] annotations, IAnnotationProcessor<?>... processors) {
+    @Override
+    public void register(Class<? extends Annotation>[] annotations, IAnnotationProcessor<?>... processors) {
         for (Class<? extends Annotation> annotation : annotations) {
             register(annotation, processors);
         }
     }
 
-    @SafeVarargs
-    public final void register(Class<? extends Annotation> annotation, Class<? extends IAnnotationProcessor<?>>... processors) {
+    @Override
+    public void register(Class<? extends Annotation> annotation, Class<? extends IAnnotationProcessor<?>>... processors) {
         register(annotation, Arrays.stream(processors)
-                .map(ReflectionManager::construct)
+                .map(ReflectionUtil::construct)
                 .toArray(IAnnotationProcessor<?>[]::new));
     }
 
-    public final <T extends Annotation> void register(Class<T> annotation, IAnnotationProcessor<?>... processors) {
+    @Override
+    public <T extends Annotation> void register(Class<T> annotation, IAnnotationProcessor<?>... processors) {
         this.annotationProcessors.compute(annotation, (a, v) -> {
             if (v == null) {
                 v = new LinkedList<>();
@@ -99,20 +103,24 @@ public class AnnotationManager {
         });
     }
 
+    @Override
     public <A extends Annotation> int calculateWeight(Collection<A> annotations) {
         return convertCollectionToProcessorStream(annotations)
                 .mapToInt(p -> p.getSecond().getWeight(p.getFirst()))
                 .sum();
     }
 
+    @Override
     public List<IAnnotationProcessor<?>> get(Class<? extends Annotation> annotation) {
         return this.annotationProcessors.getOrDefault(annotation, new LinkedList<>());
     }
 
+    @Override
     public Collection<Class<? extends Annotation>> getManagedAnnotations() {
         return this.annotationProcessors.keySet();
     }
 
+    @Override
     public List<PreparedAnnotationProcessor> toExecutionList(Collection<Annotation> annotations) {
         return convertCollectionToProcessorStream(annotations)
                 .map(p -> new PreparedAnnotationProcessor(p.getFirst(), p.getSecond()))
@@ -120,12 +128,14 @@ public class AnnotationManager {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Annotation> getManagedAnnotationsOn(AnnotatedElement element) {
         return Arrays.stream(element.getAnnotations())
                 .filter(f -> this.annotationProcessors.containsKey(f.annotationType()))
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Pair<Class<? extends Annotation>, Class<? extends Annotation>>> getConflictingAnnotations(Collection<Annotation> annotations) {
         List<Pair<Class<? extends Annotation>, Class<? extends Annotation>>> result = new LinkedList<>();
 
@@ -143,12 +153,14 @@ public class AnnotationManager {
         return result;
     }
 
+    @Override
     public boolean hasManagedAnnotation(AnnotatedElement element) {
         return Arrays.stream(element.getAnnotations())
                 .map(Annotation::annotationType)
                 .anyMatch(this.annotationProcessors::containsKey);
     }
 
+    @Override
     public <A extends Annotation> boolean hasConflictingAnnotations(Collection<A> annotations) {
         return convertCollectionToProcessorStream(annotations)
                 .anyMatch(p -> p.getSecond().getIncompatibleWith(p.getFirst())
@@ -156,6 +168,7 @@ public class AnnotationManager {
                         .anyMatch(c -> annotations.stream().map(Annotation::annotationType).anyMatch(c::equals)));
     }
 
+    @Override
     public int getTotalProcessors() {
         return this.annotationProcessors.values().stream()
                 .mapToInt(Collection::size)

@@ -1,30 +1,30 @@
 package tv.isshoni.winry.bootstrap;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
 import org.reflections8.Reflections;
-import org.reflections8.scanners.ResourcesScanner;
-import org.reflections8.scanners.SubTypesScanner;
-import org.reflections8.scanners.TypeAnnotationsScanner;
-import org.reflections8.util.ConfigurationBuilder;
-import org.reflections8.util.FilterBuilder;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
-import tv.isshoni.winry.bytebuddy.ByteBuddyUtil;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.element.BootstrappedClass;
 import tv.isshoni.winry.entity.element.BootstrappedField;
 import tv.isshoni.winry.entity.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.element.IBootstrappedElement;
 import tv.isshoni.winry.logging.WinryLogger;
-import tv.isshoni.winry.reflection.ReflectionManager;
+import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.reflection.ReflectionUtil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
@@ -32,129 +32,149 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private final AnnotationManager annotationManager;
 
-    // TODO: make reflection manager less of a singleton
-    private final ReflectionManager reflectionManager;
+    private final ElementBootstrapper elementBootstrapper;
+
+    private ImmutableMap<Class<?>, Object> provided;
 
     public SimpleBootstrapper() {
         this.annotationManager = new AnnotationManager();
-        this.reflectionManager = new ReflectionManager();
+        this.elementBootstrapper = new ElementBootstrapper(this);
+    }
+
+    @Override
+    public AnnotationManager getAnnotationManager() {
+        return this.annotationManager;
+    }
+
+    @Override
+    public ElementBootstrapper getElementBootstrapper() {
+        return this.elementBootstrapper;
+    }
+
+    @Override
+    public ImmutableMap<Class<?>, Object> getProvided() {
+        return this.provided;
     }
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
-        LOGGER.info("Beginning bootstrap process...");
-        LOGGER.info("Bootstrapper class discovery...");
-        Set<Class<?>> clazzes = this.discoverClasses(bootstrap, clazz);
-        clazzes.addAll(provided.keySet());
-        LOGGER.info("Bootstrapper discovered " + clazzes.size() + " classes");
-        LOGGER.info("Preparing classes...");
-        List<IBootstrappedElement<?>> finalizedElements = this.finalizeClasses(bootstrap, this.prepareClasses(bootstrap, clazzes), provided);
+        this.provided = ImmutableMap.copyOf(provided);
+
+        LOGGER.info("Bootstrapping elements...");
+        bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
+        List<IBootstrappedElement<?>> finalizedElements = this.finalizeClasses();
         LOGGER.info("Finished class discovery and instantiation...");
         LOGGER.info("Boot order:");
-        LOGGER.setIndent(4);
         finalizedElements.forEach(e -> LOGGER.info(e.toString()));
-        LOGGER.setIndent(0);
         LOGGER.info("Executing:");
-        LOGGER.setIndent(4);
         finalizedElements.forEach(e -> {
             LOGGER.info("Executing: " + e.toString());
-
-            e.execute(provided);
+            e.execute();
         });
-        LOGGER.setIndent(0);
     }
 
     @Override
-    public List<IBootstrappedElement<?>> finalizeClasses(Bootstrap bootstrap, Map<Class<?>, BootstrappedClass> clazzes, Map<Class<?>, Object> provided) {
+    public List<IBootstrappedElement<?>> finalizeClasses() {
         LOGGER.info("Finalizing classes...");
-        clazzes.values().forEach(c -> {
+        this.elementBootstrapper.getBootstrappedClasses().forEach(c -> {
             LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
-            LOGGER.setIndent(4);
 
-            if (provided.containsKey(c.getBootstrappedElement())) {
-                c.setProvided(true);
-                LOGGER.info("Provided Class");
-            }
-
-            c.addField(Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
+            Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
                     .filter(this.annotationManager::hasManagedAnnotation)
-                    .map(f -> new BootstrappedField(f, clazzes.get(f.getType()), this.annotationManager))
-                    .collect(Collectors.toSet()));
+                    .forEach(this.elementBootstrapper::bootstrap);
             LOGGER.info("Discovered " + c.getFields().size() + " fields");
 
-            c.addMethod(Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
+            Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
                     .filter(this.annotationManager::hasManagedAnnotation)
-                    .map(m -> new BootstrappedMethod(m, this.annotationManager))
-                    .collect(Collectors.toSet()));
+                    .forEach(this.elementBootstrapper::bootstrap);
             LOGGER.info("Discovered " + c.getMethods().size() + " methods");
-            LOGGER.info("Wrapping class...");
-            c.setWrappedClass(ByteBuddyUtil.wrapClass(c)
-                    .name("WinryWrapped" + c.getBootstrappedElement().getSimpleName())
-                    .make()
-                    .load(ClassLoader.getSystemClassLoader())
-                    .getLoaded());
-            LOGGER.setIndent(0);
+            // TODO: All wrapping will be handled by the bytebuddy interface!
+//            LOGGER.info("Wrapping class...");
+//            c.setWrappedClass(ByteBuddyUtil.wrapClass(c)
+//                    .name("WinryWrapped" + c.getBootstrappedElement().getSimpleName())
+//                    .make()
+//                    .load(ClassLoader.getSystemClassLoader())
+//                    .getLoaded());
         });
 
-        // TECHNICAL DEBT: This feels like it can be handled better than with just two streams
-        List<IBootstrappedElement<?>> result = new LinkedList<>(clazzes.values());
-
-        result.addAll(clazzes.values().stream()
-                .flatMap(b -> b.getMethods().stream())
-                .collect(Collectors.toList()));
-
-        result.addAll(clazzes.values().stream()
-                .flatMap(b -> b.getFields().stream())
-                .collect(Collectors.toList()));
-
-        Collections.sort(result);
-
-        return result;
+        return this.elementBootstrapper.getBootstrappedClasses().stream()
+                .flatMap(c -> Streams.concat(c.getMethods().stream(), c.getFields().stream(), Stream.of(c)))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Set<Class<?>> discoverClasses(Bootstrap bootstrap, Class<?> baseClazz) {
-        LOGGER.info("Beginning class discovery process...");
+    public void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided) {
+        LOGGER.info("Performing class discovery...");
 
-        Set<Class<?>> clazzes = new HashSet<>();
-        clazzes.add(baseClazz);
-        clazzes.addAll(Arrays.asList(bootstrap.manualLoad()));
+        Set<Class<?>> classes = new HashSet<>();
+        classes.add(baseClass);
+        classes.addAll(provided.keySet());
+        classes.addAll(Arrays.asList(manual));
 
-        LOGGER.info("Discovered manually loaded classes: " + Arrays.toString(bootstrap.manualLoad()));
-        LOGGER.info("Discovering classes from packages: " + Arrays.toString(bootstrap.loadPackage()));
+        LOGGER.info("Discovered " + manual.length + " manually loaded classes!");
+        LOGGER.info("Discovered " + provided.keySet() + " provided classes!");
+        LOGGER.info("Searching " + Arrays.toString(packages) + " packages for classes...");
 
-        if (bootstrap.loadPackage().length > 0) {
-            String[] packages = bootstrap.loadPackage();
+        if (packages.length > 0) {
+            Reflections reflections = ReflectionUtil.classFinder(packages, manual);
 
-            FilterBuilder filter = new FilterBuilder().includePackage(packages);
-
-            for (Class<?> clazz : bootstrap.manualLoad()) {
-                filter.includePackage(clazz);
-            }
-
-            Reflections reflections = new Reflections(new ConfigurationBuilder()
-                    .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new ResourcesScanner())
-                    .forPackages(packages)
-                    .filterInputsBy(filter));
-
-            this.annotationManager.getManagedAnnotations().forEach(a -> clazzes.addAll(reflections.getTypesAnnotatedWith(a)));
+            this.annotationManager.getManagedAnnotations().stream()
+                    .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
+                    .forEach(classes::add);
         }
 
-        return clazzes;
+        LOGGER.info("Discovered " + classes.size() + " classes!");
+        LOGGER.info("Performing bootstrap...");
+        classes.forEach(this.elementBootstrapper::bootstrap);
+
+        LOGGER.info("Attaching provided instances...");
+        provided.forEach((c, o) -> {
+            BootstrappedClass bootstrapped = this.elementBootstrapper.getBootstrappedClass(c);
+
+            bootstrapped.setProvided(true);
+            bootstrapped.setObject(o);
+        });
+    }
+
+    public <T> T execute(BootstrappedMethod bootstrapped) {
+        Method method = bootstrapped.getBootstrappedElement();
+        Object target = null;
+
+        if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
+            target = this.elementBootstrapper.getDeclaringClass(method).getObject();
+        }
+
+        try {
+            T result = (T) method.invoke(target);
+
+            bootstrapped.setExecuted(true);
+
+            return result;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public Map<Class<?>, BootstrappedClass> prepareClasses(Bootstrap bootstrap, Set<Class<?>> clazzes) {
-        Map<Class<?>, BootstrappedClass> result = new HashMap<>();
+    public void inject(BootstrappedField bootstrapped, Object injected) {
+        Object target = null;
+        Field field = bootstrapped.getBootstrappedElement();
 
-        clazzes.forEach(c -> {
-            if (!this.annotationManager.hasManagedAnnotation(c)) {
-                return; // No need to keep processing here
-            }
+        if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
+            target = this.elementBootstrapper.getDeclaringClass(field).getObject();
+        }
 
-            result.put(c, new BootstrappedClass(c, this.annotationManager));
-        });
+        ReflectionUtil.injectField(field, target, injected);
+        bootstrapped.setInjected(true);
+    }
 
-        return result;
+    @Override
+    public void inject(BootstrappedField bootstrapped) {
+        Preconditions.checkNotNull(bootstrapped);
+        Preconditions.checkNotNull(bootstrapped.getTarget());
+        Preconditions.checkNotNull(bootstrapped.getTarget().getObject());
+
+        inject(bootstrapped, bootstrapped.getTarget().getObject());
     }
 }

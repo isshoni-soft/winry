@@ -5,7 +5,6 @@ import tv.isshoni.winry.entity.element.BootstrappedField;
 import tv.isshoni.winry.entity.element.BootstrappedMethod;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotationProcessor> {
 
@@ -18,16 +17,16 @@ public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotatio
         this.processor = processor;
     }
 
-    public void executeClass(BootstrappedClass bootstrappedClass, Map<Class<?>, Object> provided) {
-        this.processor.executeClass(bootstrappedClass, this.annotation, provided);
+    public void executeClass(BootstrappedClass bootstrappedClass) {
+        this.processor.executeClass(bootstrappedClass, this.annotation);
     }
 
-    public void executeMethod(BootstrappedMethod bootstrappedMethod, Map<Class<?>, Object> provided) {
-        this.processor.executeMethod(bootstrappedMethod, this.annotation, provided);
+    public void executeMethod(BootstrappedMethod bootstrappedMethod) {
+        this.processor.executeMethod(bootstrappedMethod, this.annotation);
     }
 
-    public void executeField(BootstrappedField bootstrappedField, Map<Class<?>, Object> provided) {
-        this.processor.executeField(bootstrappedField, this.annotation, provided);
+    public void executeField(BootstrappedField bootstrappedField) {
+        this.processor.executeField(bootstrappedField, this.annotation);
     }
 
     @Override

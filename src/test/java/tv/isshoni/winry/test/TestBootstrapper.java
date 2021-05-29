@@ -1,13 +1,34 @@
 package tv.isshoni.winry.test;
 
-import org.junit.Test;
-import tv.isshoni.winry.Winry;
-import tv.isshoni.winry.test.model.TestBootstrappedClass;
+import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.bootstrap.SimpleBootstrapper;
 
-public class TestBootstrapper {
+import java.util.Map;
 
-    @Test
-    public void testBootstrapper() {
-        Winry.bootstrap(TestBootstrappedClass.class, new TestCaseService());
+public class TestBootstrapper extends SimpleBootstrapper {
+
+    private static TestBootstrapper instance;
+
+    public static TestBootstrapper getInstance() {
+        return instance;
+    }
+
+    private boolean run;
+
+    public TestBootstrapper() {
+        this.run = false;
+
+        instance = this;
+    }
+
+    public boolean hasRun() {
+        return this.run;
+    }
+
+    @Override
+    public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
+        this.run = true;
+
+        super.bootstrap(bootstrap, clazz, provided);
     }
 }

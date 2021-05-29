@@ -3,15 +3,17 @@ package tv.isshoni.winry.entity.element;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public class BootstrappedMethod implements IBootstrappedElement<Method> {
+
+    private final IBootstrapper bootstrapper;
 
     private final AnnotationManager annotationManager;
 
@@ -23,9 +25,10 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
 
     private boolean executed;
 
-    public BootstrappedMethod(Method method, AnnotationManager annotationManager) {
+    public BootstrappedMethod(Method method, IBootstrapper bootstrapper) {
         this.method = method;
-        this.annotationManager = annotationManager;
+        this.bootstrapper = bootstrapper;
+        this.annotationManager = bootstrapper.getAnnotationManager();
         this.modifiers = ReflectedModifier.getModifiers(method);
         this.annotations = this.annotationManager.getManagedAnnotationsOn(method);
         this.executed = false;
@@ -55,8 +58,8 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
     }
 
     @Override
-    public AnnotationManager getAnnotationManager() {
-        return this.annotationManager;
+    public IBootstrapper getBootstrapper() {
+        return this.bootstrapper;
     }
 
     @Override
@@ -69,9 +72,9 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
     }
 
     @Override
-    public void execute(Map<Class<?>, Object> provided) {
+    public void execute() {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeMethod(this, provided);
+            processor.executeMethod(this);
         }
     }
 

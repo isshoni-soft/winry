@@ -1,7 +1,7 @@
 package tv.isshoni.winry.annotation;
 
 import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
-import tv.isshoni.winry.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.bootstrap.SimpleBootstrapper;
 
 import java.lang.annotation.ElementType;

@@ -1,7 +1,7 @@
 package tv.isshoni.winry;
 
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,19 +14,17 @@ public class Winry {
 
     private static final WinryLogger LOGGER = WinryLogger.create("Winry");
 
-    private static String[] packages;
+    private static Bootstrap bootstrap;
 
     public static void bootstrap(Class<?> clazz, Object... provided) {
         Instant start = Instant.now();
 
-        Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
+        bootstrap = clazz.getAnnotation(Bootstrap.class);
 
         if (bootstrap == null) {
             LOGGER.severe(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return;
         }
-
-        packages = bootstrap.loadPackage();
 
         LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
 
@@ -46,7 +44,7 @@ public class Winry {
         LOGGER.info("Finished in " + Duration.between(start, Instant.now()).toMillis() + " ms");
     }
 
-    public static String[] getPackages() {
-        return packages;
+    public static Bootstrap getBootstrap() {
+        return bootstrap;
     }
 }

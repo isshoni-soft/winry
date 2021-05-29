@@ -8,17 +8,16 @@ import tv.isshoni.winry.entity.element.BootstrappedMethod;
 import java.lang.annotation.Annotation;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public interface IAnnotationProcessor<A extends Annotation> {
 
     WeightCalculator WEIGHT_CALCULATOR = new WeightCalculator();
 
-    default void executeClass(BootstrappedClass clazz, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeClass(BootstrappedClass clazz, A annotation) { }
 
-    default void executeField(BootstrappedField field, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeField(BootstrappedField field, A annotation) { }
 
-    default void executeMethod(BootstrappedMethod method, A annotation, Map<Class<?>, Object> provided) { }
+    default void executeMethod(BootstrappedMethod method, A annotation) { }
 
     default int getWeight(A annotation) {
         return WEIGHT_CALCULATOR.calculateWeight(annotation);

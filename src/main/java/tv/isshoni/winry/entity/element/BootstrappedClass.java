@@ -4,17 +4,19 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
+
+    private final IBootstrapper bootstrapper;
 
     private final AnnotationManager annotationManager;
 
@@ -34,10 +36,11 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     private boolean provided = false;
     private boolean injectable = true;
 
-    public BootstrappedClass(Class<?> clazz, AnnotationManager annotationManager) {
+    public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
         this.clazz = clazz;
-        this.annotationManager = annotationManager;
+        this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
+        this.annotationManager = bootstrapper.getAnnotationManager();
         this.annotations = this.annotationManager.getManagedAnnotationsOn(clazz);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
@@ -90,8 +93,8 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     @Override
-    public AnnotationManager getAnnotationManager() {
-        return this.annotationManager;
+    public IBootstrapper getBootstrapper() {
+        return this.bootstrapper;
     }
 
     @Override
@@ -109,9 +112,9 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     @Override
-    public void execute(Map<Class<?>, Object> provided) {
+    public void execute() {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeClass(this, provided);
+            processor.executeClass(this);
         }
     }
 

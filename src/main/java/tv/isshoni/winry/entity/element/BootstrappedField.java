@@ -3,46 +3,17 @@ package tv.isshoni.winry.entity.element;
 import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
 
-//    private static final Map<Class<? extends Annotation>, BiConsumer<Map<Class<?>, Object>, BootstrappedField>> ANNOTATION_PROCEDURE = new HashMap<>();
-//
-//    static {
-//        registerAnnotationProcedure(Logger.class, (provided, field) -> {
-//            if (!field.field.getType().equals(WinryLogger.class)) {
-//                LOGGER.severe(field.getDisplay() + " is not of type WinryLogger, skipping...");
-//                return;
-//            }
-//
-//            if (field.modifiers.contains(ReflectedModifier.FINAL)) {
-//                LOGGER.severe(field.getDisplay() + " has modifier final, Winry is currently unable to inject into final fields, skipping...");
-//                return;
-//            }
-//
-//            Logger annotation = (Logger) field.annotations;
-//
-//            WinryLogger logger = ReflectionManager.executeMethod(WinryLogger.class, null, "create", annotation.value(), annotation.indent());
-//
-//            LOGGER.info("Injecting: " + logger);
-//            ReflectionManager.injectField(field, logger);
-//        });
-//    }
-//
-//    public static void registerAnnotationProcedure(Class<? extends Annotation> annotation, BiConsumer<Map<Class<?>, Object>, BootstrappedField> consumer) {
-//        if (ANNOTATION_PROCEDURE.containsKey(annotation)) {
-//            throw new IllegalStateException(annotation.getName() + " already has a procedure registered!");
-//        }
-//
-//        ANNOTATION_PROCEDURE.put(annotation, consumer);
-//    }
+    private final IBootstrapper bootstrapper;
 
     private final AnnotationManager annotationManager;
 
@@ -56,10 +27,11 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
 
     private boolean injected = false;
 
-    public BootstrappedField(Field field, BootstrappedClass target, AnnotationManager annotationManager) {
+    public BootstrappedField(Field field, BootstrappedClass target, IBootstrapper bootstrapper) {
         this.field = field;
-        this.annotationManager = annotationManager;
+        this.bootstrapper = bootstrapper;
         this.target = target;
+        this.annotationManager = bootstrapper.getAnnotationManager();
         this.modifiers = ReflectedModifier.getModifiers(field);
         this.annotations = this.annotationManager.getManagedAnnotationsOn(field);
 
@@ -88,8 +60,8 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
     }
 
     @Override
-    public AnnotationManager getAnnotationManager() {
-        return this.annotationManager;
+    public IBootstrapper getBootstrapper() {
+        return this.bootstrapper;
     }
 
     public BootstrappedClass getTarget() {
@@ -110,9 +82,9 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
     }
 
     @Override
-    public void execute(Map<Class<?>, Object> provided) {
+    public void execute() {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeField(this, provided);
+            processor.executeField(this);
         }
     }
 
