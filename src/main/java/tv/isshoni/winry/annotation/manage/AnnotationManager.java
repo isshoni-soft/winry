@@ -1,9 +1,9 @@
 package tv.isshoni.winry.annotation.manage;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ConfigurationBuilder;
+import org.reflections8.Reflections;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.annotation.AttachTo;
 import tv.isshoni.winry.annotation.Processor;
