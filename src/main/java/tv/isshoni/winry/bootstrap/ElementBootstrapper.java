@@ -21,6 +21,10 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     private final Map<Class<?>, BootstrappedClass> bootstrappedClasses;
 
+    private final Map<Method, BootstrappedMethod> bootstrappedMethods;
+
+    private final Map<Field, BootstrappedField> bootstrappedFields;
+
     private final IBootstrapper bootstrapper;
 
     private final AnnotationManager annotationManager;
@@ -29,6 +33,8 @@ public class ElementBootstrapper implements IElementBootstrapper {
         this.bootstrapper = bootstrapper;
         this.annotationManager = bootstrapper.getAnnotationManager();
         this.bootstrappedClasses = new HashMap<>();
+        this.bootstrappedMethods = new HashMap<>();
+        this.bootstrappedFields = new HashMap<>();
     }
 
     public BootstrappedClass getBootstrappedClass(Class<?> clazz) {

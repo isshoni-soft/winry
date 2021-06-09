@@ -1,6 +1,5 @@
 package tv.isshoni.winry.entity.bootstrap;
 
-import com.google.common.collect.ImmutableMap;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.bootstrap.ElementBootstrapper;
@@ -17,7 +16,7 @@ public interface IBootstrapper {
 
     ElementBootstrapper getElementBootstrapper();
 
-    ImmutableMap<Class<?>, Object> getProvided();
+    Map<Class<?>, Object> getProvided();
 
     void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided);
 

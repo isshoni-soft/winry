@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private final ElementBootstrapper elementBootstrapper;
 
-    private ImmutableMap<Class<?>, Object> provided;
+    private Map<Class<?>, Object> provided;
 
     public SimpleBootstrapper() {
         this.annotationManager = new AnnotationManager();
@@ -52,13 +53,13 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     @Override
-    public ImmutableMap<Class<?>, Object> getProvided() {
-        return this.provided;
+    public Map<Class<?>, Object> getProvided() {
+        return Collections.unmodifiableMap(this.provided);
     }
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
-        this.provided = ImmutableMap.copyOf(provided);
+        this.provided = Collections.unmodifiableMap(provided);
 
         LOGGER.info("Bootstrapping elements...");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
@@ -98,7 +99,8 @@ public class SimpleBootstrapper implements IBootstrapper {
         });
 
         return this.elementBootstrapper.getBootstrappedClasses().stream()
-                .flatMap(c -> Streams.concat(c.getMethods().stream(), c.getFields().stream(), Stream.of(c)))
+//                .map(c -> new Object[] {c.getMethods().stream(), c.getFields().stream(), Stream.of(c)})
+                .flatMap(c -> Stream.concat(c.getMethods().stream(), c.getFields().stream()))
                 .sorted()
                 .collect(Collectors.toList());
     }
