@@ -15,6 +15,10 @@
         </developer>
     </developers>
 
+    <properties>
+        <winry.java.version>16</winry.java.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -22,14 +26,31 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <target>1.9</target>
-                    <source>1.9</source>
+                    <target>${winry.java.version}</target>
+                    <source>${winry.java.version}</source>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>tv.isshoni.araragi</groupId>
+                <artifactId>koyomi</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <dependency>
+            <groupId>tv.isshoni.araragi</groupId>
+            <artifactId>streams</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

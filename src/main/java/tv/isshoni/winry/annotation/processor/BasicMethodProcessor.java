@@ -1,7 +1,7 @@
 package tv.isshoni.winry.annotation.processor;
 
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
-import tv.isshoni.winry.entity.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.annotation.Annotation;

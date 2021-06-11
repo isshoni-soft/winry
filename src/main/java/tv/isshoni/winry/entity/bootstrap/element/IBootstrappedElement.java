@@ -1,4 +1,4 @@
-package tv.isshoni.winry.entity.element;
+package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;

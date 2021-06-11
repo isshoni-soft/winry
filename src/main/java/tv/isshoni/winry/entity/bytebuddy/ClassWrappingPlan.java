@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.bytebuddy;
 
-import tv.isshoni.winry.entity.element.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 
 import java.util.Collections;
 import java.util.LinkedList;

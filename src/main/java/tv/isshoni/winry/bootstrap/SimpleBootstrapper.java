@@ -1,16 +1,15 @@
 package tv.isshoni.winry.bootstrap;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Streams;
 import org.reflections8.Reflections;
+import tv.isshoni.araragi.stream.AraragiStream;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.element.BootstrappedClass;
-import tv.isshoni.winry.entity.element.BootstrappedField;
-import tv.isshoni.winry.entity.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.element.IBootstrappedElement;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
@@ -21,11 +20,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
@@ -63,46 +59,42 @@ public class SimpleBootstrapper implements IBootstrapper {
 
         LOGGER.info("Bootstrapping elements...");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
-        List<IBootstrappedElement<?>> finalizedElements = this.finalizeClasses();
-        LOGGER.info("Finished class discovery and instantiation...");
-        LOGGER.info("Boot order:");
-        finalizedElements.forEach(e -> LOGGER.info(e.toString()));
-        LOGGER.info("Executing:");
-        finalizedElements.forEach(e -> {
-            LOGGER.info("Executing: " + e.toString());
+        this.compileRunStream().forEachOrdered(e -> {
+            LOGGER.info("Executing: " + e);
             e.execute();
         });
+//        LOGGER.info("Finished class discovery and instantiation...");
+//        LOGGER.info("Boot order:");
     }
 
     @Override
-    public List<IBootstrappedElement<?>> finalizeClasses() {
+    public AraragiStream<IBootstrappedElement> compileRunStream() {
         LOGGER.info("Finalizing classes...");
-        this.elementBootstrapper.getBootstrappedClasses().forEach(c -> {
-            LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
+//        this.elementBootstrapper.getBootstrappedClasses().forEach;
 
-            Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
-                    .filter(this.annotationManager::hasManagedAnnotation)
-                    .forEach(this.elementBootstrapper::bootstrap);
-            LOGGER.info("Discovered " + c.getFields().size() + " fields");
+        return Streams.to(this.elementBootstrapper.getBootstrappedClasses())
+                .peek((c -> {
+                    LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
 
-            Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
-                    .filter(this.annotationManager::hasManagedAnnotation)
-                    .forEach(this.elementBootstrapper::bootstrap);
-            LOGGER.info("Discovered " + c.getMethods().size() + " methods");
-            // TODO: All wrapping will be handled by the bytebuddy interface!
+                    Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
+                            .filter(this.annotationManager::hasManagedAnnotation)
+                            .forEach(this.elementBootstrapper::bootstrap);
+                    LOGGER.info("Discovered " + c.getFields().size() + " fields");
+
+                    Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
+                            .filter(this.annotationManager::hasManagedAnnotation)
+                            .forEach(this.elementBootstrapper::bootstrap);
+                    LOGGER.info("Discovered " + c.getMethods().size() + " methods");
+                    // TODO: All wrapping will be handled by the bytebuddy interface!
 //            LOGGER.info("Wrapping class...");
 //            c.setWrappedClass(ByteBuddyUtil.wrapClass(c)
 //                    .name("WinryWrapped" + c.getBootstrappedElement().getSimpleName())
 //                    .make()
 //                    .load(ClassLoader.getSystemClassLoader())
 //                    .getLoaded());
-        });
-
-        return this.elementBootstrapper.getBootstrappedClasses().stream()
-//                .map(c -> new Object[] {c.getMethods().stream(), c.getFields().stream(), Stream.of(c)})
-                .flatMap(c -> Stream.concat(c.getMethods().stream(), c.getFields().stream()))
-                .sorted()
-                .collect(Collectors.toList());
+                }))
+                .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
+                .sorted();
     }
 
     @Override
@@ -173,9 +165,9 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     @Override
     public void inject(BootstrappedField bootstrapped) {
-        Preconditions.checkNotNull(bootstrapped);
-        Preconditions.checkNotNull(bootstrapped.getTarget());
-        Preconditions.checkNotNull(bootstrapped.getTarget().getObject());
+//        Preconditions.checkNotNull(bootstrapped);
+//        Preconditions.checkNotNull(bootstrapped.getTarget());
+//        Preconditions.checkNotNull(bootstrapped.getTarget().getObject());
 
         inject(bootstrapped, bootstrapped.getTarget().getObject());
     }

@@ -1,6 +1,5 @@
-package tv.isshoni.winry.entity.element;
+package tv.isshoni.winry.entity.bootstrap.element;
 
-import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
@@ -9,6 +8,7 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
@@ -56,7 +56,7 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
 
     @Override
     public Set<ReflectedModifier> getModifiers() {
-        return ImmutableSet.copyOf(this.modifiers);
+        return Collections.unmodifiableSet(this.modifiers);
     }
 
     @Override

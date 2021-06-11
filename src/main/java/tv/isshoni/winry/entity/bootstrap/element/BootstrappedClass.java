@@ -1,7 +1,5 @@
-package tv.isshoni.winry.entity.element;
+package tv.isshoni.winry.entity.bootstrap.element;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
@@ -9,6 +7,7 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -89,7 +88,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     @Override
     public Set<ReflectedModifier> getModifiers() {
-        return ImmutableSet.copyOf(this.modifiers);
+        return Collections.unmodifiableSet(this.modifiers);
     }
 
     @Override
@@ -136,11 +135,11 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     public List<BootstrappedField> getFields() {
-        return ImmutableList.copyOf(this.fields);
+        return Collections.unmodifiableList(this.fields);
     }
 
     public List<BootstrappedMethod> getMethods() {
-        return ImmutableList.copyOf(this.methods);
+        return Collections.unmodifiableList(this.methods);
     }
 
     public Class<?> getWrappedClass() {

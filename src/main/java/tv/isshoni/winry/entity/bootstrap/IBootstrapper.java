@@ -3,12 +3,12 @@ package tv.isshoni.winry.entity.bootstrap;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.bootstrap.ElementBootstrapper;
-import tv.isshoni.winry.entity.element.BootstrappedField;
-import tv.isshoni.winry.entity.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.element.IBootstrappedElement;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
 
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public interface IBootstrapper {
 
@@ -22,7 +22,7 @@ public interface IBootstrapper {
 
     void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided);
 
-    List<IBootstrappedElement<?>> finalizeClasses();
+    Stream<IBootstrappedElement> compileRunStream();
 
     <T> T execute(BootstrappedMethod bootstrapped);
 

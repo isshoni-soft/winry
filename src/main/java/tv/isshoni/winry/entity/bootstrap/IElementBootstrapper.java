@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.bootstrap;
 
-import tv.isshoni.winry.entity.element.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;

@@ -1,7 +1,5 @@
 package tv.isshoni.winry.entity.util;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Objects;
 
 public class Pair<F, S> {
@@ -11,8 +9,6 @@ public class Pair<F, S> {
     private final S second;
 
     public Pair(F first, S second) {
-        Preconditions.checkNotNull(first, second);
-
         this.first = first;
         this.second = second;
     }

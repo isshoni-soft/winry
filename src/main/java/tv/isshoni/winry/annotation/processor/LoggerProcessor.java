@@ -2,7 +2,7 @@ package tv.isshoni.winry.annotation.processor;
 
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
-import tv.isshoni.winry.entity.element.BootstrappedField;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
