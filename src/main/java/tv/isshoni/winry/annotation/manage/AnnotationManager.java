@@ -145,9 +145,9 @@ public class AnnotationManager implements IAnnotationManager {
                 .collect(Collectors.toList());
 
         convertCollectionToProcessorStream(annotations)
-                .forEach((a, p) -> result.addAll(p.getIncompatibleWith(a).stream()
+                .forEach((a, p) -> result.addAll(Streams.to(p.getIncompatibleWith(a))
                         .filter(annotationTypes::contains)
-                        .map(t -> new Pair<Class<? extends Annotation>, Class<? extends Annotation>>(a.annotationType(), t))
+                        .<Class<? extends Annotation>, Class<? extends Annotation>>mapToPair(c -> a.annotationType(), t -> t)
                         .collect(Collectors.toList())));
 
         return result;
@@ -177,7 +177,7 @@ public class AnnotationManager implements IAnnotationManager {
 
     private <A extends Annotation> PairStream<A, IAnnotationProcessor<A>> convertCollectionToProcessorStream(Collection<A> annotations) {
         return Streams.to(annotations)
-                .flatMapToPair(a -> get(a.annotationType()).stream()
-                        .map(p -> new Pair<>(a, (IAnnotationProcessor<A>) p)));
+                .flatMapToPair(a -> Streams.to(get(a.annotationType()))
+                        .mapToPair(c -> a, p -> (IAnnotationProcessor<A>) p));
     }
 }
