@@ -52,6 +52,11 @@
         </dependency>
 
         <dependency>
+            <groupId>tv.isshoni.araragi</groupId>
+            <artifactId>data</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>

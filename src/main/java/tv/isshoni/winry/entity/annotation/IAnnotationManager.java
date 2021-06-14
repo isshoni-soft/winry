@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.annotation;
 
-import tv.isshoni.winry.entity.util.Pair;
+import tv.isshoni.araragi.data.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

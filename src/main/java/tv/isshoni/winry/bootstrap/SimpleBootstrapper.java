@@ -59,19 +59,19 @@ public class SimpleBootstrapper implements IBootstrapper {
 
         LOGGER.info("Bootstrapping elements...");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
-        this.compileRunStream().forEachOrdered(e -> {
+        LOGGER.info("Finished class discovery and instantiation...");
+        LOGGER.info("Run order:");
+        this.compileRunStream()
+                .peek(e -> LOGGER.info(e.getDisplay()))
+                .forEachOrdered(e -> {
             LOGGER.info("Executing: " + e);
             e.execute();
         });
-//        LOGGER.info("Finished class discovery and instantiation...");
-//        LOGGER.info("Boot order:");
     }
 
     @Override
     public AraragiStream<IBootstrappedElement> compileRunStream() {
-        LOGGER.info("Finalizing classes...");
-//        this.elementBootstrapper.getBootstrappedClasses().forEach;
-
+        LOGGER.info("Compiling run order...");
         return Streams.to(this.elementBootstrapper.getBootstrappedClasses())
                 .peek((c -> {
                     LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());

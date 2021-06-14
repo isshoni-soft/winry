@@ -4,13 +4,15 @@ import org.reflections8.Reflections;
 import org.reflections8.scanners.SubTypesScanner;
 import org.reflections8.scanners.TypeAnnotationsScanner;
 import org.reflections8.util.ConfigurationBuilder;
+import tv.isshoni.araragi.data.Pair;
+import tv.isshoni.araragi.stream.PairStream;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.annotation.AttachTo;
 import tv.isshoni.winry.annotation.Processor;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
-import tv.isshoni.winry.entity.util.Pair;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // TODO: Add functionality for annotations to effect class wrapping (i.e. before instantiation & execution)
 public class AnnotationManager implements IAnnotationManager {
@@ -123,7 +124,7 @@ public class AnnotationManager implements IAnnotationManager {
     @Override
     public List<PreparedAnnotationProcessor> toExecutionList(Collection<Annotation> annotations) {
         return convertCollectionToProcessorStream(annotations)
-                .map(p -> new PreparedAnnotationProcessor(p.getFirst(), p.getSecond()))
+                .map(PreparedAnnotationProcessor::new)
                 .sorted()
                 .collect(Collectors.toList());
     }
@@ -144,7 +145,6 @@ public class AnnotationManager implements IAnnotationManager {
                 .collect(Collectors.toList());
 
         convertCollectionToProcessorStream(annotations)
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
                 .forEach((a, p) -> result.addAll(p.getIncompatibleWith(a).stream()
                         .filter(annotationTypes::contains)
                         .map(t -> new Pair<Class<? extends Annotation>, Class<? extends Annotation>>(a.annotationType(), t))
@@ -175,9 +175,9 @@ public class AnnotationManager implements IAnnotationManager {
                 .sum();
     }
 
-    private <A extends Annotation> Stream<Pair<A, IAnnotationProcessor<A>>> convertCollectionToProcessorStream(Collection<A> annotations) {
-        return annotations.stream()
-                .flatMap(a -> get(a.annotationType()).stream()
+    private <A extends Annotation> PairStream<A, IAnnotationProcessor<A>> convertCollectionToProcessorStream(Collection<A> annotations) {
+        return Streams.to(annotations)
+                .flatMapToPair(a -> get(a.annotationType()).stream()
                         .map(p -> new Pair<>(a, (IAnnotationProcessor<A>) p)));
     }
 }
