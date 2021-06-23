@@ -1,5 +1,6 @@
 package tv.isshoni.winry.entity.annotation;
 
+import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
@@ -15,6 +16,18 @@ public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotatio
     public PreparedAnnotationProcessor(Annotation annotation, IAnnotationProcessor<Annotation> processor) {
         this.annotation = annotation;
         this.processor = processor;
+    }
+
+    public void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint) {
+        this.processor.transformClass(bootstrappedClass, blueprint, this.annotation);
+    }
+
+    public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint) {
+        this.processor.transformMethod(bootstrappedMethod, blueprint, this.annotation);
+    }
+
+    public void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint) {
+        this.processor.transformField(bootstrappedField, blueprint, this.annotation);
     }
 
     public void executeClass(BootstrappedClass bootstrappedClass) {

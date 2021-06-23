@@ -94,6 +94,7 @@ public class SimpleBootstrapper implements IBootstrapper {
 //                    .getLoaded());
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
+                .peek(IBootstrappedElement::transform)
                 .sorted();
     }
 

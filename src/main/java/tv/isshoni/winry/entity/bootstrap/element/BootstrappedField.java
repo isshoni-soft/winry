@@ -68,6 +68,10 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         return this.target;
     }
 
+    public BootstrappedClass getDeclaringClass() {
+        return this.bootstrapper.getElementBootstrapper().getDeclaringClass(this.field);
+    }
+
     public boolean isInjected() {
         return this.injected;
     }
@@ -81,10 +85,18 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         return IBootstrappedElement.super.getWeight();
     }
 
+    // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
     public void execute() {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
             processor.executeField(this);
+        }
+    }
+
+    @Override
+    public void transform() {
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
         }
     }
 

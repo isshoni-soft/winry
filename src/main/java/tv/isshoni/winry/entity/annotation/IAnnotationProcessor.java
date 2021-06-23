@@ -1,6 +1,7 @@
 package tv.isshoni.winry.entity.annotation;
 
 import tv.isshoni.winry.annotation.manage.WeightCalculator;
+import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
@@ -12,6 +13,12 @@ import java.util.List;
 public interface IAnnotationProcessor<A extends Annotation> {
 
     WeightCalculator WEIGHT_CALCULATOR = new WeightCalculator();
+
+    default void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint, A annotation) { }
+
+    default void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, A annotation) { }
+
+    default void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint, A annotation) { }
 
     default void executeClass(BootstrappedClass clazz, A annotation) { }
 

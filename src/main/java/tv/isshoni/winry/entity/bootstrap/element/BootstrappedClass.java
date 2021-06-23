@@ -1,8 +1,10 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -14,6 +16,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
+
+    private static final WinryLogger LOGGER = WinryLogger.create("BootstrappedClass");
 
     private final IBootstrapper bootstrapper;
 
@@ -32,6 +36,8 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     private final Set<ReflectedModifier> modifiers;
 
+    private final ClassTransformingBlueprint transformingBlueprint;
+
     private boolean provided = false;
     private boolean injectable = true;
 
@@ -41,6 +47,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         this.modifiers = ReflectedModifier.getModifiers(clazz);
         this.annotationManager = bootstrapper.getAnnotationManager();
         this.annotations = this.annotationManager.getManagedAnnotationsOn(clazz);
+        this.transformingBlueprint = new ClassTransformingBlueprint(this);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
 
@@ -70,6 +77,8 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     public void setWrappedClass(Class<?> wrappedClazz) {
+        LOGGER.info("Setting wrapped class to: " + wrappedClazz.getName());
+
         this.wrappedClazz = wrappedClazz;
     }
 
@@ -110,10 +119,21 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         return IBootstrappedElement.super.getWeight();
     }
 
+    // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
     public void execute() {
+        LOGGER.info("Executing transformation blueprint for " + this.clazz.getName());
+        this.transformingBlueprint.transform();
+
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
             processor.executeClass(this);
+        }
+    }
+
+    @Override
+    public void transform() {
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.transformClass(this, this.transformingBlueprint);
         }
     }
 
@@ -144,6 +164,10 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     public Class<?> getWrappedClass() {
         return this.wrappedClazz;
+    }
+
+    public ClassTransformingBlueprint getTransformingBlueprint() {
+        return this.transformingBlueprint;
     }
 
     public boolean hasWrappedClass() {

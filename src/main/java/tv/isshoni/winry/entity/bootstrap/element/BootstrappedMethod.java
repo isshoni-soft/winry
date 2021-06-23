@@ -71,10 +71,22 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
         return this.executed;
     }
 
+    public BootstrappedClass getDeclaringClass() {
+        return this.bootstrapper.getElementBootstrapper().getDeclaringClass(this.method);
+    }
+
+    // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
     public void execute() {
         for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
             processor.executeMethod(this);
+        }
+    }
+
+    @Override
+    public void transform() {
+        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
+            processor.transformMethod(this, getDeclaringClass().getTransformingBlueprint());
         }
     }
 

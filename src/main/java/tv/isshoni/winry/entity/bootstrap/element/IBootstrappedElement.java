@@ -26,6 +26,8 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
 
     void execute();
 
+    void transform();
+
     default int compareTo(IBootstrappedElement<?> value) {
         return Integer.compare(value.getWeight(), this.getWeight());
     }
