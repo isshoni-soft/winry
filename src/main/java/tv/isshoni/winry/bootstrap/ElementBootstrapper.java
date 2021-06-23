@@ -37,12 +37,34 @@ public class ElementBootstrapper implements IElementBootstrapper {
         this.bootstrappedFields = new HashMap<>();
     }
 
+    @Override
     public BootstrappedClass getBootstrappedClass(Class<?> clazz) {
         return this.bootstrappedClasses.get(clazz);
     }
 
+    @Override
+    public BootstrappedMethod getBootstrappedMethod(Method method) {
+        return this.bootstrappedMethods.get(method);
+    }
+
+    @Override
+    public BootstrappedField getBootstrappedField(Field field) {
+        return this.bootstrappedFields.get(field);
+    }
+
+    @Override
     public Collection<BootstrappedClass> getBootstrappedClasses() {
         return this.bootstrappedClasses.values();
+    }
+
+    @Override
+    public Collection<BootstrappedMethod> getBootstrappedMethod() {
+        return this.bootstrappedMethods.values();
+    }
+
+    @Override
+    public Collection<BootstrappedField> getBootstrappedField() {
+        return this.bootstrappedFields.values();
     }
 
     @Override
@@ -62,7 +84,11 @@ public class ElementBootstrapper implements IElementBootstrapper {
         }
 
         LOGGER.info("Bootstrapping Method: " + method.getName());
-        getDeclaringClass(method).addMethod(new BootstrappedMethod(method, this.bootstrapper));
+        BootstrappedMethod bootstrappedMethod = new BootstrappedMethod(method, this.bootstrapper);
+
+        getDeclaringClass(method).addMethod(bootstrappedMethod);
+
+        this.bootstrappedMethods.put(method, bootstrappedMethod);
     }
 
     @Override
@@ -72,7 +98,11 @@ public class ElementBootstrapper implements IElementBootstrapper {
         }
 
         LOGGER.info("Bootstrapping Field: " + field.getName());
-        getDeclaringClass(field).addField(new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper));
+        BootstrappedField bootstrappedField = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
+
+        getDeclaringClass(field).addField(bootstrappedField);
+
+        this.bootstrappedFields.put(field, bootstrappedField);
     }
 
     @Override

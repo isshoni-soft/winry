@@ -3,6 +3,7 @@ package tv.isshoni.winry.logging;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
+// TODO: Write a custom logger that isn't based on the Java logger, because it's not all that good.
 public class WinryLogger extends Logger {
 
     public static WinryLogger create(String name) {
