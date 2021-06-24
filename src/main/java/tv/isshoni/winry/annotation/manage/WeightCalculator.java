@@ -2,6 +2,7 @@ package tv.isshoni.winry.annotation.manage;
 
 import tv.isshoni.winry.annotation.Weight;
 import tv.isshoni.winry.entity.annotation.IAnnotationWeightEnum;
+import tv.isshoni.winry.exception.NoWeightException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -11,9 +12,9 @@ import java.util.Optional;
 public class WeightCalculator {
 
     public int calculateWeight(Annotation annotation) {
-        Optional<Weight> weightOptional = Optional.of(annotation.annotationType().getAnnotation(Weight.class));
+        Optional<Weight> weightOptional = Optional.ofNullable(annotation.annotationType().getAnnotation(Weight.class));
 
-        Weight weight = weightOptional.orElseThrow(RuntimeException::new); // TODO: Make a dedicated exception to this
+        Weight weight = weightOptional.orElseThrow(() -> new NoWeightException(annotation));
 
         // step into if weight can be dynamic
         int defaultWeight = getDefaultWeight(annotation, weight);
@@ -23,11 +24,11 @@ public class WeightCalculator {
             try {
                 dynamicWeight = annotation.annotationType().getMethod(weight.dynamic());
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e); // TODO: Make a dedicated exception to this
+                throw new RuntimeException(e); // TODO: Make a dedicated exception for dynamic weight method not existing
             }
 
             if (!dynamicWeight.getReturnType().equals(Integer.class) && !dynamicWeight.getReturnType().equals(int.class)) {
-                throw new RuntimeException(); // TODO: Make a dedicated exception to this
+                throw new RuntimeException(); // TODO: Make a dedicated exception for incorrect dynamic weight return type
             }
 
             if (defaultWeight == weight.value()) {
@@ -35,7 +36,7 @@ public class WeightCalculator {
                 try {
                     return (Integer) dynamicWeight.invoke(annotation);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e); // TODO: Make a dedicated exception to this
+                    throw new RuntimeException(e); // TODO: Make a dedicated exception for being unable to invoke dynamic weight method
                 }
             } else { // the custom weight enum has a non-default value
                 return defaultWeight;
@@ -59,7 +60,7 @@ public class WeightCalculator {
         } catch (NoSuchMethodException e) {
             return weight.value();
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e); // TODO: Make a dedicated exception to this
+            throw new RuntimeException(e); // TODO: Make a dedicated exception for being unable to invoke dynamic weight method
         }
     }
 }

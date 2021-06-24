@@ -37,6 +37,8 @@ public class TestBootstrappedClass {
     public void initRun() {
         assertEquals(0, this.injectedClass.getNumCalled());
         assertEquals(5, this.injectedClass.getTest());
+
+        this.injectedClass.testProfiling();
     }
 
     @Runner(RunnerOrder.POST_INIT)
