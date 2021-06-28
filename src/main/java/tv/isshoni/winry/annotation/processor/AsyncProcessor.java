@@ -1,7 +1,7 @@
 package tv.isshoni.winry.annotation.processor;
 
 import tv.isshoni.winry.annotation.Async;
-import tv.isshoni.winry.bytebuddy.AsyncDelegator;
+import tv.isshoni.winry.bytebuddy.delegator.AsyncDelegator;
 import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;

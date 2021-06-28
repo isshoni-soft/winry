@@ -2,7 +2,7 @@ package tv.isshoni.winry.test.model;
 
 import tv.isshoni.winry.annotation.Async;
 import tv.isshoni.winry.annotation.Injected;
-import tv.isshoni.winry.test.model.processor.Profile;
+import tv.isshoni.winry.annotation.Profile;
 
 @Injected
 public class TestInjectedClass {

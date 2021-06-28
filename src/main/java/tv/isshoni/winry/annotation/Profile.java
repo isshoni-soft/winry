@@ -1,7 +1,6 @@
-package tv.isshoni.winry.test.model.processor;
+package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.annotation.Processor;
-import tv.isshoni.winry.annotation.Weight;
+import tv.isshoni.winry.annotation.processor.ProfileProcessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

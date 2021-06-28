@@ -1,4 +1,4 @@
-package tv.isshoni.winry.bytebuddy;
+package tv.isshoni.winry.bytebuddy.delegator;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
