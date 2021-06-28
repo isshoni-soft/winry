@@ -14,7 +14,6 @@ public class ProfileProcessor implements IAnnotationProcessor<Profile> {
 
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {
-
         blueprint.registerSimpleMethodDelegator(bootstrappedMethod.getBootstrappedElement(), 1, (c, m, args, next) -> {
             Instant prev = Instant.now();
 
@@ -28,11 +27,5 @@ public class ProfileProcessor implements IAnnotationProcessor<Profile> {
             LOGGER.info("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;
         });
-
-//        blueprint.registerAdvancedMethodTransformation(bootstrappedMethod.getBootstrappedElement(), (m, b, builder) -> builder
-//                .method(named(m.getName())
-//                    .and(isDeclaredBy(m.getDeclaringClass()))
-//                    .and(returns(m.getReturnType())))
-//                .intercept(to(ProfileDelegator.class)));
     }
 }
