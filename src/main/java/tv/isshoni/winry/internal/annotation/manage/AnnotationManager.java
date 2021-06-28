@@ -1,4 +1,4 @@
-package tv.isshoni.winry.annotation.manage;
+package tv.isshoni.winry.internal.annotation.manage;
 
 import org.reflections8.Reflections;
 import org.reflections8.scanners.SubTypesScanner;
@@ -8,8 +8,8 @@ import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.stream.PairStream;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.Winry;
-import tv.isshoni.winry.annotation.AttachTo;
-import tv.isshoni.winry.annotation.Processor;
+import tv.isshoni.winry.annotation.api.AttachTo;
+import tv.isshoni.winry.annotation.api.Processor;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;

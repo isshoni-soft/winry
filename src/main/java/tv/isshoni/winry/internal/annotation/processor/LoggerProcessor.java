@@ -1,4 +1,4 @@
-package tv.isshoni.winry.annotation.processor;
+package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;

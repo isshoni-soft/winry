@@ -1,6 +1,8 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.annotation.processor.LoggerProcessor;
+import tv.isshoni.winry.annotation.api.Processor;
+import tv.isshoni.winry.annotation.api.Weight;
+import tv.isshoni.winry.internal.annotation.processor.LoggerProcessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

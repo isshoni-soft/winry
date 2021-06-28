@@ -1,8 +1,8 @@
-package tv.isshoni.winry.annotation.processor;
+package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.winry.annotation.Profile;
-import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.bytebuddy.delegator.ProfileDelegator;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.internal.delegator.ProfileDelegator;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 
@@ -15,7 +15,7 @@ public class ProfileProcessor implements IAnnotationProcessor<Profile> {
 
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {
-        blueprint.registerMethodTransformation(bootstrappedMethod.getBootstrappedElement(), (m, b, builder) -> builder
+        blueprint.registerAdvancedMethodTransformation(bootstrappedMethod.getBootstrappedElement(), (m, b, builder) -> builder
                 .method(named(m.getName())
                     .and(isDeclaredBy(m.getDeclaringClass()))
                     .and(returns(m.getReturnType())))

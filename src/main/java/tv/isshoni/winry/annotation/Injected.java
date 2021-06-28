@@ -1,6 +1,8 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.annotation.processor.BasicClassProcessor;
+import tv.isshoni.winry.annotation.api.Processor;
+import tv.isshoni.winry.annotation.api.Weight;
+import tv.isshoni.winry.internal.annotation.processor.BasicClassProcessor;
 import tv.isshoni.winry.entity.annotation.inject.InjectedType;
 
 import java.lang.annotation.ElementType;

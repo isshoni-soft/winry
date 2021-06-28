@@ -1,7 +1,7 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.annotation.manage.AnnotationManager;
-import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.logging.WinryLogger;

@@ -1,15 +1,16 @@
-package tv.isshoni.winry.annotation.manage;
+package tv.isshoni.winry.internal.annotation.manage;
 
-import tv.isshoni.winry.annotation.Weight;
+import tv.isshoni.winry.annotation.api.Weight;
 import tv.isshoni.winry.entity.annotation.IAnnotationWeightEnum;
-import tv.isshoni.winry.exception.NoWeightException;
+import tv.isshoni.winry.internal.exception.NoWeightException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-public class WeightCalculator {
+public enum WeightCalculator {
+    INSTANCE;
 
     public int calculateWeight(Annotation annotation) {
         Optional<Weight> weightOptional = Optional.ofNullable(annotation.annotationType().getAnnotation(Weight.class));

@@ -1,6 +1,8 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.annotation.processor.BasicMethodProcessor;
+import tv.isshoni.winry.annotation.api.Processor;
+import tv.isshoni.winry.annotation.api.Weight;
+import tv.isshoni.winry.internal.annotation.processor.BasicMethodProcessor;
 import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
 
 import java.lang.annotation.ElementType;

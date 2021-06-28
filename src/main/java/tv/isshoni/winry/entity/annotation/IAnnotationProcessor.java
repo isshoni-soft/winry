@@ -1,7 +1,7 @@
 package tv.isshoni.winry.entity.annotation;
 
-import tv.isshoni.winry.annotation.manage.WeightCalculator;
-import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.internal.annotation.manage.WeightCalculator;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
@@ -11,8 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public interface IAnnotationProcessor<A extends Annotation> {
-
-    WeightCalculator WEIGHT_CALCULATOR = new WeightCalculator();
 
     default void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint, A annotation) { }
 
@@ -27,7 +25,7 @@ public interface IAnnotationProcessor<A extends Annotation> {
     default void executeMethod(BootstrappedMethod method, A annotation) { }
 
     default int getWeight(A annotation) {
-        return WEIGHT_CALCULATOR.calculateWeight(annotation);
+        return WeightCalculator.INSTANCE.calculateWeight(annotation);
     }
 
     default List<Class<? extends Annotation>> getIncompatibleWith(A annotation) {

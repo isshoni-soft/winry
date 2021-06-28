@@ -1,4 +1,4 @@
-package tv.isshoni.winry.exception;
+package tv.isshoni.winry.internal.exception;
 
 public class CannotCalculateWeightException extends RuntimeException {
 

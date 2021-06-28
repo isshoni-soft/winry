@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;

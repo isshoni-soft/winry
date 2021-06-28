@@ -1,4 +1,4 @@
-package tv.isshoni.winry.bytebuddy;
+package tv.isshoni.winry.internal.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -79,7 +79,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     }
 
     @Override
-    public void registerClassTransformation(ClassTransformingPlan transformingPlan) {
+    public void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan) {
         if (this.classTransformers.contains(transformingPlan)) {
             LOGGER.warning("Registering more than one transformer to one element, this can lead to unexpected behavior!");
         }
@@ -88,12 +88,12 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     }
 
     @Override
-    public void registerMethodTransformation(Method method, MethodTransformingPlan transformingPlan) {
+    public void registerAdvancedMethodTransformation(Method method, MethodTransformingPlan transformingPlan) {
         register(method, transformingPlan, this.methodTransformers);
     }
 
     @Override
-    public void registerFieldTransformation(Field field, FieldTransformingPlan transformingPlan) {
+    public void registerAdvancedFieldTransformation(Field field, FieldTransformingPlan transformingPlan) {
         register(field, transformingPlan, this.fieldTransformers);
     }
 

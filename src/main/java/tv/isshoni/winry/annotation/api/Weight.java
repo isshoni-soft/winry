@@ -1,6 +1,4 @@
-package tv.isshoni.winry.annotation;
-
-import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
+package tv.isshoni.winry.annotation.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,7 +7,12 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface Processor {
+public @interface Weight {
 
-    Class<? extends IAnnotationProcessor<?>>[] value();
+    String NOT_DYNAMIC = "111111";
+
+    int value();
+
+    String weightEnum() default "value";
+    String dynamic() default NOT_DYNAMIC;
 }

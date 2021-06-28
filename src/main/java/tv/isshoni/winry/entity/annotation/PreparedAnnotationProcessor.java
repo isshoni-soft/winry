@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.annotation;
 
-import tv.isshoni.winry.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;

@@ -12,11 +12,11 @@ public interface ITransformingBlueprint {
 
     void transform();
 
-    void registerClassTransformation(ClassTransformingPlan transformingPlan);
+    void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan);
 
-    void registerMethodTransformation(Method method, MethodTransformingPlan transformingPlan);
+    void registerAdvancedMethodTransformation(Method method, MethodTransformingPlan transformingPlan);
 
-    void registerFieldTransformation(Field field, FieldTransformingPlan transformingPlan);
+    void registerAdvancedFieldTransformation(Field field, FieldTransformingPlan transformingPlan);
 
     BootstrappedClass getBootstrappedClass();
 

@@ -9,6 +9,7 @@ public class TestInjectedClass {
 
     private int numCalled = 0;
 
+    @Async
     public int getNumCalled() {
         return this.numCalled++;
     }
@@ -22,7 +23,6 @@ public class TestInjectedClass {
         }
     }
 
-    @Async
     public int getTest() {
         return 5;
     }
