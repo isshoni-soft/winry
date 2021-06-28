@@ -1,24 +1,38 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.winry.annotation.Profile;
-import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.internal.delegator.ProfileDelegator;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.logging.WinryLogger;
 
-import static net.bytebuddy.implementation.MethodDelegation.to;
-import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.returns;
+import java.time.Instant;
 
 public class ProfileProcessor implements IAnnotationProcessor<Profile> {
 
+    private static final WinryLogger LOGGER = WinryLogger.create("Profiling");
+
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {
-        blueprint.registerAdvancedMethodTransformation(bootstrappedMethod.getBootstrappedElement(), (m, b, builder) -> builder
-                .method(named(m.getName())
-                    .and(isDeclaredBy(m.getDeclaringClass()))
-                    .and(returns(m.getReturnType())))
-                .intercept(to(ProfileDelegator.class)));
+
+        blueprint.registerSimpleMethodDelegator(bootstrappedMethod.getBootstrappedElement(), 1, (c, m, args, next) -> {
+            Instant prev = Instant.now();
+
+            Object result = null;
+            try {
+                result = next.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            LOGGER.info("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
+            return result;
+        });
+
+//        blueprint.registerAdvancedMethodTransformation(bootstrappedMethod.getBootstrappedElement(), (m, b, builder) -> builder
+//                .method(named(m.getName())
+//                    .and(isDeclaredBy(m.getDeclaringClass()))
+//                    .and(returns(m.getReturnType())))
+//                .intercept(to(ProfileDelegator.class)));
     }
 }

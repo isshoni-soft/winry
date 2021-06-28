@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
@@ -15,7 +15,7 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
 
     private final IBootstrapper bootstrapper;
 
-    private final AnnotationManager annotationManager;
+    private final IAnnotationManager annotationManager;
 
     private final Field field;
 

@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.bootstrap;
 
-import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
@@ -27,7 +27,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     private final IBootstrapper bootstrapper;
 
-    private final AnnotationManager annotationManager;
+    private final IAnnotationManager annotationManager;
 
     public ElementBootstrapper(IBootstrapper bootstrapper) {
         this.bootstrapper = bootstrapper;

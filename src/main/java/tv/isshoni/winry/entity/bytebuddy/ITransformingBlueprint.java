@@ -5,12 +5,13 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 public interface ITransformingBlueprint {
 
     void transform();
+
+    void registerSimpleMethodDelegator(Method method, int weight, MethodDelegator delegator);
 
     void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan);
 
@@ -20,6 +21,6 @@ public interface ITransformingBlueprint {
 
     BootstrappedClass getBootstrappedClass();
 
-    Map<Method, List<ITransformingPlan<Method, BootstrappedMethod>>> getMethodTransformers();
+    Map<Method, ITransformingPlan<Method, BootstrappedMethod>> getMethodTransformers();
 
 }

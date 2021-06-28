@@ -10,6 +10,7 @@ public class TestInjectedClass {
     private int numCalled = 0;
 
     @Async
+    @Profile
     public int getNumCalled() {
         return this.numCalled++;
     }

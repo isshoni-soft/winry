@@ -4,12 +4,14 @@ import org.reflections8.Reflections;
 import tv.isshoni.araragi.stream.AraragiStream;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
@@ -27,9 +29,9 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
 
-    private final AnnotationManager annotationManager;
+    private final IAnnotationManager annotationManager;
 
-    private final ElementBootstrapper elementBootstrapper;
+    private final IElementBootstrapper elementBootstrapper;
 
     private Map<Class<?>, Object> provided;
 
@@ -39,12 +41,12 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     @Override
-    public AnnotationManager getAnnotationManager() {
+    public IAnnotationManager getAnnotationManager() {
         return this.annotationManager;
     }
 
     @Override
-    public ElementBootstrapper getElementBootstrapper() {
+    public IElementBootstrapper getElementBootstrapper() {
         return this.elementBootstrapper;
     }
 

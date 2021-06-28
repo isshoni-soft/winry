@@ -3,7 +3,6 @@ package tv.isshoni.winry.internal.bytebuddy;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
-import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
@@ -13,6 +12,7 @@ import tv.isshoni.winry.entity.bytebuddy.ClassTransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingPlan;
+import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.logging.WinryLogger;
 
@@ -22,10 +22,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.Objects;
 
 public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
@@ -37,18 +35,17 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private final IElementBootstrapper elementBootstrapper;
 
-    private final Map<Method, List<ITransformingPlan<Method, BootstrappedMethod>>> methodTransformers;
+    private final Map<Field, ITransformingPlan<Field, BootstrappedField>> fieldTransformers;
 
-    private final Map<Field, List<ITransformingPlan<Field, BootstrappedField>>> fieldTransformers;
+    private final Map<Method, ITransformingPlan<Method, BootstrappedMethod>> methodTransformers;
 
-    private final List<ITransformingPlan<Class<?>, BootstrappedClass>> classTransformers;
+    private ITransformingPlan<Class<?>, BootstrappedClass> classTransformer;
 
     public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass) {
         this.bootstrappedClass = bootstrappedClass;
         this.elementBootstrapper = bootstrappedClass.getBootstrapper().getElementBootstrapper();
         this.methodTransformers = new HashMap<>();
         this.fieldTransformers = new HashMap<>();
-        this.classTransformers = new LinkedList<>();
     }
 
     @Override
@@ -57,15 +54,15 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
 
-        builder = executeTransformation(builder, this.bootstrappedClass.getBootstrappedElement(), this.bootstrappedClass, this.classTransformers);
+        builder = executeTransformation(builder, this.bootstrappedClass.getBootstrappedElement(), this.bootstrappedClass, this.classTransformer);
 
-        for (Map.Entry<Field, List<ITransformingPlan<Field, BootstrappedField>>> entry : this.fieldTransformers.entrySet()) {
+        for (Map.Entry<Field, ITransformingPlan<Field, BootstrappedField>> entry : this.fieldTransformers.entrySet()) {
             Field field = entry.getKey();
 
             builder = executeTransformation(builder, field, this.elementBootstrapper.getBootstrappedField(field), entry.getValue());
         }
 
-        for (Map.Entry<Method, List<ITransformingPlan<Method, BootstrappedMethod>>> entry : this.methodTransformers.entrySet()) {
+        for (Map.Entry<Method, ITransformingPlan<Method, BootstrappedMethod>> entry : this.methodTransformers.entrySet()) {
             Method method = entry.getKey();
 
             builder = executeTransformation(builder, method, this.elementBootstrapper.getBootstrappedMethod(method), entry.getValue());
@@ -79,21 +76,45 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     }
 
     @Override
-    public void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan) {
-        if (this.classTransformers.contains(transformingPlan)) {
-            LOGGER.warning("Registering more than one transformer to one element, this can lead to unexpected behavior!");
+    public void registerSimpleMethodDelegator(Method method, int weight, MethodDelegator delegator) {
+        WinryMethodTransformer transformer;
+
+        if (this.methodTransformers.containsKey(method)) {
+            if (!(this.methodTransformers.get(method) instanceof WinryMethodTransformer)) {
+                LOGGER.severe("Cannot register simple method delegator to method that does not use WinryMethodTransformer!");
+                return;
+            }
+
+            transformer = (WinryMethodTransformer) this.methodTransformers.get(method);
+        } else {
+            transformer = new WinryMethodTransformer();
+
+            this.methodTransformers.put(method, transformer);
         }
 
-        this.classTransformers.add(transformingPlan);
+        transformer.addDelegator(delegator, weight);
+    }
+
+    @Override
+    public void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan) {
+        if (Objects.nonNull(this.classTransformer)) {
+            LOGGER.warning("Overwriting default Winry class transformer!");
+        }
+
+        this.classTransformer = transformingPlan;
     }
 
     @Override
     public void registerAdvancedMethodTransformation(Method method, MethodTransformingPlan transformingPlan) {
+        LOGGER.warning("Overwriting default Winry method transformer!");
+
         register(method, transformingPlan, this.methodTransformers);
     }
 
     @Override
     public void registerAdvancedFieldTransformation(Field field, FieldTransformingPlan transformingPlan) {
+        LOGGER.warning("Overwriting default Winry field transformer!");
+
         register(field, transformingPlan, this.fieldTransformers);
     }
 
@@ -103,38 +124,23 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     }
 
     @Override
-    public Map<Method, List<ITransformingPlan<Method, BootstrappedMethod>>> getMethodTransformers() {
-        return Streams.to(this.methodTransformers.entrySet())
-                .mapToPair(Map.Entry::getKey, Map.Entry::getValue)
-                .mapSecond(Collections::unmodifiableList)
-                .toUnmodifiableMap();
+    public Map<Method, ITransformingPlan<Method, BootstrappedMethod>> getMethodTransformers() {
+        return Collections.unmodifiableMap(this.methodTransformers);
     }
 
-    private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> DynamicType.Builder<?> executeTransformation(DynamicType.Builder<?> builder, E element, B bootstrapped, List<ITransformingPlan<E, B>> list) {
-        for (ITransformingPlan<E, B> transformingPlan : list) {
-            builder = transformingPlan.transform(element, bootstrapped, builder);
+    private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> DynamicType.Builder<?> executeTransformation(DynamicType.Builder<?> builder, E element, B bootstrapped, ITransformingPlan<E, B> plan) {
+        if (Objects.isNull(plan)) {
+            return builder;
         }
 
-        return builder;
+        return plan.transform(element, bootstrapped, builder);
     }
 
-    private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> void register(E element, ITransformingPlan<E, B> transformer, Map<E, List<ITransformingPlan<E, B>>> map) {
+    private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> void register(E element, ITransformingPlan<E, B> transformer, Map<E, ITransformingPlan<E, B>> map) {
         if (map.containsKey(element)) {
             LOGGER.warning("Registering more than one transformer to one element, this can lead to unexpected behavior!");
         }
 
-        map.compute(element, compute(transformer));
-    }
-
-    private <T, E, U extends List<E>> BiFunction<T, U, U> compute(E val) {
-        return (k, v) -> {
-            if (v == null) {
-                v = (U) new LinkedList<E>();
-            }
-
-            v.add(val);
-
-            return v;
-        };
+        map.putIfAbsent(element, transformer);
     }
 }

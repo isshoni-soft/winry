@@ -1,9 +1,9 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
-import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
@@ -21,7 +21,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
     private final IBootstrapper bootstrapper;
 
-    private final AnnotationManager annotationManager;
+    private final IAnnotationManager annotationManager;
 
     private final Class<?> clazz;
     private Class<?> wrappedClazz;
