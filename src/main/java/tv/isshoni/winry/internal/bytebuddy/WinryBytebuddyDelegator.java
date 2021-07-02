@@ -21,9 +21,9 @@ public class WinryBytebuddyDelegator {
     private final Queue<MethodDelegator> delegators;
 
     public WinryBytebuddyDelegator(List<Pair<MethodDelegator, Integer>> delegators) {
-        this.delegators = Streams.to(delegators)
+        this.delegators = Streams.to(delegators, Streams.collectionToPairStream())
                 .sorted(Pair.compareSecond())
-                .map(Pair::getFirst)
+                .mapFirst()
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
