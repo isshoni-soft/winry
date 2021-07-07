@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class BootstrappedField implements IBootstrappedElement<Field> {
 
@@ -85,19 +86,14 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
         return IBootstrappedElement.super.getWeight();
     }
 
-    // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
-    public void execute() {
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeField(this);
-        }
+    public Consumer<PreparedAnnotationProcessor> executeClass() {
+        return (processor) -> processor.executeField(this);
     }
 
     @Override
-    public void transform() {
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
-        }
+    public Consumer<PreparedAnnotationProcessor> transformClass() {
+        return (processor) -> processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
     }
 
     @Override

@@ -87,13 +87,6 @@ public class SimpleBootstrapper implements IBootstrapper {
                             .filter(this.annotationManager::hasManagedAnnotation)
                             .forEach(this.elementBootstrapper::bootstrap);
                     LOGGER.info("Discovered " + c.getMethods().size() + " methods");
-                    // TODO: All wrapping will be handled by the bytebuddy interface!
-//            LOGGER.info("Wrapping class...");
-//            c.setWrappedClass(ByteBuddyUtil.wrapClass(c)
-//                    .name("WinryWrapped" + c.getBootstrappedElement().getSimpleName())
-//                    .make()
-//                    .load(ClassLoader.getSystemClassLoader())
-//                    .getLoaded());
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
                 .peek(IBootstrappedElement::transform)
@@ -134,6 +127,7 @@ public class SimpleBootstrapper implements IBootstrapper {
         });
     }
 
+    @Override
     public <T> T execute(BootstrappedMethod bootstrapped) {
         Method method = bootstrapped.getBootstrappedElement();
         Object target = null;
@@ -168,10 +162,6 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     @Override
     public void inject(BootstrappedField bootstrapped) {
-//        Preconditions.checkNotNull(bootstrapped);
-//        Preconditions.checkNotNull(bootstrapped.getTarget());
-//        Preconditions.checkNotNull(bootstrapped.getTarget().getObject());
-
         inject(bootstrapped, bootstrapped.getTarget().getObject());
     }
 }

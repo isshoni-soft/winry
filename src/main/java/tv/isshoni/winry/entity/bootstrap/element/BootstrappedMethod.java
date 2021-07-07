@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class BootstrappedMethod implements IBootstrappedElement<Method> {
 
@@ -75,19 +76,14 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
         return this.bootstrapper.getElementBootstrapper().getDeclaringClass(this.method);
     }
 
-    // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
-    public void execute() {
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeMethod(this);
-        }
+    public Consumer<PreparedAnnotationProcessor> executeClass() {
+        return (processor) -> processor.executeMethod(this);
     }
 
     @Override
-    public void transform() {
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.transformMethod(this, getDeclaringClass().getTransformingBlueprint());
-        }
+    public Consumer<PreparedAnnotationProcessor> transformClass() {
+        return (processor) -> processor.transformMethod(this, getDeclaringClass().getTransformingBlueprint());
     }
 
     @Override

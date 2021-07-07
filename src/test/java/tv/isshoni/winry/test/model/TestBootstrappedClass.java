@@ -10,6 +10,9 @@ import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import static org.junit.Assert.assertEquals;
 
 @Bootstrap(
@@ -18,7 +21,7 @@ import static org.junit.Assert.assertEquals;
         manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
-    @Logger(value = "TestBootstrappedClass") private static WinryLogger LOGGER;
+    @Logger("TestBootstrappedClass") private static WinryLogger LOGGER;
 
     @Inject private TestInjectedClass injectedClass;
     @Inject private TestCaseService testService;
@@ -35,6 +38,8 @@ public class TestBootstrappedClass {
 
     @Runner
     public void initRun() {
+        this.injectedClass.asyncMethod();
+
         assertEquals(0, this.injectedClass.getNumCalled());
         assertEquals(5, this.injectedClass.getTest());
 
@@ -50,5 +55,23 @@ public class TestBootstrappedClass {
     @Runner(RunnerOrder.LAST)
     public void lastRun() {
         assertEquals(3, this.injectedClass.getNumCalled());
+
+        try {
+            Future<Integer> future = this.injectedClass.asyncFutureMethod();
+
+            Thread.sleep(10);
+
+            LOGGER.info("Selected num was " + this.injectedClass.getSelectedNum());
+
+            for (int x = 0; x < 10; x++) {
+                LOGGER.info(String.valueOf(x));
+            }
+
+            LOGGER.info("Waiting on async future method...");
+            assertEquals(this.injectedClass.getSelectedNum(), future.get().intValue());
+            LOGGER.info("Async method matching expected values!");
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
@@ -125,16 +126,17 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         LOGGER.info("Executing transformation blueprint for " + this.clazz.getName());
         this.transformingBlueprint.transform();
 
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.executeClass(this);
-        }
+        IBootstrappedElement.super.execute();
     }
 
     @Override
-    public void transform() {
-        for (PreparedAnnotationProcessor processor : this.annotationManager.toExecutionList(this.annotations)) {
-            processor.transformClass(this, this.transformingBlueprint);
-        }
+    public Consumer<PreparedAnnotationProcessor> executeClass() {
+        return (processor) -> processor.executeClass(this);
+    }
+
+    @Override
+    public Consumer<PreparedAnnotationProcessor> transformClass() {
+        return (processor) -> processor.transformClass(this, this.transformingBlueprint);
     }
 
     public Object getObject() {
