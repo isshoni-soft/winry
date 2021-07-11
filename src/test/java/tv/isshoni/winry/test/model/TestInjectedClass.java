@@ -52,6 +52,7 @@ public class TestInjectedClass {
     }
 
     @Async
+    @Profile
     public void asyncMethod() {
         UUID uuid = UUID.randomUUID();
 

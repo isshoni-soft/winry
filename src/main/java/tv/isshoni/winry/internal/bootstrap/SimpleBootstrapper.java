@@ -66,9 +66,9 @@ public class SimpleBootstrapper implements IBootstrapper {
         this.compileRunStream()
                 .peek(e -> LOGGER.info(e.getDisplay()))
                 .forEachOrdered(e -> {
-            LOGGER.info("Executing: " + e);
-            e.execute();
-        });
+                    LOGGER.info("Executing: " + e);
+                    e.execute();
+                });
     }
 
     @Override
