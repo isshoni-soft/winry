@@ -94,6 +94,15 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     @Override
+    public <T> T construct(BootstrappedClass bootstrapped) {
+        Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
+        Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
+
+        LOGGER.info("Class: new " + constructed.getName() + "()");
+        return ReflectionUtil.construct(constructed);
+    }
+
+    @Override
     public void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided) {
         LOGGER.info("Performing class discovery...");
 

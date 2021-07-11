@@ -91,6 +91,10 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
         this.injectable = injectable;
     }
 
+    public Object newInstance() {
+        return getBootstrapper().construct(this);
+    }
+
     @Override
     public Class<?> getBootstrappedElement() {
         return this.clazz;

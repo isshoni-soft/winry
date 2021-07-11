@@ -15,7 +15,9 @@ import java.lang.annotation.Target;
 @Weight(7)
 public @interface Logger {
 
-    String value() default "Logger";
+    String DEFAULT = "[DEFAULT]";
+
+    String value() default DEFAULT;
 
     int indent() default 0;
 }

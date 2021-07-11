@@ -24,6 +24,7 @@ public class TestBootstrappedClass {
     @Logger("TestBootstrappedClass") private static WinryLogger LOGGER;
 
     @Inject private TestInjectedClass injectedClass;
+    @Inject("Second") private TestInjectedClass secondInjectedClass;
     @Inject private TestCaseService testService;
     @Inject private OneLastTestService oneLastService;
 
@@ -50,6 +51,7 @@ public class TestBootstrappedClass {
     public void postInitRun() {
         assertEquals(1, this.injectedClass.getNumCalled());
         assertEquals(2, this.oneLastService.getInjectedClassVal());
+        assertEquals(0, this.secondInjectedClass.getNumCalled());
     }
 
     @Runner(RunnerOrder.LAST)

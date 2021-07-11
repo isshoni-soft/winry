@@ -26,7 +26,13 @@ public class LoggerProcessor implements IAnnotationProcessor<Logger> {
             return;
         }
 
-        WinryLogger logger = WinryLogger.create(annotation.value(), annotation.indent());
+        String name = annotation.value();
+
+        if (name.equals(Logger.DEFAULT)) {
+            name = bootstrappedField.getDeclaringClass().getDisplay();
+        }
+
+        WinryLogger logger = WinryLogger.create(name, annotation.indent());
 
         LOGGER.info("Injecting: " + logger);
         bootstrappedField.getBootstrapper().inject(bootstrappedField, logger);
