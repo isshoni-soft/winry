@@ -16,6 +16,8 @@ public class Winry {
 
     private static Bootstrap bootstrap;
 
+    private static IBootstrapper bootstrapper;
+
     public static void bootstrap(Class<?> clazz, Object... provided) {
         Instant start = Instant.now();
 
@@ -28,7 +30,6 @@ public class Winry {
 
         LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
 
-        IBootstrapper bootstrapper;
         try {
             LOGGER.info("Instantiating bootstrapper...");
             bootstrapper = bootstrap.bootstrapper().getConstructor().newInstance();
@@ -42,6 +43,10 @@ public class Winry {
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
         LOGGER.info("Finished in " + Duration.between(start, Instant.now()).toMillis() + " ms");
+    }
+
+    public static IBootstrapper getBootstrapper() {
+        return bootstrapper;
     }
 
     public static Bootstrap getBootstrap() {

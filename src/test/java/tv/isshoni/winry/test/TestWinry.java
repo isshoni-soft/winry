@@ -14,7 +14,7 @@ public class TestWinry {
 
         Winry.bootstrap(TestBootstrappedClass.class, service);
 
-        if (!TestBootstrapper.getInstance().hasRun()) {
+        if (!((TestBootstrapper) Winry.getBootstrapper()).hasRun()) {
             fail("Bootstrapper didn't run.");
         }
     }

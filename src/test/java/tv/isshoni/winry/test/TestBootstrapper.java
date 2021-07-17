@@ -7,18 +7,10 @@ import java.util.Map;
 
 public class TestBootstrapper extends SimpleBootstrapper {
 
-    private static TestBootstrapper instance;
-
-    public static TestBootstrapper getInstance() {
-        return instance;
-    }
-
     private boolean run;
 
     public TestBootstrapper() {
         this.run = false;
-
-        instance = this;
     }
 
     public boolean hasRun() {

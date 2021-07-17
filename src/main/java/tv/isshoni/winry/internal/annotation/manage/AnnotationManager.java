@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// TODO: Add functionality for annotations to effect class wrapping (i.e. before instantiation & execution)
 public class AnnotationManager implements IAnnotationManager {
 
     private static final WinryLogger LOGGER = WinryLogger.create("AnnotationManager");
@@ -52,7 +51,7 @@ public class AnnotationManager implements IAnnotationManager {
         classes.stream()
                 .map(c -> (Class<? extends Annotation>) c)
                 .filter(c -> c.isAnnotationPresent(Processor.class))
-                .forEach(c -> register(c, c.getAnnotation(Processor.class).value()));
+                .forEach(this::discover);
 
         classes = reflections.getTypesAnnotatedWith(AttachTo.class);
 
@@ -68,6 +67,15 @@ public class AnnotationManager implements IAnnotationManager {
     @Override
     public <T extends Annotation> void unregister(Class<T> annotation) {
         this.annotationProcessors.remove(annotation);
+    }
+
+    @Override
+    public void discover(Class<? extends Annotation> annotation) {
+        if (!annotation.isAnnotationPresent(Processor.class)) {
+            throw new RuntimeException(annotation.getName() + " does not have a processor annotation");
+        }
+
+        register(annotation, annotation.getAnnotation(Processor.class).value());
     }
 
     @Override
