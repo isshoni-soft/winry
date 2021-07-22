@@ -1,12 +1,12 @@
 package tv.isshoni.winry.internal.bootstrap;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ElementBootstrapper implements IElementBootstrapper {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("ElementBootstrapper");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("ElementBootstrapper");
 
     private final Map<Class<?>, BootstrappedClass> bootstrappedClasses;
 

@@ -1,8 +1,8 @@
 package tv.isshoni.winry;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class Winry {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("Winry");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("Winry");
 
     private static Bootstrap bootstrap;
 
@@ -24,7 +24,7 @@ public class Winry {
         bootstrap = clazz.getAnnotation(Bootstrap.class);
 
         if (bootstrap == null) {
-            LOGGER.severe(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
+            LOGGER.error(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return;
         }
 
@@ -34,7 +34,7 @@ public class Winry {
             LOGGER.info("Instantiating bootstrapper...");
             bootstrapper = bootstrap.bootstrapper().getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOGGER.severe("Unable to instantiate new instance of bootstrapper class: " + bootstrap.bootstrapper().getName());
+            LOGGER.error("Unable to instantiate new instance of bootstrapper class: " + bootstrap.bootstrapper().getName());
             e.printStackTrace();
             return;
         }

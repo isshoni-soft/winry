@@ -1,16 +1,16 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Profile;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.time.Instant;
 
 public class ProfileProcessor implements IAnnotationProcessor<Profile> {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("Profiling");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("Profiling");
 
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {

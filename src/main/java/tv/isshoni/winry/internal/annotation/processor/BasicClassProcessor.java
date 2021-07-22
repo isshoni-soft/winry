@@ -1,14 +1,14 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.annotation.Annotation;
 
 public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
 
-    private final static WinryLogger LOGGER = WinryLogger.create("BasicClassProcessor");
+    private final static AraragiLogger LOGGER = AraragiLogger.create("BasicClassProcessor");
 
     @Override
     public void executeClass(BootstrappedClass bootstrappedClass, Annotation annotation) {
@@ -17,7 +17,7 @@ public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
         }
 
         if (bootstrappedClass.hasObject()) {
-            LOGGER.warning("Two basic class processors present on type " + bootstrappedClass.getDisplay());
+            LOGGER.warn("Two basic class processors present on type " + bootstrappedClass.getDisplay());
             return;
         }
 

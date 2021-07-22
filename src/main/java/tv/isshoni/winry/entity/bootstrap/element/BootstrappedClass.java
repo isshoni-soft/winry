@@ -1,10 +1,10 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("BootstrappedClass");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("BootstrappedClass");
 
     private final IBootstrapper bootstrapper;
 

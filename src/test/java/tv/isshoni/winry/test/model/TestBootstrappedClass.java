@@ -1,11 +1,11 @@
 package tv.isshoni.winry.test.model;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Runner;
 import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
         manualLoad = { TestInjectedClass.class })
 public class TestBootstrappedClass {
 
-    @Logger("TestBootstrappedClass") private static WinryLogger LOGGER;
+    @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;
 
     @Inject private TestInjectedClass injectedClass;
     @Inject("Second") private TestInjectedClass secondInjectedClass;

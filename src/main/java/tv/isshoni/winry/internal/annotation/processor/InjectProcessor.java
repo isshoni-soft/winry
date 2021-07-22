@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class InjectProcessor implements IAnnotationProcessor<Inject> {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("BasicFieldProcessor");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("BasicFieldProcessor");
 
     private static final Map<String, Object> SINGLETONS = new HashMap<>(); // the irony of this name isn't lost on me
 
@@ -22,7 +22,7 @@ public class InjectProcessor implements IAnnotationProcessor<Inject> {
         }
 
         if (field.isInjected()) {
-            LOGGER.warning("Attempted to re-inject field " + field.getDisplay() + "!");
+            LOGGER.warn("Attempted to re-inject field " + field.getDisplay() + "!");
             return;
         }
 

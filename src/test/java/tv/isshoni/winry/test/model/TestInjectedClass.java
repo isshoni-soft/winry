@@ -1,10 +1,10 @@
 package tv.isshoni.winry.test.model;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Async;
 import tv.isshoni.winry.annotation.Injected;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Profile;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Injected
 public class TestInjectedClass {
 
-    @Logger("TestInjectedClass") private static WinryLogger LOGGER;
+    @Logger("TestInjectedClass") private static AraragiLogger LOGGER;
 
     private int numCalled = 0;
 

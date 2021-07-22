@@ -1,10 +1,10 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Async;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +16,7 @@ public class AsyncProcessor implements IAnnotationProcessor<Async> {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
-    private static final WinryLogger LOGGER = WinryLogger.create("AsyncProcessor");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("AsyncProcessor");
 
     // TODO: Move this stuff to Araragi when you get the chance, just make a universal AsyncManager class & maybe give it it's own module.
     static {

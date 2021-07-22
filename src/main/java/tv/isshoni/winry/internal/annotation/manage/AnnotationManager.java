@@ -5,6 +5,7 @@ import org.reflections8.scanners.SubTypesScanner;
 import org.reflections8.scanners.TypeAnnotationsScanner;
 import org.reflections8.util.ConfigurationBuilder;
 import tv.isshoni.araragi.data.Pair;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.PairStream;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.Winry;
@@ -13,7 +14,6 @@ import tv.isshoni.winry.annotation.api.Processor;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
 import java.lang.annotation.Annotation;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class AnnotationManager implements IAnnotationManager {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("AnnotationManager");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("AnnotationManager");
 
     private final Map<Class<? extends Annotation>, List<IAnnotationProcessor<?>>> annotationProcessors;
 

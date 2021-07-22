@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.bytebuddy;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
@@ -14,7 +15,6 @@ import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
-import tv.isshoni.winry.logging.WinryLogger;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private static final ByteBuddy BYTE_BUDDY = new ByteBuddy();
 
-    private static final WinryLogger LOGGER = WinryLogger.create("ClassTransformingPlan");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("ClassTransformingPlan");
 
     private final BootstrappedClass bootstrappedClass;
 
@@ -81,7 +81,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
         if (this.methodTransformers.containsKey(method)) {
             if (!(this.methodTransformers.get(method) instanceof WinryMethodTransformer)) {
-                LOGGER.severe("Cannot register simple method delegator to method that does not use WinryMethodTransformer!");
+                LOGGER.error("Cannot register simple method delegator to method that does not use WinryMethodTransformer!");
                 return;
             }
 
@@ -98,7 +98,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     @Override
     public void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan) {
         if (Objects.nonNull(this.classTransformer)) {
-            LOGGER.warning("Overwriting default Winry class transformer!");
+            LOGGER.warn("Overwriting default Winry class transformer!");
         }
 
         this.classTransformer = transformingPlan;
@@ -106,14 +106,14 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     @Override
     public void registerAdvancedMethodTransformation(Method method, MethodTransformingPlan transformingPlan) {
-        LOGGER.warning("Overwriting default Winry method transformer!");
+        LOGGER.warn("Overwriting default Winry method transformer!");
 
         register(method, transformingPlan, this.methodTransformers);
     }
 
     @Override
     public void registerAdvancedFieldTransformation(Field field, FieldTransformingPlan transformingPlan) {
-        LOGGER.warning("Overwriting default Winry field transformer!");
+        LOGGER.warn("Overwriting default Winry field transformer!");
 
         register(field, transformingPlan, this.fieldTransformers);
     }
@@ -138,7 +138,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> void register(E element, ITransformingPlan<E, B> transformer, Map<E, ITransformingPlan<E, B>> map) {
         if (map.containsKey(element)) {
-            LOGGER.warning("Registering more than one transformer to one element, this can lead to unexpected behavior!");
+            LOGGER.warn("Registering more than one transformer to one element, this can lead to unexpected behavior!");
         }
 
         map.putIfAbsent(element, transformer);

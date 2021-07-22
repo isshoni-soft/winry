@@ -18,6 +18,4 @@ public @interface Logger {
     String DEFAULT = "[DEFAULT]";
 
     String value() default DEFAULT;
-
-    int indent() default 0;
 }

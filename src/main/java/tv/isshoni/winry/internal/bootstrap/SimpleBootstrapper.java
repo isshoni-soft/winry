@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.bootstrap;
 
 import org.reflections8.Reflections;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.AraragiStream;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
@@ -12,7 +13,6 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
-import tv.isshoni.winry.logging.WinryLogger;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
-    private static final WinryLogger LOGGER = WinryLogger.create("SimpleBootstrapper");
+    private static final AraragiLogger LOGGER = AraragiLogger.create("SimpleBootstrapper");
 
     private final IAnnotationManager annotationManager;
 
