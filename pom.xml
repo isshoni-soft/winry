@@ -58,6 +58,11 @@
     <dependencies>
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
+            <artifactId>async</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>tv.isshoni.araragi</groupId>
             <artifactId>logging</artifactId>
         </dependency>
 

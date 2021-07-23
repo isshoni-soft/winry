@@ -7,31 +7,11 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class AsyncProcessor implements IAnnotationProcessor<Async> {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-
     private static final AraragiLogger LOGGER = AraragiLogger.create("AsyncProcessor");
-
-    // TODO: Move this stuff to Araragi when you get the chance, just make a universal AsyncManager class & maybe give it it's own module.
-    static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            LOGGER.info("Waiting on async executor...");
-            LOGGER.info("If it is apparent that a thread is deadlocked, please force kill...");
-
-            EXECUTOR_SERVICE.shutdown();
-            try {
-                EXECUTOR_SERVICE.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        })); // Pls java let us addShutdownHook(Runnable)
-    }
 
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Async annotation) {
@@ -44,7 +24,7 @@ public class AsyncProcessor implements IAnnotationProcessor<Async> {
         }
 
         blueprint.registerSimpleMethodDelegator(bootstrappedMethod.getBootstrappedElement(), 0, (c, m, args, next) ->
-                EXECUTOR_SERVICE.submit(() -> {
+                tv.isshoni.araragi.async.Async.submit(() -> {
                     Object result = next.call();
 
                     if (result instanceof Future) {
