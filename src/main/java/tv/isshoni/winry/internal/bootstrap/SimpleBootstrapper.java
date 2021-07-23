@@ -12,7 +12,9 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
@@ -33,11 +35,14 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private final IElementBootstrapper elementBootstrapper;
 
+    private final ILoggerFactory loggerFactory;
+
     private Map<Class<?>, Object> provided;
 
     public SimpleBootstrapper() {
         this.annotationManager = new AnnotationManager();
         this.elementBootstrapper = new ElementBootstrapper(this);
+        this.loggerFactory = new LoggerFactory();
     }
 
     @Override
@@ -51,12 +56,19 @@ public class SimpleBootstrapper implements IBootstrapper {
     }
 
     @Override
+    public ILoggerFactory getLoggerFactory() {
+        return this.loggerFactory;
+    }
+
+    @Override
     public Map<Class<?>, Object> getProvided() {
         return Collections.unmodifiableMap(this.provided);
     }
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
+        this.loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+
         this.provided = Collections.unmodifiableMap(provided);
 
         LOGGER.info("Bootstrapping elements...");

@@ -12,21 +12,24 @@ import java.util.stream.Stream;
 
 public class Winry {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("Winry");
-
     private static Bootstrap bootstrap;
 
     private static IBootstrapper bootstrapper;
 
     public static void bootstrap(Class<?> clazz, Object... provided) {
+        AraragiLogger LOGGER;
+
         Instant start = Instant.now();
 
         bootstrap = clazz.getAnnotation(Bootstrap.class);
 
         if (bootstrap == null) {
+            LOGGER = AraragiLogger.create("Winry");
             LOGGER.error(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return;
         }
+
+        LOGGER = AraragiLogger.create("Winry", bootstrap.defaultLevel());
 
         LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
 

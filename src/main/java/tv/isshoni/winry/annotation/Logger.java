@@ -1,5 +1,6 @@
 package tv.isshoni.winry.annotation;
 
+import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.annotation.api.Processor;
 import tv.isshoni.winry.annotation.api.Weight;
 import tv.isshoni.winry.internal.annotation.processor.LoggerProcessor;
@@ -18,4 +19,6 @@ public @interface Logger {
     String DEFAULT = "[DEFAULT]";
 
     String value() default DEFAULT;
+
+    Level level() default Level.INFO;
 }

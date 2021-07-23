@@ -6,6 +6,7 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -15,6 +16,8 @@ public interface IBootstrapper {
     IAnnotationManager getAnnotationManager();
 
     IElementBootstrapper getElementBootstrapper();
+
+    ILoggerFactory getLoggerFactory();
 
     Map<Class<?>, Object> getProvided();
 
