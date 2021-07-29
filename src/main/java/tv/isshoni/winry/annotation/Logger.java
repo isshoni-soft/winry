@@ -18,7 +18,11 @@ public @interface Logger {
 
     String DEFAULT = "[DEFAULT]";
 
+    Level DEFAULT_LEVEL = Level.ERROR;
+
     String value() default DEFAULT;
 
-    Level level() default Level.INFO;
+    Level level() default Level.ERROR;
+
+    boolean useDefault() default true;
 }

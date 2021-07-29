@@ -3,12 +3,17 @@ package tv.isshoni.winry.internal.annotation.processor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.entity.context.IWinryContext;
 
 import java.lang.annotation.Annotation;
 
 public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
 
-    private final static AraragiLogger LOGGER = AraragiLogger.create("BasicClassProcessor");
+    private static AraragiLogger LOGGER;
+
+    public BasicClassProcessor(IWinryContext context) {
+        LOGGER = context.getLoggerFactory().createLogger("BasicClassProcessor");
+    }
 
     @Override
     public void executeClass(BootstrappedClass bootstrappedClass, Annotation annotation) {
@@ -22,9 +27,13 @@ public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
         }
 
         if (bootstrappedClass.hasWrappedClass()) {
-            LOGGER.info("Produced wrapped class: " + bootstrappedClass.getWrappedClass().getName());
+            LOGGER.debug("Produced wrapped class: " + bootstrappedClass.getWrappedClass().getName());
         }
 
-        bootstrappedClass.setObject(bootstrappedClass.newInstance());
+        Object instance = bootstrappedClass.newInstance();
+
+        bootstrappedClass.getBootstrapper().getContext().register(instance);
+
+        bootstrappedClass.setObject(instance);
     }
 }

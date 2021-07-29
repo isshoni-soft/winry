@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("BootstrappedClass");
+    private final AraragiLogger LOGGER;
 
     private final IBootstrapper bootstrapper;
 
@@ -43,6 +43,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     private boolean injectable = true;
 
     public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
+        LOGGER = bootstrapper.getLoggerFactory().createLogger("BootstrappedClass");
         this.clazz = clazz;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
@@ -78,7 +79,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     public void setWrappedClass(Class<?> wrappedClazz) {
-        LOGGER.info("Setting wrapped class to: " + wrappedClazz.getName());
+        LOGGER.debug("Setting wrapped class to: " + wrappedClazz.getName());
 
         this.wrappedClazz = wrappedClazz;
     }
@@ -127,7 +128,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     // TODO: maybe refactor these two methods to be a little less copy and pasted
     @Override
     public void execute() {
-        LOGGER.info("Executing transformation blueprint for " + this.clazz.getName());
+        LOGGER.debug("Executing transformation blueprint for " + this.clazz.getName());
         this.transformingBlueprint.transform();
 
         IBootstrappedElement.super.execute();

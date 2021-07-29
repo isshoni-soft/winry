@@ -4,13 +4,18 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Profile;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.time.Instant;
 
 public class ProfileProcessor implements IAnnotationProcessor<Profile> {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("Profiling");
+    private final AraragiLogger LOGGER;
+
+    public ProfileProcessor(IWinryContext context) {
+        LOGGER = context.getLoggerFactory().createLogger("Profiling");
+    }
 
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {
@@ -24,7 +29,7 @@ public class ProfileProcessor implements IAnnotationProcessor<Profile> {
                 e.printStackTrace();
             }
 
-            LOGGER.info("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
+            LOGGER.debug("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;
         });
     }

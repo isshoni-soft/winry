@@ -4,13 +4,18 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.reflect.Field;
 
 public class LoggerProcessor implements IAnnotationProcessor<Logger> {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("LoggerProcessor");
+    private final AraragiLogger LOGGER;
+
+    public LoggerProcessor(IWinryContext context) {
+        LOGGER = context.getLoggerFactory().createLogger("LoggerProcessor");
+    }
 
     @Override
     public void executeField(BootstrappedField bootstrappedField, Logger annotation) {
@@ -32,9 +37,17 @@ public class LoggerProcessor implements IAnnotationProcessor<Logger> {
             name = bootstrappedField.getDeclaringClass().getDisplay();
         }
 
-        AraragiLogger logger = AraragiLogger.create(name);
+        AraragiLogger logger;
 
-        LOGGER.info("Injecting: " + logger);
+        if (annotation.level() != Logger.DEFAULT_LEVEL || !annotation.useDefault()) {
+            logger = bootstrappedField.getBootstrapper().getLoggerFactory().createLogger(name, annotation.level());
+        } else {
+            logger = bootstrappedField.getBootstrapper().getLoggerFactory().createLogger(name);
+        }
+
+        bootstrappedField.getBootstrapper().getContext().register(logger);
+
+        LOGGER.debug("Injecting: " + logger);
         bootstrappedField.getBootstrapper().inject(bootstrappedField, logger);
     }
 }

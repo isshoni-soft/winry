@@ -1,6 +1,7 @@
 package tv.isshoni.winry.test.model;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Logger;
@@ -18,7 +19,8 @@ import static org.junit.Assert.assertEquals;
 @Bootstrap(
         bootstrapper = TestBootstrapper.class,
         loadPackage = { "tv.isshoni.winry.test.model.service" },
-        manualLoad = { TestInjectedClass.class })
+        manualLoad = { TestInjectedClass.class },
+        defaultLevel = Level.INFO)
 public class TestBootstrappedClass {
 
     @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;

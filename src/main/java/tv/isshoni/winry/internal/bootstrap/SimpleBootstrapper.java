@@ -1,6 +1,8 @@
 package tv.isshoni.winry.internal.bootstrap;
 
 import org.reflections8.Reflections;
+import tv.isshoni.araragi.async.AsyncManager;
+import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.AraragiStream;
 import tv.isshoni.araragi.stream.Streams;
@@ -12,8 +14,10 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.manage.AnnotationManager;
+import tv.isshoni.winry.internal.context.WinryContext;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
@@ -29,35 +33,45 @@ import java.util.Set;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("SimpleBootstrapper");
+    private static AraragiLogger LOGGER;
 
-    private final IAnnotationManager annotationManager;
-
-    private final IElementBootstrapper elementBootstrapper;
-
-    private final ILoggerFactory loggerFactory;
+    private final IWinryContext context;
 
     private Map<Class<?>, Object> provided;
 
-    public SimpleBootstrapper() {
-        this.annotationManager = new AnnotationManager();
-        this.elementBootstrapper = new ElementBootstrapper(this);
-        this.loggerFactory = new LoggerFactory();
+    public SimpleBootstrapper(Bootstrap bootstrap) {
+        LoggerFactory loggerFactory = new LoggerFactory();
+        loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        AnnotationManager annotationManager = new AnnotationManager(loggerFactory, this);
+
+        this.context = new WinryContext(this, new AsyncManager(), annotationManager, loggerFactory, new ElementBootstrapper(this, annotationManager, loggerFactory), bootstrap);
+
+        LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");
     }
 
     @Override
     public IAnnotationManager getAnnotationManager() {
-        return this.annotationManager;
+        return this.context.getAnnotationManager();
     }
 
     @Override
     public IElementBootstrapper getElementBootstrapper() {
-        return this.elementBootstrapper;
+        return this.context.getElementBootstrapper();
     }
 
     @Override
     public ILoggerFactory getLoggerFactory() {
-        return this.loggerFactory;
+        return this.context.getLoggerFactory();
+    }
+
+    @Override
+    public IAsyncManager getAsyncManager() {
+        return this.context.getAsyncManager();
+    }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
     }
 
     @Override
@@ -67,38 +81,40 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
-        this.loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        this.getAnnotationManager().initialize(bootstrap);
+
+        provided.values().forEach(this.getContext()::register);
 
         this.provided = Collections.unmodifiableMap(provided);
 
-        LOGGER.info("Bootstrapping elements...");
+        LOGGER.debug("Bootstrapping elements...");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
-        LOGGER.info("Finished class discovery and instantiation...");
-        LOGGER.info("Run order:");
+        LOGGER.debug("Finished class discovery and instantiation...");
+        LOGGER.debug("Run order:");
         this.compileRunStream()
-                .peek(e -> LOGGER.info(e.getDisplay()))
+                .peek(e -> LOGGER.debug(e.getDisplay()))
                 .forEachOrdered(e -> {
-                    LOGGER.info("Executing: " + e);
+                    LOGGER.debug("Executing: " + e);
                     e.execute();
                 });
     }
 
     @Override
     public AraragiStream<IBootstrappedElement> compileRunStream() {
-        LOGGER.info("Compiling run order...");
-        return Streams.to(this.elementBootstrapper.getBootstrappedClasses())
+        LOGGER.debug("Compiling run order...");
+        return Streams.to(this.getElementBootstrapper().getBootstrappedClasses())
                 .peek((c -> {
-                    LOGGER.info("Finalizing: " + c.getBootstrappedElement().getName());
+                    LOGGER.debug("Finalizing: " + c.getBootstrappedElement().getName());
 
                     Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
-                            .filter(this.annotationManager::hasManagedAnnotation)
-                            .forEach(this.elementBootstrapper::bootstrap);
-                    LOGGER.info("Discovered " + c.getFields().size() + " fields");
+                            .filter(this.getAnnotationManager()::hasManagedAnnotation)
+                            .forEach(this.getElementBootstrapper()::bootstrap);
+                    LOGGER.debug("Discovered " + c.getFields().size() + " fields");
 
                     Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
-                            .filter(this.annotationManager::hasManagedAnnotation)
-                            .forEach(this.elementBootstrapper::bootstrap);
-                    LOGGER.info("Discovered " + c.getMethods().size() + " methods");
+                            .filter(this.getAnnotationManager()::hasManagedAnnotation)
+                            .forEach(this.getElementBootstrapper()::bootstrap);
+                    LOGGER.debug("Discovered " + c.getMethods().size() + " methods");
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
                 .peek(IBootstrappedElement::transform)
@@ -110,38 +126,38 @@ public class SimpleBootstrapper implements IBootstrapper {
         Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
         Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
 
-        LOGGER.info("Class: new " + constructed.getName() + "()");
+        LOGGER.debug("Class: new " + constructed.getName() + "()");
         return ReflectionUtil.construct(constructed);
     }
 
     @Override
     public void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided) {
-        LOGGER.info("Performing class discovery...");
+        LOGGER.debug("Performing class discovery...");
 
         Set<Class<?>> classes = new HashSet<>();
         classes.add(baseClass);
         classes.addAll(provided.keySet());
         classes.addAll(Arrays.asList(manual));
 
-        LOGGER.info("Discovered " + manual.length + " manually loaded classes!");
-        LOGGER.info("Discovered " + provided.keySet() + " provided classes!");
-        LOGGER.info("Searching " + Arrays.toString(packages) + " packages for classes...");
+        LOGGER.debug("Discovered " + manual.length + " manually loaded classes!");
+        LOGGER.debug("Discovered " + provided.keySet() + " provided classes!");
+        LOGGER.debug("Searching " + Arrays.toString(packages) + " packages for classes...");
 
         if (packages.length > 0) {
             Reflections reflections = ReflectionUtil.classFinder(packages, manual);
 
-            this.annotationManager.getManagedAnnotations().stream()
+            this.getAnnotationManager().getManagedAnnotations().stream()
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
                     .forEach(classes::add);
         }
 
-        LOGGER.info("Discovered " + classes.size() + " classes!");
-        LOGGER.info("Performing bootstrap...");
-        classes.forEach(this.elementBootstrapper::bootstrap);
+        LOGGER.debug("Discovered " + classes.size() + " classes!");
+        LOGGER.debug("Performing bootstrap...");
+        classes.forEach(this.getElementBootstrapper()::bootstrap);
 
-        LOGGER.info("Attaching provided instances...");
+        LOGGER.debug("Attaching provided instances...");
         provided.forEach((c, o) -> {
-            BootstrappedClass bootstrapped = this.elementBootstrapper.getBootstrappedClass(c);
+            BootstrappedClass bootstrapped = this.getElementBootstrapper().getBootstrappedClass(c);
 
             bootstrapped.setProvided(true);
             bootstrapped.setObject(o);
@@ -154,7 +170,7 @@ public class SimpleBootstrapper implements IBootstrapper {
         Object target = null;
 
         if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
-            target = this.elementBootstrapper.getDeclaringClass(method).getObject();
+            target = this.getElementBootstrapper().getDeclaringClass(method).getObject();
         }
 
         try {
@@ -174,7 +190,7 @@ public class SimpleBootstrapper implements IBootstrapper {
         Field field = bootstrapped.getBootstrappedElement();
 
         if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
-            target = this.elementBootstrapper.getDeclaringClass(field).getObject();
+            target = this.getElementBootstrapper().getDeclaringClass(field).getObject();
         }
 
         ReflectionUtil.injectField(field, target, injected);

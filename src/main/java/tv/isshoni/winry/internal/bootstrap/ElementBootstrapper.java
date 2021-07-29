@@ -7,6 +7,7 @@ import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class ElementBootstrapper implements IElementBootstrapper {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("ElementBootstrapper");
+    private static AraragiLogger LOGGER;
 
     private final Map<Class<?>, BootstrappedClass> bootstrappedClasses;
 
@@ -29,12 +30,14 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     private final IAnnotationManager annotationManager;
 
-    public ElementBootstrapper(IBootstrapper bootstrapper) {
+    public ElementBootstrapper(IBootstrapper bootstrapper, IAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         this.bootstrapper = bootstrapper;
-        this.annotationManager = bootstrapper.getAnnotationManager();
+        this.annotationManager = annotationManager;
         this.bootstrappedClasses = new HashMap<>();
         this.bootstrappedMethods = new HashMap<>();
         this.bootstrappedFields = new HashMap<>();
+
+        LOGGER = loggerFactory.createLogger("ElementBootstrapper");
     }
 
     @Override
@@ -73,7 +76,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
             return;
         }
 
-        LOGGER.info("Bootstrapping Class: " + clazz.getName());
+        LOGGER.debug("Bootstrapping Class: " + clazz.getName());
         this.bootstrappedClasses.put(clazz, new BootstrappedClass(clazz, this.bootstrapper));
     }
 
@@ -83,7 +86,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
             return;
         }
 
-        LOGGER.info("Bootstrapping Method: " + method.getName());
+        LOGGER.debug("Bootstrapping Method: " + method.getName());
         BootstrappedMethod bootstrappedMethod = new BootstrappedMethod(method, this.bootstrapper);
 
         getDeclaringClass(method).addMethod(bootstrappedMethod);
@@ -97,7 +100,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
             return;
         }
 
-        LOGGER.info("Bootstrapping Field: " + field.getName());
+        LOGGER.debug("Bootstrapping Field: " + field.getName());
         BootstrappedField bootstrappedField = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
 
         getDeclaringClass(field).addField(bootstrappedField);

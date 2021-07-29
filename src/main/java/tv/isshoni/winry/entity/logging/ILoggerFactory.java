@@ -7,7 +7,9 @@ public interface ILoggerFactory {
 
     void setDefaultLoggerLevel(ILevel level);
 
-    AraragiLogger createDefaultLogger(String name);
+    AraragiLogger createLogger(String name);
 
     AraragiLogger createLogger(String name, ILevel level);
+
+    ILevel getLevel();
 }

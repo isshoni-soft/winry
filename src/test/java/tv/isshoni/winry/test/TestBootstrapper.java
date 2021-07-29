@@ -9,7 +9,9 @@ public class TestBootstrapper extends SimpleBootstrapper {
 
     private boolean run;
 
-    public TestBootstrapper() {
+    public TestBootstrapper(Bootstrap bootstrap) {
+        super(bootstrap);
+
         this.run = false;
     }
 

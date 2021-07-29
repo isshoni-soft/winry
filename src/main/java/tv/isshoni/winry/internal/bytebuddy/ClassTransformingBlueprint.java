@@ -29,7 +29,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private static final ByteBuddy BYTE_BUDDY = new ByteBuddy();
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("ClassTransformingPlan");
+    private final AraragiLogger LOGGER;
 
     private final BootstrappedClass bootstrappedClass;
 
@@ -42,6 +42,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     private ITransformingPlan<Class<?>, BootstrappedClass> classTransformer;
 
     public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass) {
+        LOGGER = bootstrappedClass.getBootstrapper().getLoggerFactory().createLogger("ClassTransformingPlan");
         this.bootstrappedClass = bootstrappedClass;
         this.elementBootstrapper = bootstrappedClass.getBootstrapper().getElementBootstrapper();
         this.methodTransformers = new HashMap<>();

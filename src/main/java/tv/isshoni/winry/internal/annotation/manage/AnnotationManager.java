@@ -8,16 +8,19 @@ import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.PairStream;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.Winry;
+import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.api.AttachTo;
 import tv.isshoni.winry.annotation.api.Processor;
 import tv.isshoni.winry.entity.annotation.IAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
-import tv.isshoni.winry.reflection.ReflectionUtil;
+import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.context.IWinryContext;
+import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,18 +33,28 @@ import java.util.stream.Collectors;
 
 public class AnnotationManager implements IAnnotationManager {
 
-    private static final AraragiLogger LOGGER = AraragiLogger.create("AnnotationManager");
+    private static AraragiLogger LOGGER;
 
     private final Map<Class<? extends Annotation>, List<IAnnotationProcessor<?>>> annotationProcessors;
 
-    public AnnotationManager() {
-        LOGGER.info("Initializing...");
+    private final IBootstrapper bootstrapper;
+
+    public AnnotationManager(ILoggerFactory loggerFactory, IBootstrapper bootstrapper) {
+        this.bootstrapper = bootstrapper;
         this.annotationProcessors = new HashMap<>();
 
-        ArrayList<String> packages = new ArrayList<>(Arrays.asList(Winry.getBootstrap().loadPackage()));
+        LOGGER = loggerFactory.createLogger("AnnotationManager");
+    }
+
+    @Override
+    public void initialize(Bootstrap bootstrap) {
+        LOGGER.debug("Initializing...");
+
+        ArrayList<String> packages = new ArrayList<>(Arrays.asList(bootstrap.loadPackage()));
         packages.add("tv.isshoni.winry.annotation");
 
-        LOGGER.info("Performing annotation discovery...");
+        LOGGER.debug("Performing annotation discovery...");
+
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false))
                 .forPackages(packages.toArray(new String[0])));
@@ -61,7 +74,7 @@ public class AnnotationManager implements IAnnotationManager {
                 .map(c -> (Class<IAnnotationProcessor<?>>) c)
                 .forEach(c -> register(c.getAnnotation(AttachTo.class).value(), c));
 
-        LOGGER.info("Discovered " + getTotalProcessors() + " annotation processors.");
+        LOGGER.debug("Discovered " + getTotalProcessors() + " annotation processors.");
     }
 
     @Override
@@ -78,8 +91,9 @@ public class AnnotationManager implements IAnnotationManager {
         register(annotation, annotation.getAnnotation(Processor.class).value());
     }
 
+    @SafeVarargs
     @Override
-    public void register(Class<? extends Annotation>[] annotations, Class<? extends IAnnotationProcessor<?>>... processors) {
+    public final void register(Class<? extends Annotation>[] annotations, Class<? extends IAnnotationProcessor<?>>... processors) {
         for (Class<? extends Annotation> annotation : annotations) {
             register(annotation, processors);
         }
@@ -92,10 +106,23 @@ public class AnnotationManager implements IAnnotationManager {
         }
     }
 
+    @SafeVarargs
     @Override
-    public void register(Class<? extends Annotation> annotation, Class<? extends IAnnotationProcessor<?>>... processors) {
+    public final void register(Class<? extends Annotation> annotation, Class<? extends IAnnotationProcessor<?>>... processors) {
         register(annotation, Arrays.stream(processors)
-                .map(ReflectionUtil::construct)
+                .map(p -> {
+                    try {
+                        return p.getConstructor(IWinryContext.class).newInstance(this.bootstrapper.getContext());
+                    } catch (NoSuchMethodException e) {
+                        try {
+                            return p.getConstructor().newInstance();
+                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException instantiationException) {
+                            throw new RuntimeException(e); // TODO: Add a specialized exception
+                        }
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e); // TODO: Add a specialized exception
+                    }
+                })
                 .toArray(IAnnotationProcessor<?>[]::new));
     }
 

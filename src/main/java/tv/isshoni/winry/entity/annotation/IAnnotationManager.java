@@ -1,6 +1,7 @@
 package tv.isshoni.winry.entity.annotation;
 
 import tv.isshoni.araragi.data.Pair;
+import tv.isshoni.winry.annotation.Bootstrap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -8,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface IAnnotationManager {
+
+    void initialize(Bootstrap bootstrap);
 
     <T extends Annotation> void unregister(Class<T> annotation);
 

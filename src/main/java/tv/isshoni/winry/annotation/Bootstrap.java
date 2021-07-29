@@ -27,5 +27,5 @@ public @interface Bootstrap {
 
     Class<? extends IBootstrapper> bootstrapper() default SimpleBootstrapper.class;
 
-    Level defaultLevel() default Level.INFO;
+    Level defaultLevel() default Level.ERROR;
 }
