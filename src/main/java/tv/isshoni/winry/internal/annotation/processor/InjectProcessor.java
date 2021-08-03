@@ -2,7 +2,7 @@ package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Inject;
-import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.context.IWinryContext;
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class InjectProcessor implements IAnnotationProcessor<Inject> {
+public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
 
     private static final Map<String, Object> SINGLETONS = new HashMap<>(); // the irony of this name isn't lost on me
 

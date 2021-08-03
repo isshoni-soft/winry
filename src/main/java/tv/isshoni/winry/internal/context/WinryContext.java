@@ -2,7 +2,7 @@ package tv.isshoni.winry.internal.context;
 
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.entity.annotation.IAnnotationManager;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.context.IWinryContext;
@@ -15,19 +15,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WinryContext implements IWinryContext {
 
-    private static final Map<Object, WinryContext> CONTEXT_REGISTRY = new ConcurrentHashMap<>();
+    private static final Map<Object, IWinryContext> CONTEXT_REGISTRY = new ConcurrentHashMap<>();
 
-    public static Optional<WinryContext> getContextFor(Object object) {
+    public static Optional<IWinryContext> getContextFor(Object object) {
         return Optional.ofNullable(CONTEXT_REGISTRY.get(object));
     }
 
-    public static Map<Object, WinryContext> getContextRegistry() {
+    public static Map<Object, IWinryContext> getContextRegistry() {
         return Collections.unmodifiableMap(CONTEXT_REGISTRY);
     }
 
     private final IBootstrapper bootstrapper;
 
-    private final IAnnotationManager annotationManager;
+    private final IWinryAnnotationManager annotationManager;
 
     private final ILoggerFactory loggerFactory;
 
@@ -37,7 +37,7 @@ public class WinryContext implements IWinryContext {
 
     private final Bootstrap bootstrap;
 
-    public WinryContext(IBootstrapper bootstrapper, IAsyncManager asyncManager, IAnnotationManager annotationManager, ILoggerFactory loggerFactory, IElementBootstrapper elementBootstrapper, Bootstrap bootstrap) {
+    public WinryContext(IBootstrapper bootstrapper, IAsyncManager asyncManager, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory, IElementBootstrapper elementBootstrapper, Bootstrap bootstrap) {
         this.bootstrapper = bootstrapper;
         this.annotationManager = annotationManager;
         this.loggerFactory = loggerFactory;
@@ -64,7 +64,7 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
-    public IAnnotationManager getAnnotationManager() {
+    public IWinryAnnotationManager getAnnotationManager() {
         return this.annotationManager;
     }
 

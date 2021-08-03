@@ -1,8 +1,9 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.entity.annotation.IAnnotationManager;
-import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.context.IContextual;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -12,11 +13,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class BootstrappedMethod implements IBootstrappedElement<Method> {
+public class BootstrappedMethod implements IBootstrappedElement<Method>, IContextual {
 
     private final IBootstrapper bootstrapper;
-
-    private final IAnnotationManager annotationManager;
 
     private final Method method;
 
@@ -27,15 +26,16 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
     private boolean executed;
 
     public BootstrappedMethod(Method method, IBootstrapper bootstrapper) {
+        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+
         this.method = method;
         this.bootstrapper = bootstrapper;
-        this.annotationManager = bootstrapper.getAnnotationManager();
         this.modifiers = ReflectedModifier.getModifiers(method);
-        this.annotations = this.annotationManager.getManagedAnnotationsOn(method);
+        this.annotations = annotationManager.getManagedAnnotationsOn(method);
         this.executed = false;
 
-        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
-            throw new IllegalStateException(this.method.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.method.getName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));
         }
     }
 
@@ -77,12 +77,12 @@ public class BootstrappedMethod implements IBootstrappedElement<Method> {
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> executeClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> executeClass() {
         return (processor) -> processor.executeMethod(this);
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> transformClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformMethod(this, getDeclaringClass().getTransformingBlueprint());
     }
 

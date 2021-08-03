@@ -1,21 +1,17 @@
 package tv.isshoni.winry.entity.annotation;
 
-import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
+import tv.isshoni.araragi.annotation.internal.PreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.annotation.Annotation;
 
-public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotationProcessor> {
+public class WinryPreparedAnnotationProcessor extends PreparedAnnotationProcessor implements IWinryPreparedAnnotationProcessor {
 
-    private final Annotation annotation;
-
-    private final IAnnotationProcessor<Annotation> processor;
-
-    public PreparedAnnotationProcessor(Annotation annotation, IAnnotationProcessor<Annotation> processor) {
-        this.annotation = annotation;
-        this.processor = processor;
+    public WinryPreparedAnnotationProcessor(Annotation annotation, IWinryAnnotationProcessor<Annotation> processor) {
+        super(annotation, processor);
     }
 
     public void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint) {
@@ -40,10 +36,5 @@ public class PreparedAnnotationProcessor implements Comparable<PreparedAnnotatio
 
     public void executeField(BootstrappedField bootstrappedField) {
         this.processor.executeField(bootstrappedField, this.annotation);
-    }
-
-    @Override
-    public int compareTo(PreparedAnnotationProcessor o) {
-        return Integer.compare(this.processor.getWeight(this.annotation), o.processor.getWeight(o.annotation));
     }
 }

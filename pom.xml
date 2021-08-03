@@ -115,6 +115,11 @@
     <dependencies>
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
+            <artifactId>annotation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>tv.isshoni.araragi</groupId>
             <artifactId>async</artifactId>
         </dependency>
 

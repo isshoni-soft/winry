@@ -2,14 +2,14 @@ package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Logger;
-import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.reflect.Field;
 
-public class LoggerProcessor implements IAnnotationProcessor<Logger> {
+public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
 
     private final AraragiLogger LOGGER;
 

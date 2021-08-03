@@ -1,13 +1,13 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.context.IWinryContext;
 
 import java.lang.annotation.Annotation;
 
-public class BasicClassProcessor implements IAnnotationProcessor<Annotation> {
+public class BasicClassProcessor implements IWinryAnnotationProcessor<Annotation> {
 
     private static AraragiLogger LOGGER;
 

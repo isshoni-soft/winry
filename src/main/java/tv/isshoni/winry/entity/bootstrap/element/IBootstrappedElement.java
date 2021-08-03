@@ -1,6 +1,6 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
@@ -34,9 +34,9 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
         getBootstrapper().getAnnotationManager().toExecutionList(this.getAnnotations()).forEach(this.transformClass());
     }
 
-    Consumer<PreparedAnnotationProcessor> executeClass();
+    Consumer<WinryPreparedAnnotationProcessor> executeClass();
 
-    Consumer<PreparedAnnotationProcessor> transformClass();
+    Consumer<WinryPreparedAnnotationProcessor> transformClass();
 
     default int compareTo(IBootstrappedElement<?> value) {
         return Integer.compare(value.getWeight(), this.getWeight());

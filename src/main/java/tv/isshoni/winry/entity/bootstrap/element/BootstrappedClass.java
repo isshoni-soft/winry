@@ -1,9 +1,10 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.entity.annotation.IAnnotationManager;
-import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.context.IContextual;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
@@ -16,13 +17,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
+public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IContextual {
 
     private final AraragiLogger LOGGER;
 
     private final IBootstrapper bootstrapper;
-
-    private final IAnnotationManager annotationManager;
 
     private final Class<?> clazz;
     private Class<?> wrappedClazz;
@@ -43,18 +42,19 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     private boolean injectable = true;
 
     public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
-        LOGGER = bootstrapper.getLoggerFactory().createLogger("BootstrappedClass");
+        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+
+        this.LOGGER = bootstrapper.getLoggerFactory().createLogger("BootstrappedClass");
         this.clazz = clazz;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
-        this.annotationManager = bootstrapper.getAnnotationManager();
-        this.annotations = this.annotationManager.getManagedAnnotationsOn(clazz);
+        this.annotations = annotationManager.getManagedAnnotationsOn(clazz);
         this.transformingBlueprint = new ClassTransformingBlueprint(this);
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
 
-        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
-            throw new IllegalStateException(this.clazz.getSimpleName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.clazz.getSimpleName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));
         }
     }
 
@@ -135,12 +135,12 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>> {
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> executeClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> executeClass() {
         return (processor) -> processor.executeClass(this);
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> transformClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformClass(this, this.transformingBlueprint);
     }
 

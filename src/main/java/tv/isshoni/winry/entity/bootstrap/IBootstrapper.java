@@ -2,7 +2,7 @@ package tv.isshoni.winry.entity.bootstrap;
 
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.entity.annotation.IAnnotationManager;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public interface IBootstrapper {
 
-    IAnnotationManager getAnnotationManager();
+    IWinryAnnotationManager getAnnotationManager();
 
     IElementBootstrapper getElementBootstrapper();
 

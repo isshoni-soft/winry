@@ -1,8 +1,9 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
-import tv.isshoni.winry.entity.annotation.IAnnotationManager;
-import tv.isshoni.winry.entity.annotation.PreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.context.IContextual;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -12,11 +13,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class BootstrappedField implements IBootstrappedElement<Field> {
+public class BootstrappedField implements IBootstrappedElement<Field>, IContextual {
 
     private final IBootstrapper bootstrapper;
-
-    private final IAnnotationManager annotationManager;
 
     private final Field field;
 
@@ -29,15 +28,16 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
     private boolean injected = false;
 
     public BootstrappedField(Field field, BootstrappedClass target, IBootstrapper bootstrapper) {
+        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+
         this.field = field;
         this.bootstrapper = bootstrapper;
         this.target = target;
-        this.annotationManager = bootstrapper.getAnnotationManager();
         this.modifiers = ReflectedModifier.getModifiers(field);
-        this.annotations = this.annotationManager.getManagedAnnotationsOn(field);
+        this.annotations = annotationManager.getManagedAnnotationsOn(field);
 
-        if (this.annotationManager.hasConflictingAnnotations(this.annotations)) {
-            throw new IllegalStateException(this.field.getName() + " has conflicting annotations! " + this.annotationManager.getConflictingAnnotations(this.annotations));
+        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.field.getName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));
         }
     }
 
@@ -87,12 +87,12 @@ public class BootstrappedField implements IBootstrappedElement<Field> {
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> executeClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> executeClass() {
         return (processor) -> processor.executeField(this);
     }
 
     @Override
-    public Consumer<PreparedAnnotationProcessor> transformClass() {
+    public Consumer<WinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
     }
 

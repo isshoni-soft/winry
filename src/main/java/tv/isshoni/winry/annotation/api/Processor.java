@@ -1,6 +1,6 @@
 package tv.isshoni.winry.annotation.api;
 
-import tv.isshoni.winry.entity.annotation.IAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Processor {
 
-    Class<? extends IAnnotationProcessor<?>>[] value();
+    Class<? extends IWinryAnnotationProcessor<?>>[] value();
 }
