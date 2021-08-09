@@ -1,6 +1,6 @@
 package tv.isshoni.winry.annotation;
 
-import tv.isshoni.winry.annotation.api.Weight;
+import tv.isshoni.araragi.annotation.Weight;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -4,14 +4,17 @@ import org.reflections8.Reflections;
 import org.reflections8.scanners.SubTypesScanner;
 import org.reflections8.scanners.TypeAnnotationsScanner;
 import org.reflections8.util.ConfigurationBuilder;
+import tv.isshoni.araragi.annotation.AttachTo;
+import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.internal.AnnotationManager;
 import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
+import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.api.AttachTo;
-import tv.isshoni.winry.annotation.api.Processor;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
@@ -64,7 +67,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         classes.stream()
                 .filter(c -> c.isAnnotationPresent(AttachTo.class))
-                .filter(IWinryAnnotationProcessor.class::isAssignableFrom)
+                .filter(IAnnotationProcessor.class::isAssignableFrom)
                 .map(c -> (Class<IWinryAnnotationProcessor<?>>) c)
                 .forEach(c -> register(c.getAnnotation(AttachTo.class).value(), c));
 
@@ -72,14 +75,39 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     }
 
     @Override
+    public boolean isWinry(IAnnotationProcessor<Annotation> processor) {
+        return IWinryAnnotationProcessor.class.isAssignableFrom(processor.getClass());
+    }
+
+    @Override
+    public boolean isWinry(IPreparedAnnotationProcessor processor) {
+        return IWinryPreparedAnnotationProcessor.class.isAssignableFrom(processor.getClass());
+    }
+
+    @Override
+    public IPreparedAnnotationProcessor prepare(Annotation annotation, IAnnotationProcessor<Annotation> processor) {
+        if (isWinry(processor)) {
+            return new WinryPreparedAnnotationProcessor(annotation, (IWinryAnnotationProcessor<Annotation>) processor);
+        }
+
+        return super.prepare(annotation, processor);
+    }
+
+    @Override
     public IAnnotationProcessor<?> construct(Class<? extends IAnnotationProcessor<?>> processor) {
+        IAnnotationProcessor<?> result;
+
         try {
             // TODO: REPLACE ME WITH REFERENCES TO THE SUPPLIER SYSTEM
-            return processor.getConstructor(IWinryContext.class).newInstance(this.bootstrapper.getContext());
+            result = processor.getConstructor(IWinryContext.class).newInstance(this.bootstrapper.getContext());
         } catch (NoSuchMethodException e) {
-            return super.construct(processor);
+            result = super.construct(processor);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e); // TODO: Add a specialized exception
         }
+
+        this.bootstrapper.getContext().register(result);
+
+        return result;
     }
 }

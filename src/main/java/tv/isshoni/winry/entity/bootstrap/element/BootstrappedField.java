@@ -1,7 +1,8 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
+import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.context.IContextual;
 import tv.isshoni.winry.reflection.ReflectedModifier;
@@ -87,12 +88,12 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     }
 
     @Override
-    public Consumer<WinryPreparedAnnotationProcessor> executeClass() {
-        return (processor) -> processor.executeField(this);
+    public Consumer<IPreparedAnnotationProcessor> executeClass() {
+        return (processor) -> processor.executeField(this.getBootstrappedElement());
     }
 
     @Override
-    public Consumer<WinryPreparedAnnotationProcessor> transformClass() {
+    public Consumer<IWinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
     }
 

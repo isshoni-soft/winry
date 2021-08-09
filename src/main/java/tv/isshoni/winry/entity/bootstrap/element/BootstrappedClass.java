@@ -1,8 +1,9 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
+import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.context.IContextual;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
@@ -135,12 +136,12 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     @Override
-    public Consumer<WinryPreparedAnnotationProcessor> executeClass() {
-        return (processor) -> processor.executeClass(this);
+    public Consumer<IPreparedAnnotationProcessor> executeClass() {
+        return (processor) -> processor.executeClass(this.getBootstrappedElement());
     }
 
     @Override
-    public Consumer<WinryPreparedAnnotationProcessor> transformClass() {
+    public Consumer<IWinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformClass(this, this.transformingBlueprint);
     }
 
