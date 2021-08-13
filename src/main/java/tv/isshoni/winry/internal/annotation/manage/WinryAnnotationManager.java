@@ -41,6 +41,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         this.annotationProcessors = new HashMap<>();
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
+
+        register(IWinryAnnotationProcessor.class, (annotation, processor) -> new WinryPreparedAnnotationProcessor(annotation, (IWinryAnnotationProcessor<Annotation>) processor));
     }
 
     @Override
@@ -82,15 +84,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public boolean isWinry(IPreparedAnnotationProcessor processor) {
         return IWinryPreparedAnnotationProcessor.class.isAssignableFrom(processor.getClass());
-    }
-
-    @Override
-    public IPreparedAnnotationProcessor prepare(Annotation annotation, IAnnotationProcessor<Annotation> processor) {
-        if (isWinry(processor)) {
-            return new WinryPreparedAnnotationProcessor(annotation, (IWinryAnnotationProcessor<Annotation>) processor);
-        }
-
-        return super.prepare(annotation, processor);
     }
 
     @Override
