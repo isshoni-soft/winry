@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.context;
 
 import tv.isshoni.araragi.async.IAsyncManager;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
@@ -56,6 +57,11 @@ public class WinryContext implements IWinryContext {
     @Override
     public void register(Object object) {
         CONTEXT_REGISTRY.putIfAbsent(object, this);
+    }
+
+    @Override
+    public void register(Object... objects) {
+        Streams.to(objects).forEach(this::register);
     }
 
     @Override

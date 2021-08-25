@@ -8,13 +8,17 @@ import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.annotation.Annotation;
 
-public interface IWinryPreparedAnnotationProcessor extends IPreparedAnnotationProcessor {
+public interface IWinryPreparedAnnotationProcessor extends IPreparedAnnotationProcessor<IWinryAnnotationProcessor<Annotation>> {
 
-    IWinryAnnotationProcessor<Annotation> asWinry();
+    default void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint) {
+        this.getProcessor().transformClass(bootstrappedClass, blueprint, this.getAnnotation());
+    }
 
-    void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint);
+    default void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint) {
+        this.getProcessor().transformMethod(bootstrappedMethod, blueprint, this.getAnnotation());
+    }
 
-    void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint);
-
-    void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint);
+    default void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint) {
+        this.getProcessor().transformField(bootstrappedField, blueprint, this.getAnnotation());
+    }
 }

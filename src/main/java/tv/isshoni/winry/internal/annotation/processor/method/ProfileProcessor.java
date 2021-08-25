@@ -1,4 +1,4 @@
-package tv.isshoni.winry.internal.annotation.processor;
+package tv.isshoni.winry.internal.annotation.processor.method;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Profile;

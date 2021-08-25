@@ -11,6 +11,8 @@ public interface IWinryContext {
 
     void register(Object object);
 
+    void register(Object... objects);
+
     IBootstrapper getBootstrapper();
 
     IWinryAnnotationManager getAnnotationManager();

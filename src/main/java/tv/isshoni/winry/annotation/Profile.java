@@ -2,7 +2,7 @@ package tv.isshoni.winry.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.winry.internal.annotation.processor.ProfileProcessor;
+import tv.isshoni.winry.internal.annotation.processor.method.ProfileProcessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
