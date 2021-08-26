@@ -99,42 +99,41 @@
         </plugins>
     </build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>tv.isshoni.araragi</groupId>
-                <artifactId>koyomi</artifactId>
-                <version>${winry.araragi.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
+            <artifactId>collection</artifactId>
+            <version>${winry.araragi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>tv.isshoni.araragi</groupId>
             <artifactId>annotation</artifactId>
+            <version>${winry.araragi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
             <artifactId>async</artifactId>
+            <version>${winry.araragi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
             <artifactId>logging</artifactId>
+            <version>${winry.araragi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
             <artifactId>streams</artifactId>
+            <version>${winry.araragi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>tv.isshoni.araragi</groupId>
             <artifactId>data</artifactId>
+            <version>${winry.araragi.version}</version>
         </dependency>
 
         <dependency>

@@ -17,7 +17,6 @@ import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -85,15 +84,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                 .forEach(this::discoverProcessor);
 
         LOGGER.debug("Discovered " + getTotalProcessors() + " annotation processors.");
-    }
-
-    @Override
-    public Constructor<?> discoverConstructor(Class<?> clazz) {
-        Constructor<?> constructor = super.discoverConstructor(clazz);
-
-        System.out.println(constructor.toString());
-
-        return constructor;
     }
 
     @Override
