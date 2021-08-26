@@ -20,7 +20,7 @@
         <winry.java.version>16</winry.java.version>
         <winry.araragi.version>1.0.0-SNAPSHOT</winry.araragi.version>
         <winry.junit.version>4.13.2</winry.junit.version>
-        <winry.mockito.version>3.11.2</winry.mockito.version>
+        <winry.mockito.version>3.12.4</winry.mockito.version>
         <winry.powermock.version>2.0.9</winry.powermock.version>
         <winry.reflections.version>0.11.7</winry.reflections.version>
         <winry.bytebuddy.version>1.11.9</winry.bytebuddy.version>
