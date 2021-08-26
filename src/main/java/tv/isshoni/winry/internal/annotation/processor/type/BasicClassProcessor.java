@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.annotation.processor.type;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.winry.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.context.IWinryContext;
@@ -11,7 +12,7 @@ public class BasicClassProcessor implements IWinryAnnotationProcessor<Annotation
 
     private static AraragiLogger LOGGER;
 
-    public BasicClassProcessor(IWinryContext context) {
+    public BasicClassProcessor(@Context IWinryContext context) {
         LOGGER = context.getLoggerFactory().createLogger("BasicClassProcessor");
     }
 

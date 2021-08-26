@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.annotation.processor.method;
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Async;
+import tv.isshoni.winry.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.context.IWinryContext;
@@ -15,7 +16,7 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
 
     private final AraragiLogger LOGGER;
 
-    public AsyncProcessor(IWinryContext context) {
+    public AsyncProcessor(@Context IWinryContext context) {
         LOGGER = context.getLoggerFactory().createLogger("AsyncProcessor");
     }
 

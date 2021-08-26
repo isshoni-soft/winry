@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.annotation.processor.field;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.annotation.Inject;
+import tv.isshoni.winry.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.context.IWinryContext;
@@ -16,7 +17,7 @@ public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
 
     private final AraragiLogger LOGGER;
 
-    public InjectProcessor(IWinryContext context) {
+    public InjectProcessor(@Context IWinryContext context) {
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
     }
 
