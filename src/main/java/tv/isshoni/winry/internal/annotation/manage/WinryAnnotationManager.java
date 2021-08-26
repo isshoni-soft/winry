@@ -61,6 +61,10 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Processor.class);
 
+        // TODO: Maybe move some of these into specific methods for the annotation manager? Either that or
+        // TODO: create a discovery-related object to contain these methods + configurations. Either way, this
+        // TODO: feels like it should be included in the default annotation manager and not be winry-specific.
+        LOGGER.debug("Loading parameter supplier annotations...");
         classes.stream()
                 .map(c -> (Class<? extends Annotation>) c)
                 .filter(c -> c.isAnnotationPresent(Processor.class))
@@ -68,6 +72,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                         .anyMatch(IParameterSupplier.class::isAssignableFrom))
                 .forEach(this::discoverAnnotation);
 
+        LOGGER.debug("Loading all other annotations...");
         classes.stream()
                 .map(c -> (Class<? extends Annotation>) c)
                 .filter(c -> c.isAnnotationPresent(Processor.class))
@@ -77,6 +82,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         classes = reflections.getTypesAnnotatedWith(AttachTo.class);
 
+        LOGGER.debug("Attaching requested processors...");
         classes.stream()
                 .filter(c -> c.isAnnotationPresent(AttachTo.class))
                 .filter(IAnnotationProcessor.class::isAssignableFrom)
