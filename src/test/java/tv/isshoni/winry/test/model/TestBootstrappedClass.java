@@ -1,20 +1,23 @@
 package tv.isshoni.winry.test.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Logger;
 import tv.isshoni.winry.annotation.Runner;
+import tv.isshoni.winry.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
+import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import static org.junit.Assert.assertEquals;
 
 @Bootstrap(
         bootstrapper = TestBootstrapper.class,
@@ -50,7 +53,11 @@ public class TestBootstrappedClass {
     }
 
     @Runner(RunnerOrder.POST_INIT)
-    public void postInitRun() {
+    public void postInitRun(@Context IWinryContext context) {
+        assertNotNull(context);
+
+        LOGGER.info("Run context: " + context);
+
         assertEquals(1, this.injectedClass.getNumCalled());
         assertEquals(2, this.oneLastService.getInjectedClassVal());
         assertEquals(0, this.secondInjectedClass.getNumCalled());

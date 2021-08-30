@@ -1,6 +1,5 @@
 package tv.isshoni.winry.internal.bootstrap;
 
-import org.reflections8.Reflections;
 import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
@@ -22,6 +21,7 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.reflections8.Reflections;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
@@ -126,8 +128,10 @@ public class SimpleBootstrapper implements IBootstrapper {
         Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
         Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
 
+        Constructor<T> constructor = (Constructor<T>) getAnnotationManager().discoverConstructor(constructed);
+
         LOGGER.debug("Class: new " + constructed.getName() + "()");
-        return ReflectionUtil.construct(constructed);
+        return ReflectionUtil.construct(constructor, getAnnotationManager().prepareExecutable(constructor));
     }
 
     @Override
@@ -174,7 +178,13 @@ public class SimpleBootstrapper implements IBootstrapper {
         }
 
         try {
-            T result = (T) method.invoke(target);
+            T result;
+
+            if (method.getParameterCount() > 0) {
+                result = (T) method.invoke(target, getAnnotationManager().prepareExecutable(method));
+            } else {
+                result = (T) method.invoke(target);
+            }
 
             bootstrapped.setExecuted(true);
 
