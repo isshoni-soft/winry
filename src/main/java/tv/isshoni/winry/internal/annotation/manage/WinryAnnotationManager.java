@@ -15,21 +15,15 @@ import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WinryAnnotationManager extends AnnotationManager implements IWinryAnnotationManager {
 
     private static AraragiLogger LOGGER;
 
-    private final Map<Class<? extends Annotation>, List<IWinryAnnotationProcessor<?>>> annotationProcessors;
-
     private final IBootstrapper bootstrapper;
 
     public WinryAnnotationManager(ILoggerFactory loggerFactory, IBootstrapper bootstrapper) {
         this.bootstrapper = bootstrapper;
-        this.annotationProcessors = new HashMap<>();
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
@@ -39,8 +33,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public void initialize(Bootstrap bootstrap) {
         LOGGER.debug("Initializing...");
-
         LOGGER.debug("Performing annotation discovery...");
+
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
         discoverer.withPackages("tv.isshoni.winry.annotation");
         discoverer.withPackages(bootstrap.loadPackage());

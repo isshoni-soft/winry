@@ -1,11 +1,12 @@
 package tv.isshoni.winry.test;
 
-import org.junit.Test;
+import static org.junit.Assert.fail;
+
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.internal.context.WinryContext;
 import tv.isshoni.winry.test.model.TestBootstrappedClass;
 
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class TestWinry {
 

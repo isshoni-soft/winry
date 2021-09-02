@@ -22,8 +22,8 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
     public void executeField(BootstrappedField bootstrappedField, Logger annotation) {
         Field field = bootstrappedField.getBootstrappedElement();
 
-        if (!field.getType().equals(AraragiLogger.class)) {
-            LOGGER.error(bootstrappedField.getDisplay() + " is not of type WinryLogger, skipping...");
+        if (!field.getType().isAssignableFrom(AraragiLogger.class)) {
+            LOGGER.error(bootstrappedField.getDisplay() + " is not assignable to AraragiLogger, skipping...");
             return;
         }
 

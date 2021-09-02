@@ -11,8 +11,10 @@ public class WinryContextProcessor implements IParameterSupplier<Context, IWinry
 
     @Override
     public IWinryContext supply(Context context, IWinryContext o) {
+        Object otherContext = WinryContext.getContextFor(this).get();
+
         if (Objects.isNull(o)) {
-            return WinryContext.getContextFor(this).get();
+            return (IWinryContext) otherContext;
         } else {
             return o;
         }

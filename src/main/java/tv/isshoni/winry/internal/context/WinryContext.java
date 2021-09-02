@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.context;
 
 import tv.isshoni.araragi.async.IAsyncManager;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
@@ -26,6 +27,8 @@ public class WinryContext implements IWinryContext {
         return Collections.unmodifiableMap(CONTEXT_REGISTRY);
     }
 
+    private final AraragiLogger logger;
+
     private final IBootstrapper bootstrapper;
 
     private final IWinryAnnotationManager annotationManager;
@@ -45,6 +48,7 @@ public class WinryContext implements IWinryContext {
         this.elementBootstrapper = elementBootstrapper;
         this.bootstrap = bootstrap;
         this.asyncManager = asyncManager;
+        this.logger = loggerFactory.createLogger("WinryContext");
 
         register(this.bootstrapper);
         register(this.annotationManager);
@@ -57,6 +61,8 @@ public class WinryContext implements IWinryContext {
     @Override
     public void register(Object object) {
         CONTEXT_REGISTRY.putIfAbsent(object, this);
+
+        this.logger.debug("register(" + object + ", " + this + ")");
     }
 
     @Override

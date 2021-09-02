@@ -1,8 +1,5 @@
 package tv.isshoni.winry.internal.bytebuddy;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.FixedValue;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
@@ -17,13 +14,22 @@ import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
+import net.bytebuddy.implementation.FixedValue;
+import net.bytebuddy.implementation.SuperMethodCall;
 
 public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
@@ -42,7 +48,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     private ITransformingPlan<Class<?>, BootstrappedClass> classTransformer;
 
     public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass) {
-        LOGGER = bootstrappedClass.getBootstrapper().getLoggerFactory().createLogger("ClassTransformingPlan");
+        LOGGER = bootstrappedClass.getBootstrapper().getLoggerFactory().createLogger("ClassTransformingBlueprint");
         this.bootstrappedClass = bootstrappedClass;
         this.elementBootstrapper = bootstrappedClass.getBootstrapper().getElementBootstrapper();
         this.methodTransformers = new HashMap<>();
@@ -51,9 +57,26 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     @Override
     public void transform() {
-        DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.bootstrappedClass.getBootstrappedElement())
+        LOGGER.debug("Transforming: " + this.bootstrappedClass.getDisplay());
+
+        DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.bootstrappedClass.getBootstrappedElement(), ConstructorStrategy.Default.NO_CONSTRUCTORS)
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
+
+        for (Constructor<?> constructor : this.bootstrappedClass.getBootstrappedElement().getDeclaredConstructors()) {
+            DynamicType.Builder.MethodDefinition.ParameterDefinition<?> defineParameters = builder.defineConstructor(Modifier.PUBLIC);
+
+            for (int x = 0; x < constructor.getParameters().length; x++) {
+                Parameter current = constructor.getParameters()[x];
+
+                defineParameters = defineParameters.withParameter(current.getType(), current.getName())
+                        .annotateParameter(current.getAnnotations());
+
+                LOGGER.debug("Attaching " + Arrays.toString(current.getAnnotations()) + " to " + current.getName() + " in " + constructor);
+            }
+
+            builder = defineParameters.intercept(SuperMethodCall.INSTANCE);
+        }
 
         builder = executeTransformation(builder, this.bootstrappedClass.getBootstrappedElement(), this.bootstrappedClass, this.classTransformer);
 

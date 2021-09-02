@@ -10,8 +10,8 @@ import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public interface IBootstrapper {
 
@@ -31,7 +31,7 @@ public interface IBootstrapper {
 
     void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided);
 
-    Stream<IBootstrappedElement> compileRunStream();
+    List<IBootstrappedElement> compileRunList();
 
     // TODO: This is pretty atrocious, move these methods to ElementBootstrapper what was I thinking putting them here
 

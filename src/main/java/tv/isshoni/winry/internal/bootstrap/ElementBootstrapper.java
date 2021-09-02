@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.bootstrap;
 
+import tv.isshoni.araragi.collection.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
@@ -33,7 +34,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
     public ElementBootstrapper(IBootstrapper bootstrapper, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         this.bootstrapper = bootstrapper;
         this.annotationManager = annotationManager;
-        this.bootstrappedClasses = new HashMap<>();
+        this.bootstrappedClasses = new TypeMap<>();
         this.bootstrappedMethods = new HashMap<>();
         this.bootstrappedFields = new HashMap<>();
 

@@ -3,7 +3,6 @@ package tv.isshoni.winry.internal.bootstrap;
 import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.stream.AraragiStream;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
@@ -28,7 +27,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.reflections8.Reflections;
@@ -92,17 +93,18 @@ public class SimpleBootstrapper implements IBootstrapper {
         LOGGER.debug("Bootstrapping elements...");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
         LOGGER.debug("Finished class discovery and instantiation...");
+
+        List<IBootstrappedElement> run = compileRunList();
         LOGGER.debug("Run order:");
-        this.compileRunStream()
-                .peek(e -> LOGGER.debug(e.getDisplay()))
-                .forEachOrdered(e -> {
-                    LOGGER.debug("Executing: " + e);
-                    e.execute();
-                });
+        run.forEach(r -> LOGGER.debug(r.getDisplay()));
+        run.forEach(e -> {
+            LOGGER.debug("Executing: " + e);
+            e.execute();
+        });
     }
 
     @Override
-    public AraragiStream<IBootstrappedElement> compileRunStream() {
+    public List<IBootstrappedElement> compileRunList() {
         LOGGER.debug("Compiling run order...");
         return Streams.to(this.getElementBootstrapper().getBootstrappedClasses())
                 .peek((c -> {
@@ -120,7 +122,8 @@ public class SimpleBootstrapper implements IBootstrapper {
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
                 .peek(IBootstrappedElement::transform)
-                .sorted();
+                .sorted()
+                .toList();
     }
 
     @Override
@@ -129,6 +132,10 @@ public class SimpleBootstrapper implements IBootstrapper {
         Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
 
         Constructor<T> constructor = (Constructor<T>) getAnnotationManager().discoverConstructor(constructed);
+
+        if (Objects.isNull(constructor)) {
+            throw new RuntimeException("Constructor for " + constructed + " is null!");
+        }
 
         LOGGER.debug("Class: new " + constructed.getName() + "()");
         return ReflectionUtil.construct(constructor, getAnnotationManager().prepareExecutable(constructor));
@@ -201,6 +208,10 @@ public class SimpleBootstrapper implements IBootstrapper {
 
         if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
             target = this.getElementBootstrapper().getDeclaringClass(field).getObject();
+
+            if (target == null) {
+                throw new RuntimeException("Tried injecting into null instance " + bootstrapped.getDisplay());
+            }
         }
 
         ReflectionUtil.injectField(field, target, injected);
