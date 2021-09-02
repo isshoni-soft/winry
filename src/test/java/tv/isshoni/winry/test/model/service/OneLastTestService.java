@@ -1,5 +1,7 @@
 package tv.isshoni.winry.test.model.service;
 
+import static org.junit.Assert.assertNotNull;
+
 import tv.isshoni.araragi.logging.model.IAraragiLogger;
 import tv.isshoni.winry.annotation.Inject;
 import tv.isshoni.winry.annotation.Injected;
@@ -19,6 +21,8 @@ public class OneLastTestService {
 
     public OneLastTestService(@Context IWinryContext context) {
         this.test = "test";
+
+        assertNotNull(context);
     }
 
     public int getInjectedClassVal() {
