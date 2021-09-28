@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
         bootstrapper = TestBootstrapper.class,
         loadPackage = { "tv.isshoni.winry.test.model.service" },
         manualLoad = { TestInjectedClass.class },
-        defaultLevel = Level.DEBUG)
+        defaultLevel = Level.ERROR)
 public class TestBootstrappedClass {
 
     @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;
