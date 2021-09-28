@@ -1,4 +1,4 @@
-package tv.isshoni.winry.annotation;
+package tv.isshoni.winry.api.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;

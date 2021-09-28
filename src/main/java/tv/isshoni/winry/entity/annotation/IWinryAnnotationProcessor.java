@@ -4,7 +4,7 @@ import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.context.IContextual;
+import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.annotation.Annotation;

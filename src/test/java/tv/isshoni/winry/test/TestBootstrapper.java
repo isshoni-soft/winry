@@ -1,6 +1,6 @@
 package tv.isshoni.winry.test;
 
-import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.internal.bootstrap.SimpleBootstrapper;
 
 import java.util.Map;

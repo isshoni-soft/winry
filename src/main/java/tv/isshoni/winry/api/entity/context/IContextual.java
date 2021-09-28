@@ -1,4 +1,4 @@
-package tv.isshoni.winry.entity.context;
+package tv.isshoni.winry.api.entity.context;
 
 import tv.isshoni.winry.internal.context.WinryContext;
 

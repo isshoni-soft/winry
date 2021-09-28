@@ -5,13 +5,16 @@ import static org.junit.Assert.assertNotNull;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
-import tv.isshoni.winry.annotation.Bootstrap;
-import tv.isshoni.winry.annotation.Inject;
-import tv.isshoni.winry.annotation.Logger;
-import tv.isshoni.winry.annotation.Runner;
-import tv.isshoni.winry.annotation.parameter.Context;
-import tv.isshoni.winry.entity.annotation.runner.RunnerOrder;
-import tv.isshoni.winry.entity.context.IWinryContext;
+import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Inject;
+import tv.isshoni.winry.api.annotation.Listener;
+import tv.isshoni.winry.api.annotation.Logger;
+import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.event.WinryInitEvent;
+import tv.isshoni.winry.api.event.WinryPostInitEvent;
+import tv.isshoni.winry.api.event.WinryPreInitEvent;
+import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
@@ -33,8 +36,8 @@ public class TestBootstrappedClass {
     @Inject private TestCaseService testService;
     @Inject private OneLastTestService oneLastService;
 
-    @Runner(RunnerOrder.ASAP)
-    public void asapRun() {
+    @Listener(WinryPreInitEvent.class)
+    public void preInitRun() {
         LOGGER.info("Logger test!");
 
         if (this.injectedClass != null) {
@@ -42,7 +45,7 @@ public class TestBootstrappedClass {
         }
     }
 
-    @Runner
+    @Listener(WinryInitEvent.class)
     public void initRun() {
         this.injectedClass.asyncMethod();
 
@@ -52,7 +55,7 @@ public class TestBootstrappedClass {
         this.injectedClass.testProfiling();
     }
 
-    @Runner(RunnerOrder.POST_INIT)
+    @Listener(WinryPostInitEvent.class)
     public void postInitRun(@Context IWinryContext context) {
         assertNotNull(context);
 
@@ -63,7 +66,7 @@ public class TestBootstrappedClass {
         assertEquals(0, this.secondInjectedClass.getNumCalled());
     }
 
-    @Runner(RunnerOrder.LAST)
+    @Listener(WinryShutdownEvent.class)
     public void lastRun() {
         assertEquals(3, this.injectedClass.getNumCalled());
 

@@ -1,7 +1,7 @@
 package tv.isshoni.winry.test;
 
 import junit.framework.TestCase;
-import tv.isshoni.winry.annotation.Injected;
+import tv.isshoni.winry.api.annotation.Injected;
 
 @Injected
 public class TestCaseService {

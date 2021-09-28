@@ -6,7 +6,7 @@ import tv.isshoni.araragi.annotation.model.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
@@ -36,7 +36,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         LOGGER.debug("Performing annotation discovery...");
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
-        discoverer.withPackages("tv.isshoni.winry.annotation");
+        discoverer.withPackages("tv.isshoni.winry.api.annotation");
         discoverer.withPackages(bootstrap.loadPackage());
 
         LOGGER.debug("Loading parameter supplier annotations...");

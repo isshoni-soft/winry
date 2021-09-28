@@ -1,7 +1,7 @@
 package tv.isshoni.winry.entity.annotation.runner;
 
 import tv.isshoni.araragi.annotation.model.IAnnotationWeightEnum;
-import tv.isshoni.winry.annotation.Runner;
+import tv.isshoni.winry.api.annotation.Runner;
 
 public enum RunnerOrder implements IAnnotationWeightEnum {
     ASAP(6),

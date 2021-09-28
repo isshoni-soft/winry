@@ -1,9 +1,9 @@
 package tv.isshoni.winry;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.context.IWinryContext;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;

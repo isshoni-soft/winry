@@ -1,7 +1,7 @@
-package tv.isshoni.winry.entity.context;
+package tv.isshoni.winry.api.entity.context;
 
 import tv.isshoni.araragi.async.IAsyncManager;
-import tv.isshoni.winry.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;

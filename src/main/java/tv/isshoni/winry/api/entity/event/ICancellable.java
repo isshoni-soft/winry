@@ -1,4 +1,4 @@
-package tv.isshoni.winry.entity.event;
+package tv.isshoni.winry.api.entity.event;
 
 public interface ICancellable {
 
