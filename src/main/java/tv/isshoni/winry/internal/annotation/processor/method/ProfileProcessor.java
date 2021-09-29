@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.api.annotation.Profile;
+import tv.isshoni.winry.api.annotation.transformer.Profile;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;

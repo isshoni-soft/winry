@@ -26,7 +26,7 @@ import java.util.concurrent.Future;
         bootstrapper = TestBootstrapper.class,
         loadPackage = { "tv.isshoni.winry.test.model.service" },
         manualLoad = { TestInjectedClass.class },
-        defaultLevel = Level.ERROR)
+        defaultLevel = Level.DEBUG)
 public class TestBootstrappedClass {
 
     @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;
@@ -87,5 +87,7 @@ public class TestBootstrappedClass {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+
+        this.testService.run();
     }
 }

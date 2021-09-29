@@ -1,6 +1,7 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
@@ -8,6 +9,7 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -21,7 +23,19 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
 
     IBootstrapper getBootstrapper();
 
-    String getDisplay();
+    String getSimpleName();
+
+    default String getDisplay() {
+        return getSimpleName() + ": " + getBootstrappedElement().toString() + " [" + Streams.to(getAnnotations()).collapse((Annotation a, String s) -> {
+            String result = (Objects.isNull(s) ? "" : s);
+
+            if (result.length() > 0) {
+                result += ", ";
+            }
+
+            return result + a.annotationType().getSimpleName();
+        }) + "] (" + getWeight() + ")";
+    }
 
     default int getWeight() {
         return this.getBootstrapper().getAnnotationManager().calculateWeight(this.getAnnotations());

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Processor(LoggerProcessor.class)
-@Weight(7)
+@Weight(20000)
 public @interface Logger {
 
     String DEFAULT = "[DEFAULT]";

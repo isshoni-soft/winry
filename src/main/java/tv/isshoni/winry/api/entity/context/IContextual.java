@@ -1,7 +1,5 @@
 package tv.isshoni.winry.api.entity.context;
 
-import tv.isshoni.winry.internal.context.WinryContext;
-
 import java.util.Optional;
 
 public interface IContextual {

@@ -1,4 +1,4 @@
-package tv.isshoni.winry.api.annotation;
+package tv.isshoni.winry.api.annotation.transformer;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Processor(ProfileProcessor.class)
-@Weight(3)
+@Weight(10000000)
 public @interface Profile { }

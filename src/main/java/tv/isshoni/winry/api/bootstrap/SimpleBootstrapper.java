@@ -1,4 +1,4 @@
-package tv.isshoni.winry.internal.bootstrap;
+package tv.isshoni.winry.api.bootstrap;
 
 import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.async.IAsyncManager;
@@ -15,7 +15,8 @@ import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
-import tv.isshoni.winry.internal.context.WinryContext;
+import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
+import tv.isshoni.winry.api.entity.context.WinryContext;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;

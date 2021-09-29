@@ -1,10 +1,10 @@
 package tv.isshoni.winry.test.model;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.api.annotation.Async;
+import tv.isshoni.winry.api.annotation.transformer.Async;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.Logger;
-import tv.isshoni.winry.api.annotation.Profile;
+import tv.isshoni.winry.api.annotation.transformer.Profile;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

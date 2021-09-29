@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Processor(InjectProcessor.class)
-@Weight(3)
+@Weight(100000)
 public @interface Inject {
 
     String DEFAULT = "[DEFAULT]";

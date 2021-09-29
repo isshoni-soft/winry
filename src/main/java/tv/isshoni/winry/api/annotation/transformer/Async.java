@@ -1,4 +1,4 @@
-package tv.isshoni.winry.api.annotation;
+package tv.isshoni.winry.api.annotation.transformer;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Processor(AsyncProcessor.class)
-@Weight(3)
+@Weight(100000000)
 public @interface Async { }

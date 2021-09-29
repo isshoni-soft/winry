@@ -1,4 +1,4 @@
-package tv.isshoni.winry.internal.context;
+package tv.isshoni.winry.api.entity.context;
 
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
@@ -7,7 +7,6 @@ import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.util.Collections;

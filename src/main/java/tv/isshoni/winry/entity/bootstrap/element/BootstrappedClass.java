@@ -113,8 +113,8 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     @Override
-    public String getDisplay() {
-        return "class " + this.clazz.getName() + " (" + this.getWeight() + ")";
+    public String getSimpleName() {
+        return "Class";
     }
 
     @Override

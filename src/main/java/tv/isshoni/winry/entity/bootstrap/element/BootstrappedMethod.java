@@ -1,10 +1,10 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
@@ -65,8 +65,8 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     }
 
     @Override
-    public String getDisplay() {
-        return this.method.toString();
+    public String getSimpleName() {
+        return "Method";
     }
 
     public boolean isExecuted() {

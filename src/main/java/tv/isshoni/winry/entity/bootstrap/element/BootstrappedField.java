@@ -66,6 +66,11 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
         return this.bootstrapper;
     }
 
+    @Override
+    public String getSimpleName() {
+        return "Field";
+    }
+
     public BootstrappedClass getTarget() {
         return this.target;
     }
@@ -81,7 +86,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     @Override
     public int getWeight() {
         if (this.target != null && this.target.isProvided()) {
-            return 8; // TODO: Revisit these values
+            return 1000000;
         }
 
         return IBootstrappedElement.super.getWeight();
@@ -95,11 +100,6 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     @Override
     public Consumer<IWinryPreparedAnnotationProcessor> transformClass() {
         return (processor) -> processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
-    }
-
-    @Override
-    public String getDisplay() {
-        return ReflectedModifier.toString(this.field) + " " + this.field.getDeclaringClass().getSimpleName() + "." + this.field.getName();
     }
 
     @Override
