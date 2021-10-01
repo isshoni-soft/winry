@@ -92,7 +92,7 @@ public class SimpleBootstrapper implements IBootstrapper {
 
         this.provided = Collections.unmodifiableMap(provided);
 
-        LOGGER.debug("---------------------------------------- Element Bootstrapping ----------------------------------------");
+        LOGGER.debug("${dashes%50} Element Bootstrapping ${dashes%50}");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
         LOGGER.debug("Finished class discovery and instantiation...");
 

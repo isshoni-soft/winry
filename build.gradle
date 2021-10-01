@@ -10,14 +10,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'tv.isshoni.araragi:collection:1.0.0-SNAPSHOT'
+    implementation 'tv.isshoni.araragi:core:1.0.0-SNAPSHOT'
     implementation 'tv.isshoni.araragi:annotation:1.0.0-SNAPSHOT'
-    implementation 'tv.isshoni.araragi:async:1.0.0-SNAPSHOT'
     implementation 'tv.isshoni.araragi:logging:1.0.0-SNAPSHOT'
-    implementation 'tv.isshoni.araragi:streams:1.0.0-SNAPSHOT'
-    implementation 'tv.isshoni.araragi:data:1.0.0-SNAPSHOT'
+
     implementation 'net.oneandone.reflections8:reflections8:0.11.7'
-    implementation 'net.bytebuddy:byte-buddy:1.11.15'
+    implementation 'net.bytebuddy:byte-buddy:1.11.18'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:3.12.4'
