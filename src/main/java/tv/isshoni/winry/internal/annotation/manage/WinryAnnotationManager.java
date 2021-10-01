@@ -55,7 +55,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     public void register(Class<? extends Annotation> annotation, IAnnotationProcessor<?>... processors) {
         super.register(annotation, processors);
 
-        this.bootstrapper.getContext().register((Object[]) processors);
+        this.bootstrapper.getContext().registerToContext((Object[]) processors);
     }
 
     @Override

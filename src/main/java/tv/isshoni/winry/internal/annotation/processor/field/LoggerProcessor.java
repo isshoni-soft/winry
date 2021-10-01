@@ -46,7 +46,7 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
             logger = bootstrappedField.getBootstrapper().getLoggerFactory().createLogger(name);
         }
 
-        bootstrappedField.getBootstrapper().getContext().register(logger);
+        bootstrappedField.getBootstrapper().getContext().registerToContext(logger);
 
         LOGGER.debug("Injecting: " + logger);
         bootstrappedField.getBootstrapper().inject(bootstrappedField, logger);

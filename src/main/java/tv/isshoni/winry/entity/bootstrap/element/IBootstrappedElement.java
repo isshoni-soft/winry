@@ -2,6 +2,7 @@ package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface IBootstrappedElement<E extends AnnotatedElement> extends Comparable<IBootstrappedElement<?>> {
+public interface IBootstrappedElement<E extends AnnotatedElement> extends Comparable<IBootstrappedElement<?>>, IExecutable {
 
     Collection<Annotation> getAnnotations();
 

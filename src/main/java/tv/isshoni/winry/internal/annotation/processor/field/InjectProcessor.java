@@ -42,7 +42,7 @@ public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
             if (Objects.isNull(injected)) {
                 injected = field.getTarget().newInstance();
 
-                field.getBootstrapper().getContext().register(injected);
+                field.getBootstrapper().getContext().registerToContext(injected);
 
                 SINGLETONS.put(inject.value(), injected);
             }

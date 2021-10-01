@@ -5,6 +5,9 @@ import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.api.entity.context.WinryContext;
+import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
@@ -12,11 +15,9 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
-import tv.isshoni.winry.api.entity.context.WinryContext;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
@@ -87,25 +88,26 @@ public class SimpleBootstrapper implements IBootstrapper {
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
         this.getAnnotationManager().initialize(bootstrap);
 
-        provided.values().forEach(this.getContext()::register);
+        provided.values().forEach(this.getContext()::registerToContext);
 
         this.provided = Collections.unmodifiableMap(provided);
 
-        LOGGER.debug("Bootstrapping elements...");
+        LOGGER.debug("---------------------------------------- Element Bootstrapping ----------------------------------------");
         bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
         LOGGER.debug("Finished class discovery and instantiation...");
 
-        List<IBootstrappedElement> run = compileRunList();
-        LOGGER.debug("Run order:");
+        List<IExecutable> run = compileRunList();
+        LOGGER.debug("---------------------------------------- Run Order ----------------------------------------");
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
+        LOGGER.debug("---------------------------------------- Execution ----------------------------------------");
         run.forEach(e -> {
-            LOGGER.debug("Executing: " + e);
+            LOGGER.debug("Executing: " + e.getDisplay());
             e.execute();
         });
     }
 
     @Override
-    public List<IBootstrappedElement> compileRunList() {
+    public List<IExecutable> compileRunList() {
         LOGGER.debug("Compiling run order...");
         return Streams.to(this.getElementBootstrapper().getBootstrappedClasses())
                 .peek((c -> {
@@ -124,6 +126,7 @@ public class SimpleBootstrapper implements IBootstrapper {
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
                 .peek(IBootstrappedElement::transform)
                 .sorted()
+                .cast(IExecutable.class)
                 .toList();
     }
 

@@ -33,7 +33,7 @@ public class BasicClassProcessor implements IWinryAnnotationProcessor<Annotation
 
         Object instance = bootstrappedClass.newInstance();
 
-        bootstrappedClass.getBootstrapper().getContext().register(instance);
+        bootstrappedClass.getBootstrapper().getContext().registerToContext(instance);
 
         bootstrappedClass.setObject(instance);
     }
