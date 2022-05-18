@@ -3,21 +3,21 @@ package tv.isshoni.winry.internal.annotation.processor.field;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
 
-    private static final Map<String, Object> SINGLETONS = new HashMap<>(); // the irony of this name isn't lost on me
+    private final IWinryContext context;
 
     private final AraragiLogger LOGGER;
 
     public InjectProcessor(@Context IWinryContext context) {
+        this.context = context;
+
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
     }
 
@@ -37,14 +37,14 @@ public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
             LOGGER.debug("Injecting: " + field.getTarget());
             injected = field.getTarget().getObject();
         } else {
-            injected = SINGLETONS.get(inject.value());
+            injected = this.context.getInjectionRegistry().getInjectedKey(inject.value());
 
             if (Objects.isNull(injected)) {
                 injected = field.getTarget().newInstance();
 
-                field.getBootstrapper().getContext().registerToContext(injected);
+                this.context.registerToContext(injected);
 
-                SINGLETONS.put(inject.value(), injected);
+                this.context.getInjectionRegistry().registerInjection(inject.value(), injected);
             }
         }
 

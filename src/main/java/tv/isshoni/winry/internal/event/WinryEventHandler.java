@@ -5,6 +5,8 @@ import tv.isshoni.winry.api.entity.event.IEvent;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.event.IEventHandler;
 
+import java.util.HashMap;
+
 public class WinryEventHandler implements IEventHandler {
 
     private final BootstrappedMethod method;
@@ -18,7 +20,9 @@ public class WinryEventHandler implements IEventHandler {
 
     @Override
     public void execute(IEvent event) {
-        this.method.getBootstrapper().getContext().getElementBootstrapper().execute(this.method);
+        this.method.getBootstrapper().getContext().getElementBootstrapper().execute(this.method, new HashMap<>() {{
+            put("event", event);
+        }});
     }
 
     @Override

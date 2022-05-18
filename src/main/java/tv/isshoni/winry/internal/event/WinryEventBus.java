@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.event;
 
 import tv.isshoni.araragi.async.IAsyncManager;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.entity.event.ICancellable;
@@ -8,6 +9,7 @@ import tv.isshoni.winry.api.entity.event.IEvent;
 import tv.isshoni.winry.entity.event.IEventHandler;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.event.IEventBus;
+import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -25,13 +27,17 @@ public class WinryEventBus implements IEventBus {
 
     private final IAsyncManager asyncManager;
 
-    public WinryEventBus(IAsyncManager asyncManager) {
+    private final AraragiLogger LOGGER;
+
+    public WinryEventBus(IAsyncManager asyncManager, ILoggerFactory loggerFactory) {
         this.asyncManager = asyncManager;
+        this.LOGGER = loggerFactory.createLogger("EventBus");
         this.handlers = new HashMap<>();
     }
 
     @Override
     public <T extends IEvent> T fire(T event) {
+        this.LOGGER.debug("Firing event: " + event.getName());
         List<IEventHandler> handlers = getHandlersFor(event);
 
         Consumer<? super IEventHandler> runner = h -> {

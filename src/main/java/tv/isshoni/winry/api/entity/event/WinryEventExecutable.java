@@ -1,15 +1,11 @@
 package tv.isshoni.winry.api.entity.event;
 
-import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.event.IEventBus;
-import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
 public class WinryEventExecutable<T extends IEvent> implements IExecutable {
-
-    private final AraragiLogger LOGGER;
 
     private final int weight;
 
@@ -24,7 +20,6 @@ public class WinryEventExecutable<T extends IEvent> implements IExecutable {
         this.weight = weight;
         this.bus = context.getEventBus();
         this.event = ReflectionUtil.construct(eventClass);
-        this.LOGGER = context.getLoggerFactory().createLogger("EventExecutable");
     }
 
     public WinryEventExecutable(T event, int weight, IWinryContext context) {
@@ -32,7 +27,6 @@ public class WinryEventExecutable<T extends IEvent> implements IExecutable {
         this.weight = weight;
         this.bus = context.getEventBus();
         this.eventClass = (Class<T>) event.getClass();
-        this.LOGGER = context.getLoggerFactory().createLogger("EventExecutable");
     }
 
     public T getEvent() {
@@ -50,7 +44,6 @@ public class WinryEventExecutable<T extends IEvent> implements IExecutable {
 
     @Override
     public void execute() {
-        this.LOGGER.debug("Executing event: " + this.getEventClass().getName());
         this.bus.fire(this.getEvent());
     }
 

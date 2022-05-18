@@ -7,6 +7,7 @@ import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
@@ -15,7 +16,6 @@ import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
 
 public class WinryAnnotationManager extends AnnotationManager implements IWinryAnnotationManager {
 
@@ -28,12 +28,16 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
-        register(IWinryAnnotationProcessor.class, (annotation, processor) -> new WinryPreparedAnnotationProcessor(annotation, (IWinryAnnotationProcessor<Annotation>) processor));
+        register(IWinryAnnotationProcessor.class, (annotation, element, processor) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor));
     }
 
     @Override
     public void initialize(Bootstrap bootstrap) {
         LOGGER.debug("Initializing...");
+        // TODO: This is technically a hack.
+        // TODO: Write some sort of load order management code into SimpleAnnotationDiscoverer
+        this.discoverAnnotation(Context.class);
+
         LOGGER.debug("Performing annotation discovery...");
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
@@ -50,14 +54,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         discoverer.discoverAttachedProcessors();
 
         LOGGER.debug("Discovered " + getTotalProcessors() + " annotation processors.");
-    }
-
-    @Override
-    public <T extends Executable, R> R execute(T executable, Object target) throws Throwable {
-        LOGGER.debug("Execute: " + executable.toString());
-        R result = super.execute(executable, target);
-
-        return result;
     }
 
     @Override

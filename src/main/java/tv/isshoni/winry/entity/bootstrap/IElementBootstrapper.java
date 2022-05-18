@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Map;
 
 public interface IElementBootstrapper {
 
@@ -34,6 +35,8 @@ public interface IElementBootstrapper {
     <T> T construct(BootstrappedClass bootstrapped);
 
     <T> T execute(BootstrappedMethod bootstrapped);
+
+    <T> T execute(BootstrappedMethod bootstrapped, Map<String, Object> runtimeContext);
 
     void inject(BootstrappedField bootstrapped, Object injected);
 

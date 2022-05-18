@@ -6,6 +6,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.event.IEventBus;
@@ -57,6 +58,8 @@ public class WinryContext implements IWinryContext {
 
     private final IEventBus eventBus;
 
+    private final IInjectionRegistry injectionRegistry;
+
     private final List<IExecutable> executables;
 
     private final Bootstrap bootstrap;
@@ -71,6 +74,7 @@ public class WinryContext implements IWinryContext {
         this.asyncManager = builder.asyncManager;
         this.elementBootstrapper = builder.elementBootstrapper;
         this.eventBus = builder.eventBus;
+        this.injectionRegistry = builder.injectionRegistry;
         this.executables = new LinkedList<>();
         this.logger = this.loggerFactory.createLogger("WinryContext [" + this.id + "]");
 
@@ -81,6 +85,7 @@ public class WinryContext implements IWinryContext {
         registerToContext(this.bootstrap);
         registerToContext(this.asyncManager);
         registerToContext(this.eventBus);
+        registerToContext(this.injectionRegistry);
 
         CONTEXT_BY_ID.put(this.id, this);
     }
@@ -150,6 +155,11 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
+    public IInjectionRegistry getInjectionRegistry() {
+        return this.injectionRegistry;
+    }
+
+    @Override
     public List<IExecutable> getExecutables() {
         return Collections.unmodifiableList(this.executables);
     }
@@ -180,6 +190,7 @@ public class WinryContext implements IWinryContext {
         private IElementBootstrapper elementBootstrapper;
         private IAsyncManager asyncManager;
         private IEventBus eventBus;
+        private IInjectionRegistry injectionRegistry;
 
         private Builder() { }
 
@@ -208,10 +219,15 @@ public class WinryContext implements IWinryContext {
             return this;
         }
 
+        public Builder injectionRegistry(IInjectionRegistry injectionRegistry) {
+            this.injectionRegistry = injectionRegistry;
+            return this;
+        }
+
         public IWinryContext build() {
             if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
                 Objects.isNull(this.asyncManager) || Objects.isNull(this.elementBootstrapper) || Objects.isNull(this.annotationManager) ||
-                Objects.isNull(this.loggerFactory)) {
+                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry)) {
                 throw new IllegalStateException("Cannot build without all managers present!");
             }
 

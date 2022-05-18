@@ -1,8 +1,5 @@
 package tv.isshoni.winry.test.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.annotation.Bootstrap;
@@ -10,17 +7,21 @@ import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.annotation.parameter.Event;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Bootstrap(
         bootstrapper = TestBootstrapper.class,
@@ -32,7 +33,6 @@ public class TestBootstrappedClass {
     @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;
 
     @Inject private TestInjectedClass injectedClass;
-    @Inject("Second") private TestInjectedClass secondInjectedClass;
     @Inject private TestCaseService testService;
     @Inject private OneLastTestService oneLastService;
 
@@ -46,7 +46,8 @@ public class TestBootstrappedClass {
     }
 
     @Listener(WinryInitEvent.class)
-    public void initRun() {
+    public void initRun(@Event WinryInitEvent event) {
+        assertNotNull(event);
         this.injectedClass.asyncMethod();
 
         assertEquals(0, this.injectedClass.getNumCalled());
@@ -56,14 +57,19 @@ public class TestBootstrappedClass {
     }
 
     @Listener(WinryPostInitEvent.class)
-    public void postInitRun(@Context IWinryContext context) {
+    public void postInitRun(
+            @Inject("Second") TestInjectedClass secondInjectedClass,
+            @Context IWinryContext context,
+            @Event WinryPostInitEvent event) {
         assertNotNull(context);
+        assertNotNull(event);
+        assertNotNull(secondInjectedClass);
 
         LOGGER.info("Run context: " + context);
 
         assertEquals(1, this.injectedClass.getNumCalled());
         assertEquals(2, this.oneLastService.getInjectedClassVal());
-        assertEquals(0, this.secondInjectedClass.getNumCalled());
+        assertEquals(0, secondInjectedClass.getNumCalled());
     }
 
     @Listener(WinryShutdownEvent.class)

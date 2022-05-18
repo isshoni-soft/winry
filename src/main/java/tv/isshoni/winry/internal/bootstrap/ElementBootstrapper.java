@@ -142,6 +142,11 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public <T> T execute(BootstrappedMethod bootstrapped) {
+        return execute(bootstrapped, new HashMap<>());
+    }
+
+    @Override
+    public <T> T execute(BootstrappedMethod bootstrapped, Map<String, Object> runtimeContext) {
         Method method = bootstrapped.getBootstrappedElement();
         Object target = null;
 
@@ -154,7 +159,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
         }
 
         try {
-            T result = this.annotationManager.execute(method, target);
+            T result = this.annotationManager.execute(method, target, runtimeContext);
             bootstrapped.setExecuted(true);
 
             return result;

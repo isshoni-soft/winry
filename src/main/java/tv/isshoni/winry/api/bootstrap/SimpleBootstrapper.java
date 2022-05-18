@@ -1,42 +1,30 @@
 package tv.isshoni.winry.api.bootstrap;
 
+import org.reflections8.Reflections;
 import tv.isshoni.araragi.async.AsyncManager;
-import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.api.entity.context.WinryContext;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
-import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
-import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
-import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.reflections8.Reflections;
 
 public class SimpleBootstrapper implements IBootstrapper {
 
@@ -51,13 +39,15 @@ public class SimpleBootstrapper implements IBootstrapper {
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
         AsyncManager asyncManager = new AsyncManager();
+        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory);
 
         this.context = WinryContext.builder(bootstrap, this)
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
-                .elementBootstrapper(new ElementBootstrapper(this, annotationManager, loggerFactory))
-                .eventBus(new WinryEventBus(asyncManager))
+                .elementBootstrapper(elementBootstrapper)
+                .eventBus(new WinryEventBus(asyncManager, loggerFactory))
+                .injectionRegistry(new InjectionRegistry(elementBootstrapper))
                 .build();
 
         LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");

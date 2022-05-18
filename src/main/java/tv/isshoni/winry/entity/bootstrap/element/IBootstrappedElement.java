@@ -1,6 +1,7 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
@@ -43,11 +44,12 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends IExecu
     }
 
     default void execute() {
-        getBootstrapper().getContext().getAnnotationManager().toExecutionList(this.getAnnotations()).forEach(this.executeClass());
+        getBootstrapper().getContext().getAnnotationManager().toExecutionList(new Pair<>(this.getBootstrappedElement(), this.getAnnotations()))
+                .forEach(this.executeClass());
     }
 
     default void transform() {
-        getBootstrapper().getContext().getAnnotationManager().toExecutionList(this.getAnnotations())
+        getBootstrapper().getContext().getAnnotationManager().toExecutionList(new Pair<>(this.getBootstrappedElement(), this.getAnnotations()))
                 .stream()
                 .filter(getBootstrapper().getContext().getAnnotationManager()::isWinry)
                 .map(p -> (IWinryPreparedAnnotationProcessor) p)

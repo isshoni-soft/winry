@@ -4,6 +4,7 @@ import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.event.IEventBus;
@@ -37,6 +38,8 @@ public interface IWinryContext {
     IAsyncManager getAsyncManager();
 
     IEventBus getEventBus();
+
+    IInjectionRegistry getInjectionRegistry();
 
     List<IExecutable> getExecutables();
 
