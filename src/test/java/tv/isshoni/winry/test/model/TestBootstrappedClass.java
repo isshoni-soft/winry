@@ -84,8 +84,9 @@ public class TestBootstrappedClass {
     }
 
     @Listener(WinryShutdownEvent.class)
-    public void lastRun() {
+    public void lastRun(@Inject("Second") TestInjectedClass secondInjectedClass) {
         assertEquals(3, this.injectedClass.getNumCalled());
+        assertEquals(1, secondInjectedClass.getNumCalled());
 
         try {
             Future<Integer> future = this.injectedClass.asyncFutureMethod();
