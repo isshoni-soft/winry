@@ -20,7 +20,7 @@ public class WinryEventProviders implements IExecutableProvider {
 
         result.add(new WinryEventExecutable<>(WinryPreInitEvent.class, 500000, context));
         result.add(new WinryEventExecutable<>(WinryInitEvent.class, 90000, context));
-        result.add(new WinryEventExecutable<>(WinryPostInitEvent.class, 5000, context));
+        result.add(new WinryEventExecutable<>(WinryPostInitEvent.class, 50000, context));
         result.add(new WinryEventExecutable<>(WinryShutdownEvent.class, Integer.MIN_VALUE, context));
 
         return result;
