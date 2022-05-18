@@ -6,6 +6,7 @@ import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.entity.event.IEventBus;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.time.Instant;
@@ -34,6 +35,8 @@ public interface IWinryContext {
     IElementBootstrapper getElementBootstrapper();
 
     IAsyncManager getAsyncManager();
+
+    IEventBus getEventBus();
 
     List<IExecutable> getExecutables();
 

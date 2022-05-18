@@ -43,9 +43,9 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     private boolean injectable = true;
 
     public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
 
-        this.LOGGER = bootstrapper.getLoggerFactory().createLogger("BootstrappedClass");
+        this.LOGGER = bootstrapper.getContext().getLoggerFactory().createLogger("BootstrappedClass");
         this.clazz = clazz;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
@@ -94,7 +94,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     public Object newInstance() {
-        return getBootstrapper().construct(this);
+        return getBootstrapper().getContext().getElementBootstrapper().construct(this);
     }
 
     @Override

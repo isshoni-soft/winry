@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface IBootstrappedElement<E extends AnnotatedElement> extends Comparable<IBootstrappedElement<?>>, IExecutable {
+public interface IBootstrappedElement<E extends AnnotatedElement> extends IExecutable {
 
     Collection<Annotation> getAnnotations();
 
@@ -39,17 +39,17 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
     }
 
     default int getWeight() {
-        return this.getBootstrapper().getAnnotationManager().calculateWeight(this.getAnnotations());
+        return this.getBootstrapper().getContext().getAnnotationManager().calculateWeight(this.getAnnotations());
     }
 
     default void execute() {
-        getBootstrapper().getAnnotationManager().toExecutionList(this.getAnnotations()).forEach(this.executeClass());
+        getBootstrapper().getContext().getAnnotationManager().toExecutionList(this.getAnnotations()).forEach(this.executeClass());
     }
 
     default void transform() {
-        getBootstrapper().getAnnotationManager().toExecutionList(this.getAnnotations())
+        getBootstrapper().getContext().getAnnotationManager().toExecutionList(this.getAnnotations())
                 .stream()
-                .filter(getBootstrapper().getAnnotationManager()::isWinry)
+                .filter(getBootstrapper().getContext().getAnnotationManager()::isWinry)
                 .map(p -> (IWinryPreparedAnnotationProcessor) p)
                 .forEach(this.transformClass());
     }
@@ -57,8 +57,4 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends Compar
     Consumer<IPreparedAnnotationProcessor> executeClass();
 
     Consumer<IWinryPreparedAnnotationProcessor> transformClass();
-
-    default int compareTo(IBootstrappedElement<?> value) {
-        return Integer.compare(value.getWeight(), this.getWeight());
-    }
 }

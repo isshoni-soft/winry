@@ -6,8 +6,6 @@ import java.util.List;
 
 public abstract class WinryEvent implements IEvent {
 
-    private final List<IEventHandler> handlers;
-
     private final String name;
 
     private final boolean async;
@@ -15,7 +13,6 @@ public abstract class WinryEvent implements IEvent {
     public WinryEvent(String name, boolean async) {
         this.name = name;
         this.async = async;
-        this.handlers = new LinkedList<>();
     }
 
     @Override
@@ -26,10 +23,5 @@ public abstract class WinryEvent implements IEvent {
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public List<IEventHandler> getHandlers() {
-        return Collections.unmodifiableList(this.handlers);
     }
 }

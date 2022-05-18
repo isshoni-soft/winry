@@ -24,6 +24,6 @@ public class BasicMethodProcessor implements IWinryAnnotationProcessor<Annotatio
         }
 
         LOGGER.debug("Executing: " + method.getDisplay());
-        method.getBootstrapper().execute(method);
+        method.getBootstrapper().getContext().getElementBootstrapper().execute(method);
     }
 }

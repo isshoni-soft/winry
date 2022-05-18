@@ -48,6 +48,6 @@ public class InjectProcessor implements IWinryAnnotationProcessor<Inject> {
             }
         }
 
-        field.getBootstrapper().inject(field, injected);
+        field.getBootstrapper().getContext().getElementBootstrapper().inject(field, injected);
     }
 }

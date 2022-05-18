@@ -41,14 +41,14 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
         AraragiLogger logger;
 
         if (annotation.level() != Logger.DEFAULT_LEVEL || !annotation.useDefault()) {
-            logger = bootstrappedField.getBootstrapper().getLoggerFactory().createLogger(name, annotation.level());
+            logger = bootstrappedField.getBootstrapper().getContext().getLoggerFactory().createLogger(name, annotation.level());
         } else {
-            logger = bootstrappedField.getBootstrapper().getLoggerFactory().createLogger(name);
+            logger = bootstrappedField.getBootstrapper().getContext().getLoggerFactory().createLogger(name);
         }
 
         bootstrappedField.getBootstrapper().getContext().registerToContext(logger);
 
         LOGGER.debug("Injecting: " + logger);
-        bootstrappedField.getBootstrapper().inject(bootstrappedField, logger);
+        bootstrappedField.getBootstrapper().getContext().getElementBootstrapper().inject(bootstrappedField, logger);
     }
 }

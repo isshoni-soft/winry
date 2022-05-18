@@ -17,7 +17,7 @@ public class TestWinry {
         Winry.bootstrap(TestBootstrappedClass.class, service);
 
         if (!service.hasRun()) {
-            fail("Service never ran");
+            fail("No bootstrapped methods were executed!");
         }
 
         WinryContext.getContextFor(service).ifPresentOrElse(context -> {

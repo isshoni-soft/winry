@@ -27,7 +27,7 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     private boolean executed;
 
     public BootstrappedMethod(Method method, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
 
         this.method = method;
         this.bootstrapper = bootstrapper;
@@ -74,7 +74,7 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     }
 
     public BootstrappedClass getDeclaringClass() {
-        return this.bootstrapper.getElementBootstrapper().getDeclaringClass(this.method);
+        return this.bootstrapper.getContext().getElementBootstrapper().getDeclaringClass(this.method);
     }
 
     @Override

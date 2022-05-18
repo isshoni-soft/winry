@@ -10,15 +10,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'tv.isshoni.araragi:core:1.0.0-SNAPSHOT'
-    implementation 'tv.isshoni.araragi:annotation:1.0.0-SNAPSHOT'
-    implementation 'tv.isshoni.araragi:logging:1.0.0-SNAPSHOT'
+    implementation "tv.isshoni.araragi:core:$araragi_version"
+    implementation "tv.isshoni.araragi:annotation:$araragi_version"
+    implementation "tv.isshoni.araragi:logging:$araragi_version"
 
     implementation 'net.oneandone.reflections8:reflections8:0.11.7'
-    implementation 'net.bytebuddy:byte-buddy:1.11.18'
+    implementation 'net.bytebuddy:byte-buddy:1.12.10'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.mockito:mockito-core:4.5.1'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
 }
 

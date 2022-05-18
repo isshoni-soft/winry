@@ -15,15 +15,7 @@ import java.util.Map;
 
 public interface IBootstrapper {
 
-    IWinryAnnotationManager getAnnotationManager();
-
-    IElementBootstrapper getElementBootstrapper();
-
-    ILoggerFactory getLoggerFactory();
-
     IWinryContext getContext();
-
-    IAsyncManager getAsyncManager();
 
     Map<Class<?>, Object> getProvided();
 
@@ -34,12 +26,4 @@ public interface IBootstrapper {
     List<IExecutable> compileRunList();
 
     // TODO: This is pretty atrocious, move these methods to ElementBootstrapper what was I thinking putting them here
-
-    <T> T construct(BootstrappedClass bootstrapped);
-
-    <T> T execute(BootstrappedMethod bootstrapped);
-
-    void inject(BootstrappedField bootstrapped, Object injected);
-
-    void inject(BootstrappedField bootstrapped);
 }

@@ -9,13 +9,14 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.reflection.ReflectionUtil;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ElementBootstrapper implements IElementBootstrapper {
 
@@ -118,5 +119,69 @@ public class ElementBootstrapper implements IElementBootstrapper {
         }
 
         return bootstrappedClass;
+    }
+
+    @Override
+    public <T> T construct(BootstrappedClass bootstrapped) {
+        Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
+        Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
+
+        Constructor<T> constructor = (Constructor<T>) this.annotationManager.discoverConstructor(constructed);
+
+        if (Objects.isNull(constructor)) {
+            throw new RuntimeException("Constructor for " + constructed + " is null!");
+        }
+
+        LOGGER.debug("Class: new " + constructed.getName() + "()");
+        try {
+            return this.annotationManager.execute(constructor, null);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <T> T execute(BootstrappedMethod bootstrapped) {
+        Method method = bootstrapped.getBootstrappedElement();
+        Object target = null;
+
+        if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
+            target = getDeclaringClass(method).getObject();
+
+            if (Objects.isNull(target)) {
+                LOGGER.error("Non-static target is null for: " + bootstrapped.getDisplay());
+            }
+        }
+
+        try {
+            T result = this.annotationManager.execute(method, target);
+            bootstrapped.setExecuted(true);
+
+            return result;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void inject(BootstrappedField bootstrapped, Object injected) {
+        Object target = null;
+        Field field = bootstrapped.getBootstrappedElement();
+
+        if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
+            target = getDeclaringClass(field).getObject();
+
+            if (target == null) {
+                throw new RuntimeException("Tried injecting into null instance " + bootstrapped.getDisplay());
+            }
+        }
+
+        ReflectionUtil.injectField(field, target, injected);
+        bootstrapped.setInjected(true);
+    }
+
+    @Override
+    public void inject(BootstrappedField bootstrapped) {
+        inject(bootstrapped, bootstrapped.getTarget().getObject());
     }
 }

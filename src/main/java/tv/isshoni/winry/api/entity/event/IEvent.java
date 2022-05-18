@@ -9,6 +9,4 @@ public interface IEvent extends IContextual {
     boolean isAsync();
 
     String getName();
-
-    List<IEventHandler> getHandlers();
 }

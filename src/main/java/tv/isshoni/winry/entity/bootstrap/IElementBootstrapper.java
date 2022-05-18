@@ -30,4 +30,12 @@ public interface IElementBootstrapper {
     void bootstrap(Field field);
 
     BootstrappedClass getDeclaringClass(Member member);
+
+    <T> T construct(BootstrappedClass bootstrapped);
+
+    <T> T execute(BootstrappedMethod bootstrapped);
+
+    void inject(BootstrappedField bootstrapped, Object injected);
+
+    void inject(BootstrappedField bootstrapped);
 }

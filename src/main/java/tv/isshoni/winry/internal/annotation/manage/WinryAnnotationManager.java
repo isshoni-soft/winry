@@ -15,6 +15,7 @@ import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
 
 public class WinryAnnotationManager extends AnnotationManager implements IWinryAnnotationManager {
 
@@ -49,6 +50,14 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         discoverer.discoverAttachedProcessors();
 
         LOGGER.debug("Discovered " + getTotalProcessors() + " annotation processors.");
+    }
+
+    @Override
+    public <T extends Executable, R> R execute(T executable, Object target) throws Throwable {
+        LOGGER.debug("Execute: " + executable.toString());
+        R result = super.execute(executable, target);
+
+        return result;
     }
 
     @Override

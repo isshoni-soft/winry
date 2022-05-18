@@ -29,7 +29,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     private boolean injected = false;
 
     public BootstrappedField(Field field, BootstrappedClass target, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getAnnotationManager();
+        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
 
         this.field = field;
         this.bootstrapper = bootstrapper;
@@ -76,7 +76,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     }
 
     public BootstrappedClass getDeclaringClass() {
-        return this.bootstrapper.getElementBootstrapper().getDeclaringClass(this.field);
+        return this.bootstrapper.getContext().getElementBootstrapper().getDeclaringClass(this.field);
     }
 
     public boolean isInjected() {

@@ -8,15 +8,11 @@ import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.entity.event.IEventBus;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,21 +55,24 @@ public class WinryContext implements IWinryContext {
 
     private final IAsyncManager asyncManager;
 
+    private final IEventBus eventBus;
+
     private final List<IExecutable> executables;
 
     private final Bootstrap bootstrap;
 
-    public WinryContext(IBootstrapper bootstrapper, IAsyncManager asyncManager, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory, IElementBootstrapper elementBootstrapper, Bootstrap bootstrap) {
+    public WinryContext(Builder builder) {
         this.id = CONTEXT_ID.getAndIncrement();
         this.created = Instant.now();
-        this.bootstrapper = bootstrapper;
-        this.annotationManager = annotationManager;
-        this.loggerFactory = loggerFactory;
-        this.elementBootstrapper = elementBootstrapper;
-        this.bootstrap = bootstrap;
-        this.asyncManager = asyncManager;
+        this.bootstrap = builder.bootstrap;
+        this.bootstrapper = builder.bootstrapper;
+        this.annotationManager = builder.annotationManager;
+        this.loggerFactory = builder.loggerFactory;
+        this.asyncManager = builder.asyncManager;
+        this.elementBootstrapper = builder.elementBootstrapper;
+        this.eventBus = builder.eventBus;
         this.executables = new LinkedList<>();
-        this.logger = loggerFactory.createLogger("WinryContext [" + this.id + "]");
+        this.logger = this.loggerFactory.createLogger("WinryContext [" + this.id + "]");
 
         registerToContext(this.bootstrapper);
         registerToContext(this.annotationManager);
@@ -81,6 +80,7 @@ public class WinryContext implements IWinryContext {
         registerToContext(this.elementBootstrapper);
         registerToContext(this.bootstrap);
         registerToContext(this.asyncManager);
+        registerToContext(this.eventBus);
 
         CONTEXT_BY_ID.put(this.id, this);
     }
@@ -145,6 +145,11 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
+    public IEventBus getEventBus() {
+        return this.eventBus;
+    }
+
+    @Override
     public List<IExecutable> getExecutables() {
         return Collections.unmodifiableList(this.executables);
     }
@@ -157,5 +162,60 @@ public class WinryContext implements IWinryContext {
     @Override
     public String toString() {
         return "WinryContext[bootstrapper=" + this.bootstrapper.getClass().getName() + ",created=" + this.created.toString() + "]";
+    }
+
+    public static Builder builder(Bootstrap bootstrap, IBootstrapper bootstrapper) {
+        Builder builder = new Builder();
+        builder.bootstrap = bootstrap;
+        builder.bootstrapper = bootstrapper;
+
+        return builder;
+    }
+
+    public static class Builder {
+        private Bootstrap bootstrap;
+        private IBootstrapper bootstrapper;
+        private IWinryAnnotationManager annotationManager;
+        private ILoggerFactory loggerFactory;
+        private IElementBootstrapper elementBootstrapper;
+        private IAsyncManager asyncManager;
+        private IEventBus eventBus;
+
+        private Builder() { }
+
+        public Builder annotationManager(IWinryAnnotationManager annotationManager) {
+            this.annotationManager = annotationManager;
+            return this;
+        }
+
+        public Builder loggerFactory(ILoggerFactory loggerFactory) {
+            this.loggerFactory = loggerFactory;
+            return this;
+        }
+
+        public Builder elementBootstrapper(IElementBootstrapper elementBootstrapper) {
+            this.elementBootstrapper = elementBootstrapper;
+            return this;
+        }
+
+        public Builder asyncManager(IAsyncManager asyncManager) {
+            this.asyncManager = asyncManager;
+            return this;
+        }
+
+        public Builder eventBus(IEventBus eventBus) {
+            this.eventBus = eventBus;
+            return this;
+        }
+
+        public IWinryContext build() {
+            if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
+                Objects.isNull(this.asyncManager) || Objects.isNull(this.elementBootstrapper) || Objects.isNull(this.annotationManager) ||
+                Objects.isNull(this.loggerFactory)) {
+                throw new IllegalStateException("Cannot build without all managers present!");
+            }
+
+            return new WinryContext(this);
+        }
     }
 }

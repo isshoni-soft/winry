@@ -1,6 +1,8 @@
 package tv.isshoni.winry.internal.bytebuddy;
 
+import net.bytebuddy.implementation.MethodCall;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
@@ -19,17 +21,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.SuperMethodCall;
+
+import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.returns;
 
 public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
@@ -48,9 +50,9 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     private ITransformingPlan<Class<?>, BootstrappedClass> classTransformer;
 
     public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass) {
-        LOGGER = bootstrappedClass.getBootstrapper().getLoggerFactory().createLogger("ClassTransformingBlueprint");
+        LOGGER = bootstrappedClass.getBootstrapper().getContext().getLoggerFactory().createLogger("ClassTransformingBlueprint");
         this.bootstrappedClass = bootstrappedClass;
-        this.elementBootstrapper = bootstrappedClass.getBootstrapper().getElementBootstrapper();
+        this.elementBootstrapper = bootstrappedClass.getBootstrapper().getContext().getElementBootstrapper();
         this.methodTransformers = new HashMap<>();
         this.fieldTransformers = new HashMap<>();
     }
@@ -90,6 +92,15 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
             Method method = entry.getKey();
 
             builder = executeTransformation(builder, method, this.elementBootstrapper.getBootstrappedMethod(method), entry.getValue());
+        }
+
+        List<Method> portedMethods = Streams.to(this.bootstrappedClass.getBootstrappedElement().getDeclaredMethods())
+                .filterInverted(this.methodTransformers::containsKey)
+                .toList();
+
+        for (Method method : portedMethods) {
+            builder = WinryMethodTransformer.replicateMethod(method, builder)
+                    .intercept(MethodCall.invoke(method).onSuper().withAllArguments());
         }
 
         this.bootstrappedClass.setWrappedClass(builder
