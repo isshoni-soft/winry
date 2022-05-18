@@ -15,6 +15,7 @@ import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
+import tv.isshoni.winry.test.event.TestEvent;
 import tv.isshoni.winry.test.model.service.OneLastTestService;
 
 import java.util.concurrent.ExecutionException;
@@ -46,14 +47,24 @@ public class TestBootstrappedClass {
     }
 
     @Listener(WinryInitEvent.class)
-    public void initRun(@Event WinryInitEvent event) {
+    public void initRun(@Event WinryInitEvent event, @Context IWinryContext context) {
         assertNotNull(event);
         this.injectedClass.asyncMethod();
+
+        TestEvent fired = context.getEventBus().fire(new TestEvent(5));
+        assertEquals(10, fired.getData());
 
         assertEquals(0, this.injectedClass.getNumCalled());
         assertEquals(5, this.injectedClass.getTest());
 
         this.injectedClass.testProfiling();
+    }
+
+    @Listener(TestEvent.class)
+    public void onTestEvent(@Event TestEvent event) {
+        LOGGER.info("Test Event: " + event.getData());
+
+        event.setData(event.getData() * 2);
     }
 
     @Listener(WinryPostInitEvent.class)
