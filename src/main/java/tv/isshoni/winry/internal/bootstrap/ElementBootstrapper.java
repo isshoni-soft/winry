@@ -8,7 +8,9 @@ import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 import tv.isshoni.winry.reflection.ReflectionUtil;
 
@@ -40,6 +42,11 @@ public class ElementBootstrapper implements IElementBootstrapper {
         this.bootstrappedFields = new HashMap<>();
 
         LOGGER = loggerFactory.createLogger("ElementBootstrapper");
+    }
+
+    @Override
+    public ITransformingBlueprint supplyTransformingBlueprint(BootstrappedClass bootstrappedClass) {
+        return new ClassTransformingBlueprint(bootstrappedClass);
     }
 
     @Override

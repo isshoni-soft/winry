@@ -3,6 +3,7 @@ package tv.isshoni.winry.entity.bootstrap;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -11,6 +12,8 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface IElementBootstrapper {
+
+    ITransformingBlueprint supplyTransformingBlueprint(BootstrappedClass bootstrappedClass);
 
     BootstrappedClass getBootstrappedClass(Class<?> clazz);
 

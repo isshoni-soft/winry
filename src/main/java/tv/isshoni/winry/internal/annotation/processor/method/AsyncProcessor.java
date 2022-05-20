@@ -2,13 +2,13 @@ package tv.isshoni.winry.internal.annotation.processor.method;
 
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.api.annotation.transformer.Async;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.annotation.transformer.Async;
+import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
-import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
@@ -26,7 +26,7 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
     }
 
     @Override
-    public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, Async annotation, ClassTransformingBlueprint blueprint) {
+    public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, Async annotation, ITransformingBlueprint blueprint) {
         IAsyncManager asyncManager = this.context.getAsyncManager();
 
         Method method = bootstrappedMethod.getBootstrappedElement();
