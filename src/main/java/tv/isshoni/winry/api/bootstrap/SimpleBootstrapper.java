@@ -82,7 +82,7 @@ public class SimpleBootstrapper implements IBootstrapper {
                 .flatMap(p -> p.provideExecutables(this.context).stream())
                 .peek(this.context::registerToContext)
                 .peek(p -> LOGGER.debug("Injecting Executable: " + p.getDisplay()))
-                .forEach(run::add);
+                .addTo(run);
 
         Collections.sort(run);
         LOGGER.debug("${dashes%50} Run Order ${dashes%50}");
@@ -133,9 +133,9 @@ public class SimpleBootstrapper implements IBootstrapper {
         if (packages.length > 0) {
             Reflections reflections = ReflectionUtil.classFinder(packages, manual);
 
-            this.getContext().getAnnotationManager().getManagedAnnotations().stream()
+            Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
-                    .forEach(classes::add);
+                    .addTo(classes);
         }
 
         LOGGER.debug("Discovered " + classes.size() + " classes!");
