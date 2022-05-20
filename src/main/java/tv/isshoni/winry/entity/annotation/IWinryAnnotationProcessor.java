@@ -1,23 +1,29 @@
 package tv.isshoni.winry.entity.annotation;
 
 import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
+import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.api.entity.context.IContextual;
+import tv.isshoni.winry.entity.bytebuddy.FieldTransformingPlan;
+import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.function.Function;
 
 public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnotationProcessor<A>, IContextual {
 
+    Function<AraragiLogger, Runnable> NO_WINRY_METHOD_TRANSFORMER = logger -> () -> logger.error("Could not register method delegator to non WinryMethodTransformer");
+
     default void transformClass(BootstrappedClass bootstrappedClass, ClassTransformingBlueprint blueprint, A annotation) { }
 
-    default void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, A annotation) { }
+    default void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, A annotation, ClassTransformingBlueprint blueprint) { }
 
-    default void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint, A annotation) { }
+    default void transformField(BootstrappedField bootstrappedField, FieldTransformingPlan fieldPlan, A annotation, ClassTransformingBlueprint blueprint) { }
 
     default void executeClass(BootstrappedClass clazz, A annotation) { }
 

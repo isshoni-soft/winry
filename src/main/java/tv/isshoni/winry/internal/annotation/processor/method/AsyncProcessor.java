@@ -7,6 +7,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.lang.reflect.Method;
@@ -16,13 +17,17 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
 
     private final AraragiLogger LOGGER;
 
+    private final IWinryContext context;
+
     public AsyncProcessor(@Context IWinryContext context) {
+        this.context = context;
+
         LOGGER = context.getLoggerFactory().createLogger("AsyncProcessor");
     }
 
     @Override
-    public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Async annotation) {
-        IAsyncManager asyncManager = getWinryContext().getAsyncManager();
+    public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, Async annotation, ClassTransformingBlueprint blueprint) {
+        IAsyncManager asyncManager = this.context.getAsyncManager();
 
         Method method = bootstrappedMethod.getBootstrappedElement();
         LOGGER.debug("Async-ifying: " + bootstrappedMethod);
@@ -32,15 +37,16 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
             throw new RuntimeException("Tried to make async method with non-void/future return type!");
         }
 
-        blueprint.registerSimpleMethodDelegator(bootstrappedMethod.getBootstrappedElement(), 0, (c, m, args, next) ->
-                asyncManager.submit(() -> {
-                    Object result = next.call();
+        methodPlan.asWinry().ifPresentOrElse(mt ->
+                mt.addDelegator((c, m, args, next) ->
+                        asyncManager.submit(() -> {
+                            Object result = next.call();
 
-                    if (result instanceof Future) {
-                        return ((Future<?>) result).get();
-                    }
+                            if (result instanceof Future) {
+                                return ((Future<?>) result).get();
+                            }
 
-                    return result;
-                }));
+                            return result;
+                        }), 0), NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
     }
 }

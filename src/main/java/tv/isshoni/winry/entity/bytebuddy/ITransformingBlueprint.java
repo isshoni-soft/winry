@@ -1,6 +1,7 @@
 package tv.isshoni.winry.entity.bytebuddy;
 
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 
 import java.lang.reflect.Field;
@@ -11,16 +12,24 @@ public interface ITransformingBlueprint {
 
     void transform();
 
-    void registerSimpleMethodDelegator(Method method, int weight, MethodDelegator delegator);
+    void setClassTransformingPlan(ClassTransformingPlan transformingPlan);
 
-    void registerAdvancedClassTransformation(ClassTransformingPlan transformingPlan);
+    void setMethodTransformingPlan(Method method, MethodTransformingPlan transformingPlan);
 
-    void registerAdvancedMethodTransformation(Method method, MethodTransformingPlan transformingPlan);
-
-    void registerAdvancedFieldTransformation(Field field, FieldTransformingPlan transformingPlan);
+    void setFieldTransformingPlan(Field field, FieldTransformingPlan transformingPlan);
 
     BootstrappedClass getBootstrappedClass();
 
+    MethodTransformingPlan getMethodTransformingPlan(Method method);
+
+    FieldTransformingPlan getFieldTransformingPlan(Field field);
+
+    MethodTransformingPlan supplyDefaultMethodTransformingPlan();
+
+    FieldTransformingPlan supplyDefaultFieldTransformingPlan();
+
     Map<Method, ITransformingPlan<Method, BootstrappedMethod>> getMethodTransformers();
+
+    Map<Field, ITransformingPlan<Field, BootstrappedField>> getFieldTransformers();
 
 }

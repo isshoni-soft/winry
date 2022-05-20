@@ -15,10 +15,10 @@ public interface IWinryPreparedAnnotationProcessor extends IPreparedAnnotationPr
     }
 
     default void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint) {
-        this.getProcessor().transformMethod(bootstrappedMethod, blueprint, this.getAnnotation());
+        this.getProcessor().transformMethod(bootstrappedMethod, blueprint.getMethodTransformingPlan(bootstrappedMethod.getBootstrappedElement()), this.getAnnotation(), blueprint);
     }
 
     default void transformField(BootstrappedField bootstrappedField, ClassTransformingBlueprint blueprint) {
-        this.getProcessor().transformField(bootstrappedField, blueprint, this.getAnnotation());
+        this.getProcessor().transformField(bootstrappedField, blueprint.getFieldTransformingPlan(bootstrappedField.getBootstrappedElement()), this.getAnnotation(), blueprint);
     }
 }

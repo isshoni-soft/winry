@@ -6,6 +6,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 
 import java.time.Instant;
@@ -19,8 +20,8 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
     }
 
     @Override
-    public void transformMethod(BootstrappedMethod bootstrappedMethod, ClassTransformingBlueprint blueprint, Profile annotation) {
-        blueprint.registerSimpleMethodDelegator(bootstrappedMethod.getBootstrappedElement(), 1, (c, m, args, next) -> {
+    public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, Profile annotation, ClassTransformingBlueprint blueprint) {
+        methodPlan.asWinry().ifPresentOrElse(mp -> mp.addDelegator((c, m, args, next) -> {
             Instant prev = Instant.now();
 
             Object result = null;
@@ -32,6 +33,6 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
 
             LOGGER.debug("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;
-        });
+        }, 1), () -> NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
     }
 }
