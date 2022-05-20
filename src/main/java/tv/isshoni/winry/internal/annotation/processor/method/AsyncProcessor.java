@@ -25,7 +25,7 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
         IAsyncManager asyncManager = getWinryContext().getAsyncManager();
 
         Method method = bootstrappedMethod.getBootstrappedElement();
-        LOGGER.debug("Running on " + bootstrappedMethod);
+        LOGGER.debug("Async-ifying: " + bootstrappedMethod);
 
         if (!(method.getReturnType().isAssignableFrom(Future.class) || method.getReturnType().equals(Void.TYPE))) {
             // TODO: Make specialized exception for this

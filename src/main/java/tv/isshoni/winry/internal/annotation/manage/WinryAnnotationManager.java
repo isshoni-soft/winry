@@ -7,7 +7,6 @@ import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
@@ -34,10 +33,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public void initialize(Bootstrap bootstrap) {
         LOGGER.debug("Initializing...");
-        // TODO: This is technically a hack.
-        // TODO: Write some sort of load order management code into SimpleAnnotationDiscoverer
-        this.discoverAnnotation(Context.class);
-
         LOGGER.debug("Performing annotation discovery...");
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
@@ -53,7 +48,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         LOGGER.debug("Attaching requested processors...");
         discoverer.discoverAttachedProcessors();
 
-        LOGGER.debug("Discovered " + getTotalProcessors() + " annotation processors.");
+        LOGGER.debug("Discovered " + getManagedAnnotations().size() + " annotations and " + getTotalProcessors() + " annotation processors.");
+        LOGGER.debug("Done initializing!");
     }
 
     @Override
