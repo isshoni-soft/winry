@@ -25,7 +25,8 @@ dependencies {
 group = 'tv.isshoni'
 version = '1.0.0-SNAPSHOT'
 description = 'winry'
-java.sourceCompatibility = JavaVersion.VERSION_16
+java.sourceCompatibility = JavaVersion.VERSION_18
+java.targetCompatibility = JavaVersion.VERSION_18
 
 publishing {
     publications {
