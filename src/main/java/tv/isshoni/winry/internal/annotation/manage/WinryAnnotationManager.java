@@ -65,6 +65,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                 .filter(c -> c.isAnnotationPresent(Loader.class))
                 .map(c -> c.getAnnotation(Loader.class))
                 .flatMap(l -> Streams.to(l.loadPackage()))
+                .distinct()
                 .forEach(result::add);
 
         return result.toArray(new String[0]);
@@ -78,6 +79,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                 .filter(c -> c.isAnnotationPresent(Loader.class))
                 .map(c -> c.getAnnotation(Loader.class))
                 .flatMap(l -> Streams.to(l.manualLoad()))
+                .distinct()
                 .forEach(result::add);
 
         return result.toArray(new Class<?>[0]);
@@ -91,6 +93,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                 .filter(c -> c.isAnnotationPresent(Loader.class))
                 .map(c -> c.getAnnotation(Loader.class))
                 .flatMap(l -> Streams.to(l.providers()))
+                .distinct()
                 .forEach(result::add);
 
         return result.toArray(new Class[0]);
