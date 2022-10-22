@@ -28,7 +28,7 @@ public class Winry {
 
         LOGGER = AraragiLogger.create("Winry", bootstrap.defaultLevel());
 
-        LOGGER.debug("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
+        LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
 
         IBootstrapper bootstrapper;
         try {
@@ -51,7 +51,7 @@ public class Winry {
         LOGGER.debug("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
-        LOGGER.debug("${dashes%50} Execution Complete (" + Duration.between(start, Instant.now()).toMillis() + " ms) ${dashes%50}");
+        LOGGER.info("${dashes%50} Execution Complete (" + Duration.between(start, Instant.now()).toMillis() + " ms) ${dashes%50}");
 
         return bootstrapper.getContext();
     }

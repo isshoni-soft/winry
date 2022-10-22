@@ -87,9 +87,9 @@ public class SimpleBootstrapper implements IBootstrapper {
         Collections.sort(run);
         LOGGER.debug("${dashes%50} Run Order ${dashes%50}");
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
-        LOGGER.debug("${dashes%50} Execution ${dashes%50}");
+        LOGGER.info("${dashes%50} Execution ${dashes%50}");
         run.forEach(e -> {
-            LOGGER.debug("Executing: " + e.getDisplay());
+            LOGGER.info("Executing: " + e.getDisplay());
             e.execute();
         });
     }
