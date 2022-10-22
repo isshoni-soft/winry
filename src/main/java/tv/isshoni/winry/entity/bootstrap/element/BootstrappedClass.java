@@ -29,7 +29,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
 
     private Object object;
 
-    private final Collection<Annotation> annotations;
+    private final List<Annotation> annotations;
 
     private final List<BootstrappedField> fields;
 
@@ -158,7 +158,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     @Override
-    public Collection<Annotation> getAnnotations() {
+    public List<Annotation> getAnnotations() {
         return this.annotations;
     }
 

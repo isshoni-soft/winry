@@ -42,7 +42,7 @@ public class WinryEventBus implements IEventBus {
 
         Consumer<? super IEventHandler> runner = h -> {
             if (event instanceof ICancellable) {
-                if (((ICancellable) event).isCancelled()) {
+                if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
                     return;
                 }
             }

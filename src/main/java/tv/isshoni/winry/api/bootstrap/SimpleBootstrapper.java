@@ -101,12 +101,12 @@ public class SimpleBootstrapper implements IBootstrapper {
                 .peek((c -> {
                     LOGGER.debug("Finalizing: " + c.getBootstrappedElement().getName());
 
-                    Arrays.stream(c.getBootstrappedElement().getDeclaredFields())
+                    Streams.to(c.getBootstrappedElement().getDeclaredFields())
                             .filter(this.getContext().getAnnotationManager()::hasManagedAnnotation)
                             .forEach(this.getContext().getElementBootstrapper()::bootstrap);
                     LOGGER.debug("Discovered " + c.getFields().size() + " fields");
 
-                    Arrays.stream(c.getBootstrappedElement().getDeclaredMethods())
+                    Streams.to(c.getBootstrappedElement().getDeclaredMethods())
                             .filter(this.getContext().getAnnotationManager()::hasManagedAnnotation)
                             .forEach(this.getContext().getElementBootstrapper()::bootstrap);
                     LOGGER.debug("Discovered " + c.getMethods().size() + " methods");

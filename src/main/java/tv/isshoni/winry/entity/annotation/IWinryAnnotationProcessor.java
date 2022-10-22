@@ -42,4 +42,16 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     default void executeMethod(Method method, A annotation) {
         this.executeMethod(this.getWinryContext().getElementBootstrapper().getBootstrappedMethod(method), annotation);
     }
+
+    default void executeClass(Object obj, Class<?> clazz, A annotation) {
+        this.executeClass(clazz, annotation);
+    }
+
+    default void executeField(Object obj, Field field, A annotation) {
+        this.executeField(field, annotation);
+    }
+
+    default void executeMethod(Object obj, Method method, A annotation) {
+        this.executeMethod(method, annotation);
+    }
 }

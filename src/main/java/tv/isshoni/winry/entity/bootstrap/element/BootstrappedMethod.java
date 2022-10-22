@@ -9,8 +9,8 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -20,7 +20,7 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
 
     private final Method method;
 
-    private final Collection<Annotation> annotations;
+    private final List<Annotation> annotations;
 
     private final Set<ReflectedModifier> modifiers;
 
@@ -45,7 +45,7 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     }
 
     @Override
-    public Collection<Annotation> getAnnotations() {
+    public List<Annotation> getAnnotations() {
         return this.annotations;
     }
 

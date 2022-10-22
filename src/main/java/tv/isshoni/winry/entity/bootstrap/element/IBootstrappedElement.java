@@ -10,14 +10,14 @@ import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public interface IBootstrappedElement<E extends AnnotatedElement> extends IExecutable {
 
-    Collection<Annotation> getAnnotations();
+    List<Annotation> getAnnotations();
 
     E getBootstrappedElement();
 

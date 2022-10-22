@@ -1,7 +1,5 @@
 package tv.isshoni.winry.api.entity.executable;
 
-import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
-
 public interface IExecutable extends Comparable<IExecutable> {
 
     int getWeight();

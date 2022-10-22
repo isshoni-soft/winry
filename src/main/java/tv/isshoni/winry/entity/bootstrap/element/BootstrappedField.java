@@ -1,16 +1,16 @@
 package tv.isshoni.winry.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -22,7 +22,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
 
     private final Set<ReflectedModifier> modifiers;
 
-    private final Collection<Annotation> annotations;
+    private final List<Annotation> annotations;
 
     private final BootstrappedClass target;
 
@@ -47,7 +47,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     }
 
     @Override
-    public Collection<Annotation> getAnnotations() {
+    public List<Annotation> getAnnotations() {
         return this.annotations;
     }
 

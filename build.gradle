@@ -1,12 +1,18 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'tv.isshoni.araragi.plugin' version '1.0.1'
+    id 'tv.isshoni.araragi' version '1.1.0'
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
+    isshoni()
+}
+
+java {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
 }
 
 dependencies {
@@ -15,7 +21,7 @@ dependencies {
     implementation "tv.isshoni.araragi:logging:$araragi_version"
 
     implementation 'net.oneandone.reflections8:reflections8:0.11.7'
-    implementation 'net.bytebuddy:byte-buddy:1.12.10'
+    implementation "net.bytebuddy:byte-buddy:$bytebuddy_version"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:4.5.1'
@@ -25,12 +31,19 @@ dependencies {
 group = 'tv.isshoni'
 version = '1.0.0-SNAPSHOT'
 description = 'winry'
-java.sourceCompatibility = JavaVersion.VERSION_16
 
 publishing {
+    repositories {
+        isshoni()
+    }
+
     publications {
-        maven(MavenPublication) {
-            from(components.java)
+        mavenJava(MavenPublication) {
+            groupId = "${project.group}"
+            artifactId = "${project.name}"
+            version = "${project.version}"
+
+            from components.java
         }
     }
 }
