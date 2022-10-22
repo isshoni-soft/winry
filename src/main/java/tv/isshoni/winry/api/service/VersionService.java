@@ -9,6 +9,7 @@ import tv.isshoni.winry.api.entity.context.IWinryContext;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 @Injected
@@ -37,38 +38,37 @@ public class VersionService {
         loadVersionFor(this.context.getFileName());
     }
 
-    public void loadVersionFor(String ctxName) {
+    public String loadVersionFor(String ctxName) {
         Properties properties = new Properties();
         ctxName = ctxName.toLowerCase();
         try {
             properties.load(VersionService.class.getResourceAsStream("/" + ctxName + "_version.properties"));
         } catch (IOException | NullPointerException e) {
             this.logger.warn("Could not find version file for context: " + ctxName + "!");
-            return;
+            return null;
         }
 
         String version = properties.getProperty("version");
         this.logger.info("Detected " + ctxName + " version: " + version);
 
-        this.versions.putIfAbsent(ctxName, version);
+        return (this.versions.putIfAbsent(ctxName, version) == null ? version : null);
     }
 
-    public String getVersion(String ctxName) {
+    public Optional<String> getVersion(String ctxName) {
         String version = this.versions.get(ctxName.toLowerCase());
 
         if (version == null) {
-            loadVersionFor(ctxName);
-            version = getVersion();
+            version = loadVersionFor(ctxName);
         }
 
-        return version;
+        return Optional.ofNullable(version);
     }
 
-    public String getVersion() {
+    public Optional<String> getVersion() {
         return getVersion(this.context.getFileName());
     }
 
     public String getWinryVersion() {
-        return getVersion("winry");
+        return getVersion("winry").get();
     }
 }
