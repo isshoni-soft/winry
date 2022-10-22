@@ -12,7 +12,7 @@ import tv.isshoni.winry.entity.bootstrap.IExecutableProvider;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WinryEventProviders implements IExecutableProvider {
+public class WinryEventsProvider implements IExecutableProvider {
 
     @Override
     public List<IExecutable> provideExecutables(IWinryContext context) {

@@ -9,6 +9,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
+import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
@@ -41,7 +42,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         LOGGER.debug("Performing annotation discovery...");
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
-        discoverer.withPackages("tv.isshoni.winry.api.annotation");
         discoverer.withPackages(getAllLoadedPackages(bootstrap));
 
         LOGGER.debug("Loading parameter supplier annotations...");
@@ -60,6 +60,10 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public String[] getAllLoadedPackages(Bootstrap bootstrap) {
         ArrayList<String> result = new ArrayList<>(Arrays.asList(bootstrap.loader().loadPackage()));
+
+        if (!bootstrap.disableDefaultPackage()) {
+            result.add("tv.isshoni.winry.api.annotation");
+        }
 
         Streams.to(bootstrap.loader().manualLoad())
                 .filter(c -> c.isAnnotationPresent(Loader.class))
@@ -88,6 +92,10 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public Class<? extends IExecutableProvider>[] getAllProviders(Bootstrap bootstrap) {
         ArrayList<Class<? extends IExecutableProvider>> result = new ArrayList<>(Arrays.asList(bootstrap.loader().providers()));
+
+        if (!bootstrap.disableDefaultProvider()) {
+            result.add(WinryEventsProvider.class);
+        }
 
         Streams.to(bootstrap.loader().manualLoad())
                 .filter(c -> c.isAnnotationPresent(Loader.class))

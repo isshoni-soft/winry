@@ -23,4 +23,8 @@ public @interface Bootstrap {
     Class<? extends IBootstrapper> bootstrapper() default SimpleBootstrapper.class;
 
     Level defaultLevel() default Level.ERROR;
+
+    boolean disableDefaultProvider() default false;
+
+    boolean disableDefaultPackage() default false;
 }

@@ -2,7 +2,6 @@ package tv.isshoni.winry.api.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.winry.api.bootstrap.WinryEventProviders;
 import tv.isshoni.winry.entity.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.internal.annotation.processor.type.BasicClassProcessor;
 
@@ -24,5 +23,5 @@ public @interface Loader {
 
     Class<?>[] manualLoad() default { };
 
-    Class<? extends IExecutableProvider>[] providers() default { WinryEventProviders.class };
+    Class<? extends IExecutableProvider>[] providers() default { };
 }
