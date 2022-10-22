@@ -29,8 +29,7 @@ dependencies {
 }
 
 group = 'tv.isshoni'
-version = '1.0.0-SNAPSHOT'
-description = 'winry'
+version = "$winry_version"
 
 publishing {
     repositories {
