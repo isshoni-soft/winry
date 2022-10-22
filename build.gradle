@@ -31,6 +31,14 @@ dependencies {
 group = 'tv.isshoni'
 version = "$winry_version"
 
+processResources {
+    filesMatching("**/winry_version.properties") {
+        expand(
+            'version': project.version,
+        )
+    }
+}
+
 publishing {
     repositories {
         isshoni()

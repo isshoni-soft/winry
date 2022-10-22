@@ -63,6 +63,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         if (!bootstrap.disableDefaultPackage()) {
             result.add("tv.isshoni.winry.api.annotation");
+            result.add("tv.isshoni.winry.api.service");
         }
 
         Streams.to(bootstrap.loader().manualLoad())

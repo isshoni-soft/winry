@@ -14,6 +14,7 @@ import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.service.VersionService;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
 import tv.isshoni.winry.test.event.TestEvent;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Bootstrap(
+        value = "Winry Testing",
         bootstrapper = TestBootstrapper.class,
         loader = @Loader(
                 loadPackage = { "tv.isshoni.winry.test.model.service" },
@@ -41,8 +43,8 @@ public class TestBootstrappedClass {
     @Inject private OneLastTestService oneLastService;
 
     @Listener(WinryPreInitEvent.class)
-    public void preInitRun() {
-        LOGGER.info("Logger test!");
+    public void preInitRun(@Inject VersionService service) {
+        LOGGER.info("Testing Winry v" + service.getWinryVersion());
 
         if (this.injectedClass != null) {
             this.testService.fail("Default injected class is not null!");

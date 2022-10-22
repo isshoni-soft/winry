@@ -3,15 +3,17 @@ package tv.isshoni.winry.internal.event;
 import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.winry.api.annotation.ExecutableEvent;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.entity.event.ICancellable;
 import tv.isshoni.winry.api.entity.event.IEvent;
-import tv.isshoni.winry.entity.event.IEventHandler;
+import tv.isshoni.winry.api.entity.event.WinryEventExecutable;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.event.IEventBus;
+import tv.isshoni.winry.entity.event.IEventHandler;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,13 +27,18 @@ public class WinryEventBus implements IEventBus {
 
     private final Map<Class<? extends IEvent>, List<IEventHandler>> handlers;
 
+    private final List<WinryEventExecutable<?>> executableEvents;
+
     private final IAsyncManager asyncManager;
+    private final IWinryAnnotationManager annotationManager;
 
     private final AraragiLogger LOGGER;
 
-    public WinryEventBus(IAsyncManager asyncManager, ILoggerFactory loggerFactory) {
+    public WinryEventBus(IAsyncManager asyncManager, ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
         this.asyncManager = asyncManager;
+        this.annotationManager = annotationManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
+        this.executableEvents = new LinkedList<>();
         this.handlers = new HashMap<>();
     }
 
@@ -64,10 +71,29 @@ public class WinryEventBus implements IEventBus {
     @Override
     public <T extends IEvent> T fire(Class<T> clazz) {
         try {
-            return fire(clazz.getConstructor().newInstance());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return fire(this.annotationManager.construct(clazz));
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public <T extends IEvent> void registerExecutable(Class<T> clazz) {
+        if (!clazz.isAnnotationPresent(ExecutableEvent.class)) {
+            return;
+        }
+
+        registerExecutable(clazz, clazz.getAnnotation(ExecutableEvent.class).value());
+    }
+
+    @Override
+    public <T extends IEvent> void registerExecutable(Class<T> clazz, int weight) {
+        this.executableEvents.add(new WinryEventExecutable<>(clazz, weight, this));
+    }
+
+    @Override
+    public List<WinryEventExecutable<?>> getExecutableEvents() {
+        return Collections.unmodifiableList(this.executableEvents);
     }
 
     @Override

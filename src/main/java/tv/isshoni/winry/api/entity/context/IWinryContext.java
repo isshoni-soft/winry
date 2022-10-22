@@ -44,4 +44,12 @@ public interface IWinryContext {
     List<IExecutable> getExecutables();
 
     Bootstrap getBootstrapAnnotation();
+
+    default String getContextName() {
+        return this.getBootstrapAnnotation().value();
+    }
+
+    default String getFileName() {
+        return getContextName().toLowerCase().replaceAll(" ", "_");
+    }
 }

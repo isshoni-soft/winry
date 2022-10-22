@@ -21,8 +21,10 @@ import tv.isshoni.winry.reflection.ReflectionUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,7 @@ public class SimpleBootstrapper implements IBootstrapper {
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
                 .elementBootstrapper(elementBootstrapper)
-                .eventBus(new WinryEventBus(asyncManager, loggerFactory))
+                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager))
                 .injectionRegistry(new InjectionRegistry(elementBootstrapper))
                 .build();
 
@@ -79,19 +81,51 @@ public class SimpleBootstrapper implements IBootstrapper {
         Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
                 .map(ReflectionUtil::construct)
                 .peek(this.context::registerToContext)
-                .flatMap(p -> p.provideExecutables(this.context).stream())
+                .flatMap(p -> Optional.ofNullable(p.provideExecutables(this.context))
+                        .orElse(new LinkedList<>()).stream())
                 .peek(this.context::registerToContext)
                 .peek(p -> LOGGER.debug("Injecting Executable: " + p.getDisplay()))
                 .addTo(run);
 
-        Collections.sort(run);
+        run = fuseEvents(run);
+
+        execute(run);
+    }
+
+    public List<IExecutable> fuseEvents(List<IExecutable> run) {
+        return Streams.to(run)
+                .add(this.context.getEventBus().getExecutableEvents())
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public void execute(List<IExecutable> executables) {
         LOGGER.debug("${dashes%50} Run Order ${dashes%50}");
-        run.forEach(r -> LOGGER.debug(r.getDisplay()));
+        executables.forEach(r -> LOGGER.debug(r.getDisplay()));
         LOGGER.info("${dashes%50} Execution ${dashes%50}");
-        run.forEach(e -> {
-            LOGGER.info("Executing: " + e.getDisplay());
-            e.execute();
-        });
+
+        int index = 0;
+        boolean broken = false;
+        for (IExecutable executable : executables) {
+            index++;
+            int prevEventSize = this.context.getEventBus().getExecutableEvents().size();
+            LOGGER.info("Executing: " + executable.getDisplay());
+            executable.execute();
+
+            if (prevEventSize < this.context.getEventBus().getExecutableEvents().size()) {
+                LOGGER.info("${dashes%10}> Detected new executable event registration, preforming executor hotswap...");
+                broken = true;
+                break;
+            }
+        }
+
+        if (broken) {
+            int oldSize = executables.size();
+            executables = fuseEvents(executables);
+            LOGGER.info("Rebooting from index: " + index + " with new length: " + executables.size() + "(was " + oldSize + ")");
+            execute(executables.subList(index, executables.size()));
+        }
     }
 
     @Override

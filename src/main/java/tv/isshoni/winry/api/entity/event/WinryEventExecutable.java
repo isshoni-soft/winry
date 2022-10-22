@@ -1,9 +1,7 @@
 package tv.isshoni.winry.api.entity.event;
 
-import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.event.IEventBus;
-import tv.isshoni.winry.reflection.ReflectionUtil;
 
 public class WinryEventExecutable<T extends IEvent> implements IExecutable {
 
@@ -11,21 +9,20 @@ public class WinryEventExecutable<T extends IEvent> implements IExecutable {
 
     private final Class<T> eventClass;
 
-    private final T event;
+    private T event;
 
     private final IEventBus bus;
 
-    public WinryEventExecutable(Class<T> eventClass, int weight, IWinryContext context) {
+    public WinryEventExecutable(Class<T> eventClass, int weight, IEventBus bus) {
         this.eventClass = eventClass;
         this.weight = weight;
-        this.bus = context.getEventBus();
-        this.event = ReflectionUtil.construct(eventClass);
+        this.bus = bus;
     }
 
-    public WinryEventExecutable(T event, int weight, IWinryContext context) {
+    public WinryEventExecutable(T event, int weight, IEventBus bus) {
         this.event = event;
         this.weight = weight;
-        this.bus = context.getEventBus();
+        this.bus = bus;
         this.eventClass = (Class<T>) event.getClass();
     }
 
@@ -42,9 +39,17 @@ public class WinryEventExecutable<T extends IEvent> implements IExecutable {
         return this.weight;
     }
 
+    public boolean hasEvent() {
+        return this.getEvent() != null;
+    }
+
     @Override
     public void execute() {
-        this.bus.fire(this.getEvent());
+        if (this.hasEvent()) {
+            this.bus.fire(this.getEvent());
+        } else {
+            this.bus.fire(this.getEventClass());
+        }
     }
 
     @Override

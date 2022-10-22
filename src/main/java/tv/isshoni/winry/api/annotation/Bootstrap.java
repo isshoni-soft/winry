@@ -18,6 +18,8 @@ import java.lang.annotation.Target;
 @Processor(BasicClassProcessor.class)
 public @interface Bootstrap {
 
+    String value() default "DEFAULT-BOOTSTRAP-NAME";
+
     Loader loader() default @Loader;
 
     Class<? extends IBootstrapper> bootstrapper() default SimpleBootstrapper.class;
