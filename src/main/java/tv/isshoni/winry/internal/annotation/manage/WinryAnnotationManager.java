@@ -6,15 +6,20 @@ import tv.isshoni.araragi.annotation.model.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.annotation.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.entity.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WinryAnnotationManager extends AnnotationManager implements IWinryAnnotationManager {
 
@@ -37,7 +42,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
         discoverer.withPackages("tv.isshoni.winry.api.annotation");
-        discoverer.withPackages(bootstrap.loadPackage());
+        discoverer.withPackages(getAllLoadedPackages(bootstrap));
 
         LOGGER.debug("Loading parameter supplier annotations...");
         discoverer.discoverParameterAnnotations();
@@ -50,6 +55,45 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         LOGGER.debug("Discovered " + getManagedAnnotations().size() + " annotations and " + getTotalProcessors() + " annotation processors.");
         LOGGER.debug("Done initializing!");
+    }
+
+    @Override
+    public String[] getAllLoadedPackages(Bootstrap bootstrap) {
+        ArrayList<String> result = new ArrayList<>(Arrays.asList(bootstrap.loader().loadPackage()));
+
+        Streams.to(bootstrap.loader().manualLoad())
+                .filter(c -> c.isAnnotationPresent(Loader.class))
+                .map(c -> c.getAnnotation(Loader.class))
+                .flatMap(l -> Streams.to(l.loadPackage()))
+                .forEach(result::add);
+
+        return result.toArray(new String[0]);
+    }
+
+    @Override
+    public Class<?>[] getAllManuallyLoaded(Bootstrap bootstrap) {
+        ArrayList<Class<?>> result = new ArrayList<>(Arrays.asList(bootstrap.loader().manualLoad()));
+
+        Streams.to(bootstrap.loader().manualLoad())
+                .filter(c -> c.isAnnotationPresent(Loader.class))
+                .map(c -> c.getAnnotation(Loader.class))
+                .flatMap(l -> Streams.to(l.manualLoad()))
+                .forEach(result::add);
+
+        return result.toArray(new Class<?>[0]);
+    }
+
+    @Override
+    public Class<? extends IExecutableProvider>[] getAllProviders(Bootstrap bootstrap) {
+        ArrayList<Class<? extends IExecutableProvider>> result = new ArrayList<>(Arrays.asList(bootstrap.loader().providers()));
+
+        Streams.to(bootstrap.loader().manualLoad())
+                .filter(c -> c.isAnnotationPresent(Loader.class))
+                .map(c -> c.getAnnotation(Loader.class))
+                .flatMap(l -> Streams.to(l.providers()))
+                .forEach(result::add);
+
+        return result.toArray(new Class[0]);
     }
 
     @Override

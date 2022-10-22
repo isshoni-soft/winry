@@ -72,11 +72,11 @@ public class SimpleBootstrapper implements IBootstrapper {
         this.provided = Collections.unmodifiableMap(provided);
 
         LOGGER.debug("${dashes%50} Element Bootstrapping ${dashes%50}");
-        bootstrapClasses(clazz, bootstrap.manualLoad(), bootstrap.loadPackage(), provided);
+        bootstrapClasses(clazz, this.context.getAnnotationManager().getAllManuallyLoaded(bootstrap), this.context.getAnnotationManager().getAllLoadedPackages(bootstrap), provided);
         LOGGER.debug("Finished class discovery and instantiation...");
 
         List<IExecutable> run = compileRunList();
-        Streams.to(bootstrap.providers())
+        Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
                 .map(ReflectionUtil::construct)
                 .peek(this.context::registerToContext)
                 .flatMap(p -> p.provideExecutables(this.context).stream())
