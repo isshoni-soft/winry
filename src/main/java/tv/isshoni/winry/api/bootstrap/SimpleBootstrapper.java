@@ -123,7 +123,7 @@ public class SimpleBootstrapper implements IBootstrapper {
         if (broken) {
             int oldSize = executables.size();
             executables = fuseEvents(executables);
-            LOGGER.info("Rebooting from index: " + index + " with new length: " + executables.size() + "(was " + oldSize + ")");
+            LOGGER.info("Rebooting from index: " + index + " with new length: " + executables.size() + " (was " + oldSize + ")");
             execute(executables.subList(index, executables.size()));
         }
     }
