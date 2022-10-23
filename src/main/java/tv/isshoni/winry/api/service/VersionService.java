@@ -27,6 +27,8 @@ public class VersionService {
 
         loadVersionFor("winry");
 
+        this.logger.info("Detected Winry version: " + getWinryVersion());
+
         loadVersionFor(this.context.getFileName());
     }
 
@@ -41,7 +43,7 @@ public class VersionService {
         }
 
         String version = properties.getProperty("version");
-        this.logger.info("Detected " + ctxName + " version: " + version);
+        this.logger.debug("Detected " + ctxName + " version: " + version);
 
         return (this.versions.putIfAbsent(ctxName, version) == null ? version : null);
     }
