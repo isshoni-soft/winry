@@ -25,14 +25,8 @@ public class VersionService {
         this.context = context;
         this.logger = context.getLoggerFactory().createLogger("VersionService");
 
-        Properties properties = new Properties();
-        try {
-            properties.load(FileUtil.getResource("winry_version.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        loadVersionFor("winry");
 
-        this.versions.put("winry", properties.getProperty("version"));
         this.logger.info("Detected Winry version: " + getWinryVersion());
 
         loadVersionFor(this.context.getFileName());
@@ -42,7 +36,7 @@ public class VersionService {
         Properties properties = new Properties();
         ctxName = ctxName.toLowerCase();
         try {
-            properties.load(VersionService.class.getResourceAsStream("/" + ctxName + "_version.properties"));
+            properties.load(FileUtil.getResource(ctxName + "_version.properties"));
         } catch (IOException | NullPointerException e) {
             this.logger.warn("Could not find version file for context: " + ctxName + "!");
             return null;
