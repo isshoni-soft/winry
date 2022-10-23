@@ -27,8 +27,6 @@ public class VersionService {
 
         loadVersionFor("winry");
 
-        this.logger.info("Detected Winry version: " + getWinryVersion());
-
         loadVersionFor(this.context.getFileName());
     }
 
