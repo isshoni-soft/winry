@@ -4,7 +4,7 @@ import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.reflection.ReflectedModifier;
@@ -86,6 +86,7 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     public void setObject(Object object) {
+        LOGGER.debug("Set Object: " + object);
         this.object = object;
     }
 

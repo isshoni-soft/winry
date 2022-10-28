@@ -133,15 +133,8 @@ public class ElementBootstrapper implements IElementBootstrapper {
         Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
         Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
 
-        Constructor<T> constructor = (Constructor<T>) this.annotationManager.discoverConstructor(constructed);
-
-        if (Objects.isNull(constructor)) {
-            throw new RuntimeException("Constructor for " + constructed + " is null!");
-        }
-
-        LOGGER.debug("Class: new " + constructed.getName() + "()");
         try {
-            return this.annotationManager.execute(constructor, null);
+            return this.annotationManager.construct(constructed);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@ package tv.isshoni.winry.reflection;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -28,6 +29,30 @@ public enum ReflectedModifier {
 
     public static String toString(Member member) {
         return Modifier.toString(member.getModifiers());
+    }
+
+    public static boolean isPrivate(Member member) {
+        return hasModifiers(member, PRIVATE);
+    }
+
+    public static boolean isPublic(Member member) {
+        return hasModifiers(member, PUBLIC);
+    }
+
+    public static boolean isProtected(Member member) {
+        return hasModifiers(member, PROTECTED);
+    }
+
+    public static boolean hasModifiers(Member member, ReflectedModifier... modifiers) {
+        return hasModifiers(member.getModifiers(), modifiers);
+    }
+
+    public static boolean hasModifiers(Class<?> clazz, ReflectedModifier... modifiers) {
+        return hasModifiers(clazz.getModifiers(), modifiers);
+    }
+
+    public static boolean hasModifiers(int modifiers, ReflectedModifier... expected) {
+        return getModifiers(modifiers).containsAll(Arrays.asList(expected));
     }
 
     public static Set<ReflectedModifier> getModifiers(Class<?> clazz) {

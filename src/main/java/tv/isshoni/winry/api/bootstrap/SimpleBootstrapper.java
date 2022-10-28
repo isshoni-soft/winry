@@ -146,6 +146,7 @@ public class SimpleBootstrapper implements IBootstrapper {
                     LOGGER.debug("Discovered " + c.getMethods().size() + " methods");
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
+                .peek(getContext()::registerToContext)
                 .peek(IBootstrappedElement::transform)
                 .cast(IExecutable.class)
                 .collect(Collectors.toList());

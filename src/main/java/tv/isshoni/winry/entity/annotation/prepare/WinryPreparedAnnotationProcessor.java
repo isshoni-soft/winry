@@ -1,11 +1,12 @@
-package tv.isshoni.winry.entity.annotation;
+package tv.isshoni.winry.entity.annotation.prepare;
 
 import tv.isshoni.araragi.annotation.model.SimplePreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class WinryPreparedAnnotationProcessor extends SimplePreparedAnnotationProcessor implements IWinryPreparedAnnotationProcessor {
+public class WinryPreparedAnnotationProcessor extends SimplePreparedAnnotationProcessor implements IWinryPreparedAnnotationProcessor<IWinryAnnotationProcessor<Annotation>> {
 
     public WinryPreparedAnnotationProcessor(Annotation annotation, AnnotatedElement element, IWinryAnnotationProcessor<Annotation> processor) {
         super(annotation, element, processor);

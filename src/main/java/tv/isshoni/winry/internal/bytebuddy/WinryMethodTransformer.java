@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.bytebuddy;
 
 import net.bytebuddy.dynamic.DynamicType;
 import tv.isshoni.araragi.data.Pair;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
@@ -17,13 +18,17 @@ import static net.bytebuddy.implementation.MethodDelegation.to;
 
 public class WinryMethodTransformer implements MethodTransformingPlan {
 
+    private static AraragiLogger logger;
+
     private final List<Pair<MethodDelegator, Integer>> delegators;
 
     private final List<Function<DynamicType.Builder.MethodDefinition.ParameterDefinition, DynamicType.Builder.MethodDefinition.ParameterDefinition>> parameterTransformers;
 
     private boolean removeParameters = false;
 
-    public WinryMethodTransformer() {
+    public WinryMethodTransformer(BootstrappedMethod method) {
+        logger = method.getWinryContext().getLoggerFactory().createLogger("WinryMethodTransformer");
+
         this.delegators = new LinkedList<>();
         this.parameterTransformers = new LinkedList<>();
     }
@@ -57,12 +62,14 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
     }
 
     public static DynamicType.Builder.MethodDefinition.ParameterDefinition<?> methodHeader(Method element, DynamicType.Builder<?> builder) {
+        logger.debug("Building method transformer: " + element.getName());
         return builder.defineMethod(element.getName(), element.getReturnType(), element.getModifiers());
     }
 
     public static DynamicType.Builder.MethodDefinition.ParameterDefinition<?> parametersFrom(Method element, DynamicType.Builder.MethodDefinition.ParameterDefinition<?> builder) {
         for (Parameter parameter : element.getParameters()) {
-            builder = builder.withParameter(parameter.getType(), parameter.getName(), parameter.getModifiers())
+            builder = builder.withParameter(parameter.getParameterizedType(), parameter.getName(),
+                            parameter.getModifiers())
                     .annotateParameter(parameter.getDeclaredAnnotations());
         }
 

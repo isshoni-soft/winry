@@ -24,7 +24,7 @@ public interface ITransformingBlueprint {
 
     FieldTransformingPlan getFieldTransformingPlan(Field field);
 
-    MethodTransformingPlan supplyDefaultMethodTransformingPlan();
+    MethodTransformingPlan supplyDefaultMethodTransformingPlan(BootstrappedMethod method);
 
     FieldTransformingPlan supplyDefaultFieldTransformingPlan();
 

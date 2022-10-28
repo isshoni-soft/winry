@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.MethodCall;
@@ -18,6 +19,7 @@ import tv.isshoni.winry.entity.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.reflection.ReflectedModifier;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -60,6 +62,11 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     public void transform() {
         LOGGER.debug("Transforming: " + this.bootstrappedClass.getDisplay());
 
+        String packageName = this.bootstrappedClass.getBootstrappedElement().getCanonicalName();
+        packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+
+        LOGGER.debug("Found package: " + packageName);
+
         DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.bootstrappedClass.getBootstrappedElement(), ConstructorStrategy.Default.NO_CONSTRUCTORS)
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
@@ -70,7 +77,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
             for (int x = 0; x < constructor.getParameters().length; x++) {
                 Parameter current = constructor.getParameters()[x];
 
-                defineParameters = defineParameters.withParameter(current.getType(), current.getName())
+                defineParameters = defineParameters.withParameter(current.getParameterizedType(), current.getName())
                         .annotateParameter(current.getAnnotations());
 
                 LOGGER.debug("Attaching " + Arrays.toString(current.getAnnotations()) + " to " + current.getName() + " in " + constructor);
@@ -93,19 +100,20 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
             builder = executeTransformation(builder, method, this.elementBootstrapper.getBootstrappedMethod(method), entry.getValue());
         }
 
-        List<Method> portedMethods = Streams.to(this.bootstrappedClass.getBootstrappedElement().getDeclaredMethods())
+        List<Method> unPortedMethods = Streams.to(this.bootstrappedClass.getBootstrappedElement().getDeclaredMethods())
                 .filterInverted(this.methodTransformers::containsKey)
+                .filterInverted(ReflectedModifier::isPrivate)
                 .toList();
 
-        for (Method method : portedMethods) {
+        for (Method method : unPortedMethods) {
             builder = WinryMethodTransformer.replicateMethod(method, builder)
                     .intercept(MethodCall.invoke(method).onSuper().withAllArguments());
         }
 
         this.bootstrappedClass.setWrappedClass(builder
-                .name("WinryWrapped" + this.bootstrappedClass.getBootstrappedElement().getSimpleName())
+                .name(packageName + ".WinryWrapped" + this.bootstrappedClass.getBootstrappedElement().getSimpleName())
                 .make()
-                .load(ClassLoader.getSystemClassLoader())
+                .load(ClassLoader.getSystemClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded());
     }
 
@@ -142,7 +150,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
         MethodTransformingPlan transformer;
 
         if (!this.methodTransformers.containsKey(method)) {
-            transformer = supplyDefaultMethodTransformingPlan();
+            transformer = supplyDefaultMethodTransformingPlan(this.elementBootstrapper.getBootstrappedMethod(method));
             this.methodTransformers.put(method, transformer);
         } else {
             transformer = this.methodTransformers.get(method);
@@ -166,8 +174,8 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     }
 
     @Override
-    public MethodTransformingPlan supplyDefaultMethodTransformingPlan() {
-        return new WinryMethodTransformer();
+    public MethodTransformingPlan supplyDefaultMethodTransformingPlan(BootstrappedMethod method) {
+        return new WinryMethodTransformer(method);
     }
 
     @Override

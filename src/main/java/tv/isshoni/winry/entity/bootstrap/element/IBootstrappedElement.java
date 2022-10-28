@@ -4,7 +4,7 @@ import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
-import tv.isshoni.winry.entity.annotation.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.reflection.ReflectedModifier;
 

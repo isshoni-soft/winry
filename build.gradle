@@ -22,6 +22,7 @@ dependencies {
 
     implementation 'net.oneandone.reflections8:reflections8:0.11.7'
     implementation "net.bytebuddy:byte-buddy:$bytebuddy_version"
+    implementation "net.bytebuddy:byte-buddy-agent:$bytebuddy_version"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:4.5.1'
