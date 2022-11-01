@@ -28,13 +28,9 @@ public class WinryBytebuddyDelegator {
     }
 
     @RuntimeType
-    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) {
+    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) throws Exception {
         if (this.delegators.isEmpty()) {
-            try {
-                return zuper.call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            return zuper.call();
         }
 
         MethodDelegator delegator = this.delegators.poll();

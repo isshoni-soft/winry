@@ -70,10 +70,17 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public <T extends IEvent> T fire(Class<T> clazz) {
+        T event;
         try {
-            return fire(this.annotationManager.construct(clazz));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+            event = this.annotationManager.construct(clazz);
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Encountered exception during event construction", throwable);
+        }
+
+        try {
+            return fire(event);
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Encountered exception while firing event: " + event.getName(), throwable);
         }
     }
 
