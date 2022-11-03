@@ -48,7 +48,11 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
     }
 
     public DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> buildMethod(Method element, DynamicType.Builder<?> builder) {
-        return replicateMethod(element, builder);
+        if (!this.removeParameters) {
+            return replicateMethod(element, builder);
+        } else {
+            return methodHeader(element, builder);
+        }
     }
 
     @Override
