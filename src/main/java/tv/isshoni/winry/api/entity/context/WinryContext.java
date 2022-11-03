@@ -1,19 +1,25 @@
 package tv.isshoni.winry.api.entity.context;
 
-import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.annotation.inject.IInjectionRegistry;
+import tv.isshoni.winry.entity.async.IWinryAsyncManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.entity.event.IEventBus;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,7 +60,7 @@ public class WinryContext implements IWinryContext {
 
     private final IElementBootstrapper elementBootstrapper;
 
-    private final IAsyncManager asyncManager;
+    private final IWinryAsyncManager asyncManager;
 
     private final IEventBus eventBus;
 
@@ -145,7 +151,7 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
-    public IAsyncManager getAsyncManager() {
+    public IWinryAsyncManager getAsyncManager() {
         return this.asyncManager;
     }
 
@@ -188,7 +194,7 @@ public class WinryContext implements IWinryContext {
         private IWinryAnnotationManager annotationManager;
         private ILoggerFactory loggerFactory;
         private IElementBootstrapper elementBootstrapper;
-        private IAsyncManager asyncManager;
+        private IWinryAsyncManager asyncManager;
         private IEventBus eventBus;
         private IInjectionRegistry injectionRegistry;
 
@@ -209,7 +215,7 @@ public class WinryContext implements IWinryContext {
             return this;
         }
 
-        public Builder asyncManager(IAsyncManager asyncManager) {
+        public Builder asyncManager(IWinryAsyncManager asyncManager) {
             this.asyncManager = asyncManager;
             return this;
         }

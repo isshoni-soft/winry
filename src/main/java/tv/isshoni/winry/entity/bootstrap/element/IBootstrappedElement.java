@@ -6,7 +6,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
 import tv.isshoni.winry.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

@@ -22,5 +22,7 @@ public @interface Listener {
 
     boolean ignoreCancelled() default false;
 
+    boolean needsMainThread() default false;
+
     interface DummyEvent extends IEvent { }
 }

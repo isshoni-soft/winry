@@ -1,13 +1,13 @@
 package tv.isshoni.winry.api.bootstrap;
 
 import org.reflections8.Reflections;
-import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
 import tv.isshoni.winry.api.entity.context.WinryContext;
 import tv.isshoni.winry.api.entity.executable.IExecutable;
+import tv.isshoni.winry.entity.async.IWinryAsyncManager;
 import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
@@ -16,7 +16,7 @@ import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
-import tv.isshoni.winry.reflection.ReflectionUtil;
+import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SimpleBootstrapper implements IBootstrapper {
+public class WinryBootstrapper implements IBootstrapper {
 
     private static AraragiLogger LOGGER;
 
@@ -36,11 +36,10 @@ public class SimpleBootstrapper implements IBootstrapper {
 
     private Map<Class<?>, Object> provided;
 
-    public SimpleBootstrapper(Bootstrap bootstrap) {
+    public WinryBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
-        AsyncManager asyncManager = new AsyncManager();
         ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory);
 
         this.context = WinryContext.builder(bootstrap, this)
@@ -170,10 +169,12 @@ public class SimpleBootstrapper implements IBootstrapper {
 
             Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
+                    .peek(c -> LOGGER.debug("Found: " + c.getName()))
                     .addTo(classes);
         }
 
         LOGGER.debug("Discovered " + classes.size() + " classes!");
+        classes.forEach(c -> LOGGER.debug("Discovered: " + c.getName()));
         LOGGER.debug("Performing bootstrap...");
         classes.forEach(this.getContext().getElementBootstrapper()::bootstrap);
 

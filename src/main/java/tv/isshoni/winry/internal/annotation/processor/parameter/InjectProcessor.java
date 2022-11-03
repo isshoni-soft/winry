@@ -26,7 +26,12 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
     @Override
     public void executeField(BootstrappedField field, Inject inject) {
-        Object injected = getInjected(inject, field.getTarget());
+        Object injected;
+        if (field.getTarget() == null) {
+            injected = getInjected(inject, field.getBootstrappedElement().getType());
+        } else {
+            injected = getInjected(inject, field.getTarget());
+        }
 
         if (injected == null) {
             throw new IllegalStateException("Cannot find desired injected value for: " + field.getTarget().getDisplay() + "!");
@@ -54,6 +59,14 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
     public Object getInjected(Inject annotation, Class<?> clazz) {
         Object injected;
+
+        LOGGER.debug("Getting injected for type: " + clazz);
+        if (IWinryContext.class.isAssignableFrom(clazz) || clazz.equals(IWinryContext.class)) {
+            LOGGER.info("Injecting context...");
+            return this.context;
+        }
+        LOGGER.info("Injecting other....");
+
         if (annotation.value().equals(Inject.DEFAULT)) { // No perceivable change in initial functionality
             injected = getInjected(clazz);
         } else {

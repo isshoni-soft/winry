@@ -1,4 +1,4 @@
-package tv.isshoni.winry.reflection;
+package tv.isshoni.winry.internal.util.reflection;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;

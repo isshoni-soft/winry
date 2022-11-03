@@ -1,6 +1,5 @@
 package tv.isshoni.winry.internal.event;
 
-import tv.isshoni.araragi.async.IAsyncManager;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.ExecutableEvent;
@@ -9,6 +8,7 @@ import tv.isshoni.winry.api.entity.event.ICancellable;
 import tv.isshoni.winry.api.entity.event.IEvent;
 import tv.isshoni.winry.api.entity.event.WinryEventExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.entity.async.IWinryAsyncManager;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.event.IEventBus;
 import tv.isshoni.winry.entity.event.IEventHandler;
@@ -29,12 +29,12 @@ public class WinryEventBus implements IEventBus {
 
     private final List<WinryEventExecutable<?>> executableEvents;
 
-    private final IAsyncManager asyncManager;
+    private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
 
     private final AraragiLogger LOGGER;
 
-    public WinryEventBus(IAsyncManager asyncManager, ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
+    public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
         this.asyncManager = asyncManager;
         this.annotationManager = annotationManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
@@ -54,13 +54,17 @@ public class WinryEventBus implements IEventBus {
                 }
             }
 
-            h.execute(event);
+            if (h.needsMainThread()) {
+                // TODO: Submit execute to main thread.
+            } else {
+                h.execute(event);
+            }
         };
-        Consumer<? super IEventHandler> consumer;
+
+        Consumer<? super IEventHandler> consumer = runner;
+
         if (event.isAsync()) {
             consumer = h -> this.asyncManager.submit(() -> runner.accept(h));
-        } else {
-            consumer = runner;
         }
 
         handlers.forEach(consumer);

@@ -1,8 +1,4 @@
-package tv.isshoni.winry.reflection;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+package tv.isshoni.winry.internal.util.reflection;
 
 import org.reflections8.Reflections;
 import org.reflections8.scanners.ResourcesScanner;
@@ -11,7 +7,20 @@ import org.reflections8.scanners.TypeAnnotationsScanner;
 import org.reflections8.util.ConfigurationBuilder;
 import org.reflections8.util.FilterBuilder;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
 public class ReflectionUtil {
+
+    public static boolean hasConstructor(Class<?> clazz, Class<?>... parameters) {
+        try {
+            clazz.getConstructor(parameters);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
 
     public static Reflections classFinder(String[] packages, Class<?>... references) {
         FilterBuilder filter = new FilterBuilder().includePackage(packages);

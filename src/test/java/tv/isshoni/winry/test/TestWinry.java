@@ -1,12 +1,13 @@
 package tv.isshoni.winry.test;
 
-import static org.junit.Assert.fail;
-
+import org.junit.Test;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.api.entity.context.WinryContext;
 import tv.isshoni.winry.test.model.TestBootstrappedClass;
 
-import org.junit.Test;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.fail;
 
 public class TestWinry {
 
@@ -14,7 +15,12 @@ public class TestWinry {
     public void testBootstrapper() {
         TestCaseService service = new TestCaseService();
 
-        Winry.bootstrap(TestBootstrappedClass.class, service);
+        try {
+            Winry.bootstrap(TestBootstrappedClass.class, service);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            fail("Bootstrap method threw an exception!");
+        }
 
         if (!service.hasRun()) {
             fail("No bootstrapped methods were executed!");

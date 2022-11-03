@@ -14,6 +14,7 @@ import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.service.AsyncService;
 import tv.isshoni.winry.api.service.VersionService;
 import tv.isshoni.winry.test.TestBootstrapper;
 import tv.isshoni.winry.test.TestCaseService;
@@ -25,9 +26,10 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @Bootstrap(
-        value = "Winry Testing",
+        name = "Winry Testing",
         bootstrapper = TestBootstrapper.class,
         loader = @Loader(
                 loadPackage = { "tv.isshoni.winry.test.model.service" },
@@ -41,6 +43,8 @@ public class TestBootstrappedClass {
     @Inject private TestInjectedClass injectedClass;
     @Inject private TestCaseService testService;
     @Inject private OneLastTestService oneLastService;
+
+    @Inject private AsyncService asyncService;
 
     @Listener(WinryPreInitEvent.class)
     public void preInitRun(@Inject VersionService service) {
@@ -63,6 +67,13 @@ public class TestBootstrappedClass {
         assertEquals(5, this.injectedClass.getTest());
 
         this.injectedClass.testProfiling();
+
+        LOGGER.info("Current thread id is: " + Thread.currentThread().getId() + " testing if main thread runner works...");
+        this.asyncService.onMain(() -> {
+            if (Thread.currentThread().getId() != 1) {
+                fail("AsyncService.onMain not running on thread id 1");
+            }
+        });
     }
 
     @Listener(TestEvent.class)

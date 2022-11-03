@@ -6,7 +6,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.api.entity.context.IWinryContext;
-import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
 
 import java.lang.reflect.Field;
 

@@ -44,4 +44,9 @@ public class WinryEventHandler implements IEventHandler {
     public boolean shouldIgnoreCancelled() {
         return this.listener.ignoreCancelled();
     }
+
+    @Override
+    public boolean needsMainThread() {
+        return this.listener.needsMainThread();
+    }
 }

@@ -1,16 +1,17 @@
 package tv.isshoni.winry.test;
 
 import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.bootstrap.SimpleBootstrapper;
+import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
+import tv.isshoni.winry.entity.async.IWinryAsyncManager;
 
 import java.util.Map;
 
-public class TestBootstrapper extends SimpleBootstrapper {
+public class TestBootstrapper extends WinryBootstrapper {
 
     private boolean run;
 
-    public TestBootstrapper(Bootstrap bootstrap) {
-        super(bootstrap);
+    public TestBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
+        super(bootstrap, asyncManager);
 
         this.run = false;
     }

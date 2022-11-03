@@ -3,13 +3,15 @@ package tv.isshoni.winry.internal.bytebuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -46,14 +48,7 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
     }
 
     public DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> buildMethod(Method element, DynamicType.Builder<?> builder) {
-        DynamicType.Builder.MethodDefinition.ParameterDefinition<?> methodHeader = methodHeader(element, builder);
-
-        if (this.parameterTransformers.isEmpty() && !this.removeParameters) {
-            return parametersFrom(element, methodHeader);
-        } else {
-            return Streams.to(this.parameterTransformers)
-                    .collapse(Function::apply, methodHeader);
-        }
+        return replicateMethod(element, builder);
     }
 
     @Override
@@ -62,23 +57,44 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
     }
 
     public static DynamicType.Builder.MethodDefinition.ParameterDefinition<?> methodHeader(Method element, DynamicType.Builder<?> builder) {
-        logger.debug("Building method transformer: " + element.getName());
-        return builder.defineMethod(element.getName(), element.getReturnType(), element.getModifiers());
+        return builder.defineMethod(element.getName(), element.getGenericReturnType(), element.getModifiers());
     }
 
-    public static DynamicType.Builder.MethodDefinition.ParameterDefinition<?> parametersFrom(Method element, DynamicType.Builder.MethodDefinition.ParameterDefinition<?> builder) {
+    public static DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> parametersFrom(Method element, DynamicType.Builder.MethodDefinition.ParameterDefinition<?> builder) {
+        DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> result = builder;
+
+        // TODO: Look into if reusing builder here will screw us when a method has multiple parameters.
         for (Parameter parameter : element.getParameters()) {
-            builder = builder.withParameter(parameter.getParameterizedType(), parameter.getName(),
-                            parameter.getModifiers())
-                    .annotateParameter(parameter.getDeclaredAnnotations());
+            result = attachGenericsToParameter(parameter, builder
+                    .withParameter(parameter.getParameterizedType(), parameter.getName(), parameter.getModifiers())
+                    .annotateParameter(parameter.getDeclaredAnnotations()));
         }
 
-        return builder;
+        return result;
     }
 
     public static DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> replicateMethod(Method element, DynamicType.Builder<?> builder) {
-        DynamicType.Builder.MethodDefinition.ParameterDefinition<?> header = methodHeader(element, builder);
+        logger.debug("Replicating method: " + element);
+        return parametersFrom(element, methodHeader(element, builder));
+    }
 
-        return parametersFrom(element, header);
+    public static DynamicType.Builder.MethodDefinition.ImplementationDefinition<?> attachGenericsToParameter(Parameter parameter, DynamicType.Builder.MethodDefinition.TypeVariableDefinition<?> parameters) {
+        Type pt = parameter.getParameterizedType();
+
+        if (!(pt instanceof ParameterizedType)) {
+            return parameters;
+        }
+
+        logger.debug("-> Found generic parameter: " + parameter);
+
+        Type[] types = ((ParameterizedType) pt).getActualTypeArguments();
+
+        logger.debug("-> Found actual types: " + Arrays.toString(types));
+
+        for (Type actual : types) {
+            parameters = parameters.typeVariable(actual.getTypeName(), actual);
+        }
+
+        return parameters;
     }
 }

@@ -3,8 +3,6 @@ package tv.isshoni.winry.entity.event;
 import tv.isshoni.winry.api.entity.event.IEvent;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 
-import java.lang.reflect.Method;
-
 public interface IEventHandler extends Comparable<IEventHandler> {
 
     void execute(IEvent event);
@@ -16,6 +14,8 @@ public interface IEventHandler extends Comparable<IEventHandler> {
     int getWeight();
 
     boolean shouldIgnoreCancelled();
+
+    boolean needsMainThread();
 
     default int compareTo(IEventHandler o) {
         int weight = Integer.compare(this.getWeight(), o.getWeight());

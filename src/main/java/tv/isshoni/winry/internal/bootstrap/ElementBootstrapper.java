@@ -11,8 +11,8 @@ import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.reflection.ReflectedModifier;
-import tv.isshoni.winry.reflection.ReflectionUtil;
+import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
+import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
 import java.lang.reflect.*;
 import java.util.Collection;

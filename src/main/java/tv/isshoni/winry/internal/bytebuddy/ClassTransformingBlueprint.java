@@ -19,7 +19,7 @@ import tv.isshoni.winry.entity.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.entity.bytebuddy.ITransformingPlan;
 import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
-import tv.isshoni.winry.reflection.ReflectedModifier;
+import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
