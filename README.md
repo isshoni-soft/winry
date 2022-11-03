@@ -5,11 +5,35 @@ of Java applications to facilitate innovation while not wasting time on boilerpl
 
 Table of Contents
 -----------------
+- [Basic Usage](#basic-usage)
+- [Repository](#repository)
 - [About](#about)
 - [How it Works](#how-it-works)
-- [Basic Usage](#basic-usage)
 - [Advanced Usage](#advanced-usage)
 - [Theoretical Applications](#theoretical-applications)
+
+Basic Usage
+-----------
+TODO
+
+[Return to Table of Contents](#table-of-contents)
+
+Repository
+----------
+I have a maven repository where I publish builds, here is how you would import it as a dependency with gradle:
+```groovy
+repositories {
+    maven {
+        url = 'https://repo.isshoni.institute'
+    }
+}
+
+dependencies {
+    implementation 'tv.isshoni:winry:0.52.3'
+}
+```
+
+[Return to Table of Contents](#table-of-contents)
 
 About
 -----
@@ -19,12 +43,6 @@ TODO
 
 How it Works
 ------------
-TODO  
-  
-[Return to Table of Contents](#table-of-contents)
-
-Basic Usage
------------
 TODO  
   
 [Return to Table of Contents](#table-of-contents)
