@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+@Deprecated
 public enum ReflectedModifier {
     PUBLIC(Modifier::isPublic),
     PRIVATE(Modifier::isPrivate),

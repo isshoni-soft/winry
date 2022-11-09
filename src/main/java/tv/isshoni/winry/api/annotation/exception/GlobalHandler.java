@@ -1,4 +1,4 @@
-package tv.isshoni.winry.api.annotation;
+package tv.isshoni.winry.api.annotation.exception;
 
 import tv.isshoni.araragi.annotation.Weight;
 
@@ -8,9 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Weight(4) // TODO: Determine if this is a correct weight.
-public @interface ExceptionHandler {
-
-    Class<? extends Throwable> value();
+@Target(ElementType.TYPE)
+@Weight(2005000000)
+public @interface GlobalHandler {
+    boolean enforceSingleton() default false;
 }

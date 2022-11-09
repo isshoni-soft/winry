@@ -11,6 +11,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
+@Deprecated
 public class ReflectionUtil {
 
     public static boolean hasConstructor(Class<?> clazz, Class<?>... parameters) {
