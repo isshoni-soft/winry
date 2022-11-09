@@ -16,6 +16,8 @@ java {
 }
 
 dependencies {
+    compileOnly "javax.xml.bind:jaxb-api:$jaxb_version"
+
     implementation "tv.isshoni.araragi:core:$araragi_version"
     implementation "tv.isshoni.araragi:annotation:$araragi_version"
     implementation "tv.isshoni.araragi:logging:$araragi_version"
