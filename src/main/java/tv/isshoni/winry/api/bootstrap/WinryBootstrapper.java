@@ -2,21 +2,21 @@ package tv.isshoni.winry.api.bootstrap;
 
 import org.reflections8.Reflections;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;
-import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
-import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -167,7 +167,7 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("Searching " + Arrays.toString(packages) + " packages for classes...");
 
         if (packages.length > 0) {
-            Reflections reflections = ReflectionUtil.classFinder(packages, manual);
+            Reflections reflections = WinryAnnotationManager.classFinder(packages, manual);
 
             Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())

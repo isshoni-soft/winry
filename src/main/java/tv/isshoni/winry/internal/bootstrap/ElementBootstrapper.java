@@ -2,6 +2,9 @@ package tv.isshoni.winry.internal.bootstrap;
 
 import tv.isshoni.araragi.data.collection.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.araragi.reflect.ReflectionUtil;
+import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
@@ -10,11 +13,10 @@ import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
-import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
-import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

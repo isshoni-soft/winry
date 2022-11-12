@@ -2,12 +2,12 @@ package tv.isshoni.winry.internal.entity.bootstrap.element;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IContextual;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;

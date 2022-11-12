@@ -1,12 +1,12 @@
 package tv.isshoni.winry.internal.annotation.processor.field;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.annotation.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
 
 import java.lang.reflect.Field;
 

@@ -1,5 +1,11 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
+import org.reflections8.Reflections;
+import org.reflections8.scanners.ResourcesScanner;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
+import org.reflections8.util.FilterBuilder;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.internal.AnnotationManager;
 import tv.isshoni.araragi.annotation.model.IAnnotationDiscoverer;
@@ -125,5 +131,18 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public boolean isWinry(IPreparedAnnotationProcessor processor) {
         return IWinryPreparedAnnotationProcessor.class.isAssignableFrom(processor.getClass());
+    }
+
+    public static Reflections classFinder(String[] packages, Class<?>... references) {
+        FilterBuilder filter = new FilterBuilder().includePackage(packages);
+
+        for (Class<?> clazz : references) {
+            filter.includePackage(clazz);
+        }
+
+        return new Reflections(new ConfigurationBuilder()
+                .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new ResourcesScanner())
+                .forPackages(packages)
+                .filterInputsBy(filter));
     }
 }

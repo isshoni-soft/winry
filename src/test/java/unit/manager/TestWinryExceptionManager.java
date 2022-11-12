@@ -32,7 +32,7 @@ public class TestWinryExceptionManager {
         loggerFactory = mock(LoggerFactory.class);
 
         when(loggerFactory.createLogger(any(Class.class)))
-                .thenReturn(AraragiLogger.create("ExceptionManager"));
+                .thenReturn(mock(AraragiLogger.class));
     }
 
     @Before
