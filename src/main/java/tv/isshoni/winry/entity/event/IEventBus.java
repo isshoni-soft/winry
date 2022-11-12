@@ -3,7 +3,7 @@ package tv.isshoni.winry.entity.event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.entity.context.IContextual;
 import tv.isshoni.winry.api.entity.event.IEvent;
-import tv.isshoni.winry.api.entity.event.WinryEventExecutable;
+import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
 
 import java.util.List;

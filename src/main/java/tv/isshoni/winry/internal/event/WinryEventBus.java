@@ -6,7 +6,7 @@ import tv.isshoni.winry.api.annotation.ExecutableEvent;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.entity.event.ICancellable;
 import tv.isshoni.winry.api.entity.event.IEvent;
-import tv.isshoni.winry.api.entity.event.WinryEventExecutable;
+import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.entity.async.IWinryAsyncManager;
 import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;

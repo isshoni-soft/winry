@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.util;
 
+@Deprecated
 public class StringUtil {
 
     public static String getCharsForNumber(int i) {
