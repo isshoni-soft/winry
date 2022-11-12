@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.entity.exception;
 
+import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
 
 import java.lang.reflect.Method;
@@ -11,7 +12,9 @@ public interface IExceptionManager {
 
     void toss(Throwable throwable, Method context);
 
-    void register(Class<? extends IExceptionHandler<?>> handler);
+    void registerGlobal(Class<? extends IExceptionHandler<?>> clazz);
+
+    void registerGlobal(Class<? extends IExceptionHandler<?>> clazz, Handler handlerMeta);
 
     <E extends Throwable> List<IExceptionHandler<E>> getHandlersFor(Class<E> clazz);
 }

@@ -1,4 +1,4 @@
-package tv.isshoni.winry.test;
+package integration.test;
 
 import tv.isshoni.winry.api.annotation.Injected;
 

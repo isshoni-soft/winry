@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Weight(2005000000)
 public @interface Handler {
 
+    Class<? extends Throwable> value();
+
     boolean global() default false;
 
     boolean enforceSingleton() default false;

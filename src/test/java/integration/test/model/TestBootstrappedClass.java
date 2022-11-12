@@ -1,5 +1,7 @@
-package tv.isshoni.winry.test.model;
+package integration.test.model;
 
+import integration.test.event.TestEvent;
+import model.service.OneLastTestService;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.annotation.Bootstrap;
@@ -16,10 +18,8 @@ import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.async.AsyncService;
 import tv.isshoni.winry.api.service.VersionService;
-import tv.isshoni.winry.test.TestBootstrapper;
-import tv.isshoni.winry.test.TestCaseService;
-import tv.isshoni.winry.test.event.TestEvent;
-import tv.isshoni.winry.test.model.service.OneLastTestService;
+import integration.test.TestBootstrapper;
+import integration.test.TestCaseService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
         name = "Winry Testing",
         bootstrapper = TestBootstrapper.class,
         loader = @Loader(
-                loadPackage = { "tv.isshoni.winry.test.model.service" },
+                loadPackage = { "model.service" },
                 manualLoad = { TestInjectedClass.class }
         ),
         defaultLevel = Level.DEBUG)

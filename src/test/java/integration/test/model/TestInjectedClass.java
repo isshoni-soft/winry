@@ -1,4 +1,4 @@
-package tv.isshoni.winry.test.model;
+package integration.test.model;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.transformer.Async;

@@ -1,9 +1,9 @@
-package tv.isshoni.winry.test;
+package integration.test;
 
 import org.junit.Test;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.api.context.WinryContext;
-import tv.isshoni.winry.test.model.TestBootstrappedClass;
+import integration.test.model.TestBootstrappedClass;
 
 import java.util.concurrent.ExecutionException;
 

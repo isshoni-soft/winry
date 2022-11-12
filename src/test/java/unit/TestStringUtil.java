@@ -1,3 +1,5 @@
+package unit;
+
 import org.junit.Test;
 import tv.isshoni.winry.internal.util.StringUtil;
 
