@@ -1,6 +1,6 @@
 package tv.isshoni.winry.test.event;
 
-import tv.isshoni.winry.api.entity.event.WinryEvent;
+import tv.isshoni.winry.api.event.WinryEvent;
 
 public class TestEvent extends WinryEvent {
 

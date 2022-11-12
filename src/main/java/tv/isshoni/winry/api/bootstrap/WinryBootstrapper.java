@@ -4,17 +4,17 @@ import org.reflections8.Reflections;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
-import tv.isshoni.winry.api.WinryContext;
-import tv.isshoni.winry.api.entity.executable.IExecutable;
-import tv.isshoni.winry.entity.async.IWinryAsyncManager;
-import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.context.WinryContext;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
 import tv.isshoni.winry.internal.event.WinryEventBus;
+import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
@@ -39,10 +39,12 @@ public class WinryBootstrapper implements IBootstrapper {
     public WinryBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        WinryExceptionManager exceptionManager = new WinryExceptionManager(loggerFactory);
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
         ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory);
 
         this.context = WinryContext.builder(bootstrap, this)
+                .exceptionManager(exceptionManager)
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)

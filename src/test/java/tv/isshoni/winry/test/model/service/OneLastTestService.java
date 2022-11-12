@@ -1,14 +1,14 @@
 package tv.isshoni.winry.test.model.service;
 
-import static org.junit.Assert.assertNotNull;
-
 import tv.isshoni.araragi.logging.model.IAraragiLogger;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.test.model.TestInjectedClass;
+
+import static org.junit.Assert.assertNotNull;
 
 @Injected
 public class OneLastTestService {

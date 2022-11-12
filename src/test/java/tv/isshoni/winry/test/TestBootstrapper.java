@@ -2,7 +2,7 @@ package tv.isshoni.winry.test;
 
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.entity.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Map;
 

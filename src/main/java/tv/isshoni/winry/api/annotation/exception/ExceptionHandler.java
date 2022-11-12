@@ -1,7 +1,7 @@
 package tv.isshoni.winry.api.annotation.exception;
 
 import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.winry.entity.exception.IExceptionHandler;
+import tv.isshoni.winry.api.exception.IExceptionHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

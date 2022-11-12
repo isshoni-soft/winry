@@ -1,8 +1,7 @@
 package tv.isshoni.winry.api.bootstrap;
 
-import tv.isshoni.winry.api.entity.event.IEvent;
-import tv.isshoni.winry.api.entity.executable.IExecutable;
-import tv.isshoni.winry.entity.event.IEventBus;
+import tv.isshoni.winry.api.event.IEvent;
+import tv.isshoni.winry.internal.entity.event.IEventBus;
 
 public class WinryEventExecutable<T extends IEvent> implements IExecutable {
 

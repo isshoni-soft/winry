@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.async;
 
 import tv.isshoni.araragi.async.AsyncManager;
-import tv.isshoni.winry.entity.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Stack;
 import java.util.concurrent.Callable;
