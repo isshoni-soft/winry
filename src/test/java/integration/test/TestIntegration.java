@@ -5,7 +5,7 @@ import model.integration.TestCaseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import tv.isshoni.winry.Winry;
+import tv.isshoni.winry.api.Winry;
 import tv.isshoni.winry.api.context.WinryContext;
 
 import java.util.concurrent.ExecutionException;

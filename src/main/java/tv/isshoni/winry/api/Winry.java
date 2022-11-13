@@ -1,4 +1,4 @@
-package tv.isshoni.winry;
+package tv.isshoni.winry.api;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
