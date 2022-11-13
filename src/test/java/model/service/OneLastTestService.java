@@ -6,7 +6,7 @@ import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
-import integration.test.model.TestInjectedClass;
+import model.integration.model.TestInjectedClass;
 
 import static org.junit.Assert.assertNotNull;
 

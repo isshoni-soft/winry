@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.bootstrap;
 
-import tv.isshoni.araragi.data.collection.TypeMap;
+import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;

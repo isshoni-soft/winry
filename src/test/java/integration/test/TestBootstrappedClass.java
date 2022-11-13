@@ -1,6 +1,7 @@
-package integration.test.model;
+package integration.test;
 
-import integration.test.event.TestEvent;
+import model.integration.event.TestEvent;
+import model.integration.model.TestInjectedClass;
 import model.service.OneLastTestService;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
@@ -18,8 +19,8 @@ import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.async.AsyncService;
 import tv.isshoni.winry.api.service.VersionService;
-import integration.test.TestBootstrapper;
-import integration.test.TestCaseService;
+import model.integration.TestBootstrapper;
+import model.integration.TestCaseService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

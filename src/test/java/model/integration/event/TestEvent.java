@@ -1,4 +1,4 @@
-package integration.test.event;
+package model.integration.event;
 
 import tv.isshoni.winry.api.event.WinryEvent;
 

@@ -1,22 +1,39 @@
 package integration.test;
 
+import model.integration.TestBootstrapper;
+import model.integration.TestCaseService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import tv.isshoni.winry.Winry;
 import tv.isshoni.winry.api.context.WinryContext;
-import integration.test.model.TestBootstrappedClass;
 
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.fail;
 
-public class TestWinry {
+@RunWith(Parameterized.class)
+public class TestIntegration {
+
+    @Parameterized.Parameters
+    public static Object[][] testClasses() {
+        return new Object[][] {
+                { TestBootstrappedClass.class }
+        };
+    }
+
+    private final Class<?> bootstrapped;
+
+    public TestIntegration(Class<?> bootstrapped) {
+        this.bootstrapped = bootstrapped;
+    }
 
     @Test
     public void testBootstrapper() {
         TestCaseService service = new TestCaseService();
 
         try {
-            Winry.bootstrap(TestBootstrappedClass.class, service);
+            Winry.bootstrap(this.bootstrapped, service);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             fail("Bootstrap method threw an exception!");

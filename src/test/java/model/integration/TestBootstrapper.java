@@ -1,4 +1,4 @@
-package integration.test;
+package model.integration;
 
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;

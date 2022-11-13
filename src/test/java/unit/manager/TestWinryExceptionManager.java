@@ -16,6 +16,7 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,10 +42,7 @@ public class TestWinryExceptionManager {
     }
 
     @Test
-    public void testRegister() throws Throwable {
-        when(this.annotationManager.construct(RuntimeExceptionHandler.class))
-                .thenReturn(new RuntimeExceptionHandler());
-
+    public void testRegisterGlobal() {
         this.exceptionManager.registerGlobal(RuntimeExceptionHandler.class);
 
         assertEquals(1, this.exceptionManager.getGlobalHandlers().size());
@@ -56,5 +54,37 @@ public class TestWinryExceptionManager {
 
             lh.forEach(Assert::assertNotNull);
         });
+    }
+
+    @Test
+    public void testTossGloballyRegistered() throws Throwable {
+        RuntimeExceptionHandler mockHandler = mock(RuntimeExceptionHandler.class);
+
+        when(this.annotationManager.construct(RuntimeExceptionHandler.class))
+                .thenReturn(mockHandler);
+
+        this.exceptionManager.registerGlobal(RuntimeExceptionHandler.class);
+
+        RuntimeException exception = new RuntimeException();
+
+        this.exceptionManager.toss(exception);
+
+        verify(mockHandler).handle(any(RuntimeException.class));
+    }
+
+    @Test
+    public void testTossUnRegisteredMethod() throws Throwable {
+        RuntimeExceptionHandler mockHandler = mock(RuntimeExceptionHandler.class);
+
+        when(this.annotationManager.construct(RuntimeExceptionHandler.class))
+                .thenReturn(mockHandler);
+
+        this.exceptionManager.registerGlobal(RuntimeExceptionHandler.class);
+
+        RuntimeException exception = new RuntimeException();
+
+        this.exceptionManager.toss(exception, this.getClass().getDeclaredMethod("testTossUnRegisteredMethod"));
+
+        verify(mockHandler).handle(any(RuntimeException.class));
     }
 }

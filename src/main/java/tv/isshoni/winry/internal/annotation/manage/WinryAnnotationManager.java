@@ -41,8 +41,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
-        register(IWinryAnnotationProcessor.class, (annotation, element, processor) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor));
-        register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor));
+        register(IWinryAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor, manager));
+        register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor, manager));
     }
 
     @Override
