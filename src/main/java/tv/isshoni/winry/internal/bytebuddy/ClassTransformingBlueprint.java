@@ -17,6 +17,7 @@ import tv.isshoni.winry.internal.entity.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingPlan;
 import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -40,15 +41,18 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private final IElementBootstrapper elementBootstrapper;
 
+    private final IExceptionManager exceptionManager;
+
     private final Map<Field, FieldTransformingPlan> fieldTransformers;
 
     private final Map<Method, MethodTransformingPlan> methodTransformers;
 
     private ITransformingPlan<Class<?>, BootstrappedClass> classTransformer;
 
-    public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass) {
+    public ClassTransformingBlueprint(BootstrappedClass bootstrappedClass, IExceptionManager exceptionManager) {
         LOGGER = bootstrappedClass.getBootstrapper().getContext().getLoggerFactory().createLogger("ClassTransformingBlueprint");
         this.bootstrappedClass = bootstrappedClass;
+        this.exceptionManager = exceptionManager;
         this.elementBootstrapper = bootstrappedClass.getBootstrapper().getContext().getElementBootstrapper();
         this.methodTransformers = new HashMap<>();
         this.fieldTransformers = new HashMap<>();
@@ -159,7 +163,7 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     @Override
     public MethodTransformingPlan supplyDefaultMethodTransformingPlan(BootstrappedMethod method) {
-        return new WinryMethodTransformer(method);
+        return new WinryMethodTransformer(method, this.exceptionManager);
     }
 
     @Override
@@ -175,6 +179,16 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
     @Override
     public Map<Field, ITransformingPlan<Field, BootstrappedField>> getFieldTransformers() {
         return Collections.unmodifiableMap(this.fieldTransformers);
+    }
+
+    @Override
+    public boolean hasTransformers(Method method) {
+        return this.getMethodTransformers().containsKey(method);
+    }
+
+    @Override
+    public boolean hasTransformers(Field field) {
+        return this.getFieldTransformers().containsKey(field);
     }
 
     private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> DynamicType.Builder<?> executeTransformation(DynamicType.Builder<?> builder, E element, B bootstrapped, ITransformingPlan<E, B> plan) {

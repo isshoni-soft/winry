@@ -24,12 +24,7 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
         methodPlan.asWinry().ifPresentOrElse(mp -> mp.addDelegator((c, m, args, next) -> {
             Instant prev = Instant.now();
 
-            Object result = null;
-            try {
-                result = next.call();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Object result = next.get();
 
             LOGGER.debug("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;

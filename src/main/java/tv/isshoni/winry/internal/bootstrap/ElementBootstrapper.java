@@ -12,6 +12,7 @@ import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
 import java.lang.reflect.Field;
@@ -36,9 +37,12 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     private final IWinryAnnotationManager annotationManager;
 
-    public ElementBootstrapper(IBootstrapper bootstrapper, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
+    private final IExceptionManager exceptionManager;
+
+    public ElementBootstrapper(IBootstrapper bootstrapper, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory, IExceptionManager exceptionManager) {
         this.bootstrapper = bootstrapper;
         this.annotationManager = annotationManager;
+        this.exceptionManager = exceptionManager;
         this.bootstrappedClasses = new TypeMap<>();
         this.bootstrappedMethods = new HashMap<>();
         this.bootstrappedFields = new HashMap<>();
@@ -48,7 +52,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public ITransformingBlueprint supplyTransformingBlueprint(BootstrappedClass bootstrappedClass) {
-        return new ClassTransformingBlueprint(bootstrappedClass);
+        return new ClassTransformingBlueprint(bootstrappedClass, this.exceptionManager);
     }
 
     @Override

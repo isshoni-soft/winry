@@ -40,7 +40,7 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
         methodPlan.asWinry().ifPresentOrElse(mt ->
                 mt.addDelegator((c, m, args, next) ->
                         asyncManager.submit(() -> {
-                            Object result = next.call();
+                            Object result = next.get();
 
                             if (result instanceof Future) {
                                 return ((Future<?>) result).get();

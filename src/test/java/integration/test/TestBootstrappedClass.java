@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
         name = "Winry Testing",
         bootstrapper = TestBootstrapper.class,
         loader = @Loader(
-                loadPackage = { "model.service" },
+                loadPackage = { "model.service", "model.exception" },
                 manualLoad = { TestInjectedClass.class }
         ),
         defaultLevel = Level.DEBUG)

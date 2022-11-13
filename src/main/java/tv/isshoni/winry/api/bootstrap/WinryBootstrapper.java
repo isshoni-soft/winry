@@ -46,7 +46,7 @@ public class WinryBootstrapper implements IBootstrapper {
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
         WinryExceptionManager exceptionManager = new WinryExceptionManager(loggerFactory, annotationManager);
-        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory);
+        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory, exceptionManager);
 
         this.context = WinryContext.builder(bootstrap, this)
                 .exceptionManager(exceptionManager)
@@ -54,7 +54,7 @@ public class WinryBootstrapper implements IBootstrapper {
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
                 .elementBootstrapper(elementBootstrapper)
-                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager))
+                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, exceptionManager))
                 .injectionRegistry(new InjectionRegistry(elementBootstrapper))
                 .build();
 

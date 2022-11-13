@@ -40,7 +40,7 @@ public class OnMainProcessor implements IWinryAnnotationProcessor<OnMain> {
         methodPlan.asWinry().ifPresentOrElse(mt ->
                 mt.addDelegator((c, m, args, next) ->
                         asyncManager.submitToMain(() -> {
-                            Object result = next.call();
+                            Object result = next.get();
 
                             if (result instanceof Future) {
                                 return ((Future<?>) result).get();

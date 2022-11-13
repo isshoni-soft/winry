@@ -7,11 +7,13 @@ import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.event.IEventBus;
 import tv.isshoni.winry.internal.entity.event.IEventHandler;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
 import java.util.Collections;
@@ -31,12 +33,15 @@ public class WinryEventBus implements IEventBus {
 
     private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
+    private final IExceptionManager exceptionManager;
 
     private final AraragiLogger LOGGER;
 
-    public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
+    public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
+                         IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
         this.asyncManager = asyncManager;
         this.annotationManager = annotationManager;
+        this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
         this.executableEvents = new LinkedList<>();
         this.handlers = new HashMap<>();
@@ -47,6 +52,18 @@ public class WinryEventBus implements IEventBus {
         this.LOGGER.debug("Firing event: " + event.getName());
         List<IEventHandler> handlers = getHandlersFor(event);
 
+        Consumer<? super IEventHandler> execute = h -> {
+            try {
+                h.execute(event);
+            } catch (Throwable throwable) {
+                try {
+                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", IEvent.class));
+                } catch (NoSuchMethodException e) {
+                    throw new EventExecutionException(event.getClass(), e);
+                }
+            }
+        };
+
         Consumer<? super IEventHandler> runner = h -> {
             if (event instanceof ICancellable) {
                 if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
@@ -55,9 +72,9 @@ public class WinryEventBus implements IEventBus {
             }
 
             if (h.needsMainThread()) {
-                // TODO: Submit execute to main thread.
+                this.asyncManager.submitToMain(() -> execute.accept(h));
             } else {
-                h.execute(event);
+                execute.accept(h);
             }
         };
 
@@ -78,13 +95,17 @@ public class WinryEventBus implements IEventBus {
         try {
             event = this.annotationManager.construct(clazz);
         } catch (Throwable throwable) {
-            throw new RuntimeException("Encountered exception during event construction", throwable);
+            this.exceptionManager.toss(throwable);
+            throw new EventExecutionException(clazz, throwable);
         }
 
         try {
             return fire(event);
+        } catch (EventExecutionException e) {
+            throw e;
         } catch (Throwable throwable) {
-            throw new RuntimeException("Encountered exception while firing event: " + event.getName(), throwable);
+            this.exceptionManager.toss(throwable);
+            throw new EventExecutionException(clazz, throwable);
         }
     }
 
