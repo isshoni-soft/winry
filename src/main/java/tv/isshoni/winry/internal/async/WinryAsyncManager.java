@@ -33,6 +33,14 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public <T> Future<T> submitToMain(Callable<T> callable) {
+        if (isMainThread()) {
+            try {
+                return CompletableFuture.completedFuture(callable.call());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         CompletableFuture<T> future = new CompletableFuture<>();
         synchronized (this.calls) {
             this.calls.push(() -> {
@@ -50,6 +58,11 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public Future<?> submitToMain(Runnable runnable) {
+        if (isMainThread()) {
+            runnable.run();
+            return CompletableFuture.completedFuture("");
+        }
+
         CompletableFuture<String> future = new CompletableFuture<>();
         synchronized (this.calls) {
             this.calls.push(() -> {
