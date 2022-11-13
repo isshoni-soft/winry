@@ -1,6 +1,11 @@
 package tv.isshoni.winry.api.bootstrap;
 
 import org.reflections8.Reflections;
+import org.reflections8.scanners.ResourcesScanner;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
+import org.reflections8.util.FilterBuilder;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
@@ -167,10 +172,16 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("Searching " + Arrays.toString(packages) + " packages for classes...");
 
         if (packages.length > 0) {
-            Reflections reflections = WinryAnnotationManager.classFinder(packages, manual);
+            FilterBuilder filter = new FilterBuilder().includePackage(packages);
+
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new ResourcesScanner())
+                    .forPackages(packages)
+                    .filterInputsBy(filter));
 
             Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
+                    .add(Arrays.asList(manual))
                     .peek(c -> LOGGER.debug("Found: " + c.getName()))
                     .addTo(classes);
         }
