@@ -93,14 +93,14 @@ public class WinryBootstrapper implements IBootstrapper {
                 .peek(p -> LOGGER.debug("Injecting Executable: " + p.getDisplay()))
                 .addTo(run);
 
-        run = fuseEvents(run);
+        run = fuseExecutables(run);
 
         execute(run);
     }
 
-    public List<IExecutable> fuseEvents(List<IExecutable> run) {
+    public List<IExecutable> fuseExecutables(List<IExecutable> run) {
         return Streams.to(run)
-                .add(this.context.getEventBus().getExecutableEvents())
+                .add(this.context.getExecutables())
                 .distinct()
                 .sorted()
                 .toList();
@@ -111,26 +111,25 @@ public class WinryBootstrapper implements IBootstrapper {
         executables.forEach(r -> LOGGER.debug(r.getDisplay()));
         LOGGER.info("${dashes%50} Execution ${dashes%50}");
 
-        int index = 0;
+        List<IExecutable> executed = new LinkedList<>();
         boolean broken = false;
         for (IExecutable executable : executables) {
-            index++;
-            int prevEventSize = this.context.getEventBus().getExecutableEvents().size();
+            int prevEventSize = this.context.getExecutables().size();
             LOGGER.info("Executing: " + executable.getDisplay());
             executable.execute();
+            executed.add(executable);
 
-            if (prevEventSize < this.context.getEventBus().getExecutableEvents().size()) {
-                LOGGER.info("${dashes%10}> Detected new executable event registration, preforming executor hotswap...");
+            if (prevEventSize < this.context.getExecutables().size()) {
+                LOGGER.info("${dashes%10}> Detected new executable registration, preforming hotswap...");
                 broken = true;
                 break;
             }
         }
 
         if (broken) {
-            int oldSize = executables.size();
-            executables = fuseEvents(executables);
-            LOGGER.info("Rebooting from index: " + index + " with new length: " + executables.size() + " (was " + oldSize + ")");
-            execute(executables.subList(index, executables.size()));
+            executables = fuseExecutables(executables);
+            LOGGER.info("${dashes%10}> New executable list size: " + executables.size() + "; pruning: " + executed.size() + "...");
+            execute(Streams.to(executables).filterInverted(executed::contains).toList());
         }
     }
 

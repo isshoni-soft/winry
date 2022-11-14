@@ -29,8 +29,6 @@ public class WinryEventBus implements IEventBus {
 
     private final Map<Class<? extends IEvent>, List<IEventHandler>> handlers;
 
-    private final List<WinryEventExecutable<?>> executableEvents;
-
     private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
     private final IExceptionManager exceptionManager;
@@ -43,7 +41,6 @@ public class WinryEventBus implements IEventBus {
         this.annotationManager = annotationManager;
         this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
-        this.executableEvents = new LinkedList<>();
         this.handlers = new HashMap<>();
     }
 
@@ -120,12 +117,7 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public <T extends IEvent> void registerExecutable(Class<T> clazz, int weight) {
-        this.executableEvents.add(new WinryEventExecutable<>(clazz, weight, this));
-    }
-
-    @Override
-    public List<WinryEventExecutable<?>> getExecutableEvents() {
-        return Collections.unmodifiableList(this.executableEvents);
+        getWinryContext().registerExecutable(new WinryEventExecutable<>(clazz, weight, this));
     }
 
     @Override
