@@ -1,7 +1,8 @@
 package tv.isshoni.winry.internal.async;
 
 import tv.isshoni.araragi.async.AsyncManager;
-import tv.isshoni.winry.entity.async.IWinryAsyncManager;
+import tv.isshoni.araragi.exception.Exceptions;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Stack;
 import java.util.concurrent.Callable;
@@ -33,6 +34,14 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public <T> Future<T> submitToMain(Callable<T> callable) {
+        if (isMainThread()) {
+            try {
+                return CompletableFuture.completedFuture(callable.call());
+            } catch (Exception e) {
+                throw Exceptions.rethrow(e);
+            }
+        }
+
         CompletableFuture<T> future = new CompletableFuture<>();
         synchronized (this.calls) {
             this.calls.push(() -> {
@@ -50,6 +59,11 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public Future<?> submitToMain(Runnable runnable) {
+        if (isMainThread()) {
+            runnable.run();
+            return CompletableFuture.completedFuture("");
+        }
+
         CompletableFuture<String> future = new CompletableFuture<>();
         synchronized (this.calls) {
             this.calls.push(() -> {

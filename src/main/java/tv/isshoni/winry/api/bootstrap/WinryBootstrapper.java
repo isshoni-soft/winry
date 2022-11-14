@@ -1,22 +1,27 @@
 package tv.isshoni.winry.api.bootstrap;
 
 import org.reflections8.Reflections;
+import org.reflections8.scanners.ResourcesScanner;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
+import org.reflections8.util.FilterBuilder;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
-import tv.isshoni.winry.api.entity.context.WinryContext;
-import tv.isshoni.winry.api.entity.executable.IExecutable;
-import tv.isshoni.winry.entity.async.IWinryAsyncManager;
-import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.element.IBootstrappedElement;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.context.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.event.WinryEventBus;
+import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
-import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,14 +45,16 @@ public class WinryBootstrapper implements IBootstrapper {
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
-        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory);
+        WinryExceptionManager exceptionManager = new WinryExceptionManager(loggerFactory, annotationManager);
+        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory, exceptionManager);
 
         this.context = WinryContext.builder(bootstrap, this)
+                .exceptionManager(exceptionManager)
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
                 .elementBootstrapper(elementBootstrapper)
-                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager))
+                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, exceptionManager))
                 .injectionRegistry(new InjectionRegistry(elementBootstrapper))
                 .build();
 
@@ -165,10 +172,16 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("Searching " + Arrays.toString(packages) + " packages for classes...");
 
         if (packages.length > 0) {
-            Reflections reflections = ReflectionUtil.classFinder(packages, manual);
+            FilterBuilder filter = new FilterBuilder().includePackage(packages);
+
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new ResourcesScanner())
+                    .forPackages(packages)
+                    .filterInputsBy(filter));
 
             Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
                     .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
+                    .add(Arrays.asList(manual))
                     .peek(c -> LOGGER.debug("Found: " + c.getName()))
                     .addTo(classes);
         }

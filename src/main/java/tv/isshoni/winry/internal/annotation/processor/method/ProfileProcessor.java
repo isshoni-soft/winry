@@ -3,11 +3,11 @@ package tv.isshoni.winry.internal.annotation.processor.method;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.transformer.Profile;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
-import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
 
 import java.time.Instant;
 
@@ -24,12 +24,7 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
         methodPlan.asWinry().ifPresentOrElse(mp -> mp.addDelegator((c, m, args, next) -> {
             Instant prev = Instant.now();
 
-            Object result = null;
-            try {
-                result = next.call();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Object result = next.get();
 
             LOGGER.debug("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;

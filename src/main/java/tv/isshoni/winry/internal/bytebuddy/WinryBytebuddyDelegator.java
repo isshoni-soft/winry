@@ -7,7 +7,8 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.entity.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -18,9 +19,12 @@ import java.util.stream.Collectors;
 
 public class WinryBytebuddyDelegator {
 
+    private final IExceptionManager exceptionManager;
+
     private final Queue<MethodDelegator> delegators;
 
-    public WinryBytebuddyDelegator(List<Pair<MethodDelegator, Integer>> delegators) {
+    public WinryBytebuddyDelegator(List<Pair<MethodDelegator, Integer>> delegators, IExceptionManager exceptionManager) {
+        this.exceptionManager = exceptionManager;
         this.delegators = Streams.to(delegators, Streams.collectionToPairStream())
                 .sorted(Pair.compareSecond())
                 .mapFirst()
@@ -28,21 +32,21 @@ public class WinryBytebuddyDelegator {
     }
 
     @RuntimeType
-    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) throws Exception {
-        if (this.delegators.isEmpty()) {
-            return zuper.call();
-        }
+    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) {
+            if (this.delegators.isEmpty()) {
+                return this.exceptionManager.unboxCallable(zuper, method).get();
+            }
 
-        MethodDelegator delegator = this.delegators.poll();
-
-        return delegator.delegate(object, method, args, getNext(object, method, args, zuper));
+            return this.delegators.poll().delegate(object, method, args,
+                    this.exceptionManager.unboxCallable(getNext(object, method, args, zuper), method));
     }
 
     private Callable<Object> getNext(Object object, Method method, Object[] args, Callable<Object> zuper) {
         if (this.delegators.isEmpty()) {
             return zuper;
         } else {
-            return () -> this.delegators.poll().delegate(object, method, args, getNext(object, method, args, zuper));
+            return () -> this.delegators.poll().delegate(object, method, args,
+                    this.exceptionManager.unboxCallable(getNext(object, method, args, zuper), method));
         }
     }
 }

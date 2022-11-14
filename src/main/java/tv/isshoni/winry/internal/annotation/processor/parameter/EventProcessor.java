@@ -2,7 +2,7 @@ package tv.isshoni.winry.internal.annotation.processor.parameter;
 
 import tv.isshoni.araragi.annotation.model.IParameterSupplier;
 import tv.isshoni.winry.api.annotation.parameter.Event;
-import tv.isshoni.winry.api.entity.event.IEvent;
+import tv.isshoni.winry.api.event.IEvent;
 
 import java.lang.reflect.Parameter;
 import java.util.Map;

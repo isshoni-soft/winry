@@ -10,15 +10,15 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
-import tv.isshoni.winry.entity.annotation.IWinryAdvancedAnnotationProcessor;
-import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.entity.annotation.IWinryAnnotationProcessor;
-import tv.isshoni.winry.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.entity.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
-import tv.isshoni.winry.entity.annotation.prepare.WinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.IExecutableProvider;
-import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAdvancedAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.IExecutableProvider;
+import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -35,8 +35,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
-        register(IWinryAnnotationProcessor.class, (annotation, element, processor) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor));
-        register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor));
+        register(IWinryAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor, manager));
+        register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor, manager));
     }
 
     @Override
@@ -65,8 +65,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         ArrayList<String> result = new ArrayList<>(Arrays.asList(bootstrap.loader().loadPackage()));
 
         if (!bootstrap.disableDefaultPackage()) {
-            result.add("tv.isshoni.winry.api.annotation");
-            result.add("tv.isshoni.winry.api.service");
+            result.add("tv.isshoni.winry.api");
         }
 
         Streams.to(bootstrap.loader().manualLoad())

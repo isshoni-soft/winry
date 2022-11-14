@@ -3,7 +3,7 @@ package tv.isshoni.winry.internal.logging;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.ILevel;
 import tv.isshoni.araragi.logging.model.level.Level;
-import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
 public class LoggerFactory implements ILoggerFactory {
 
@@ -24,6 +24,11 @@ public class LoggerFactory implements ILoggerFactory {
         result.setLevel(this.level);
 
         return result;
+    }
+
+    @Override
+    public AraragiLogger createLogger(Class<?> clazz) {
+        return createLogger(clazz.getSimpleName());
     }
 
     @Override

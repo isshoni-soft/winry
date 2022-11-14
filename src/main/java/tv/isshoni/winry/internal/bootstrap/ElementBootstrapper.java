@@ -1,20 +1,24 @@
 package tv.isshoni.winry.internal.bootstrap;
 
-import tv.isshoni.araragi.data.collection.TypeMap;
+import tv.isshoni.araragi.data.collection.map.TypeMap;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.IElementBootstrapper;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.entity.logging.ILoggerFactory;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.internal.bytebuddy.ClassTransformingBlueprint;
-import tv.isshoni.winry.internal.util.reflection.ReflectedModifier;
-import tv.isshoni.winry.internal.util.reflection.ReflectionUtil;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
+import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +38,12 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     private final IWinryAnnotationManager annotationManager;
 
-    public ElementBootstrapper(IBootstrapper bootstrapper, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
+    private final IExceptionManager exceptionManager;
+
+    public ElementBootstrapper(IBootstrapper bootstrapper, IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory, IExceptionManager exceptionManager) {
         this.bootstrapper = bootstrapper;
         this.annotationManager = annotationManager;
+        this.exceptionManager = exceptionManager;
         this.bootstrappedClasses = new TypeMap<>();
         this.bootstrappedMethods = new HashMap<>();
         this.bootstrappedFields = new HashMap<>();
@@ -46,7 +53,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public ITransformingBlueprint supplyTransformingBlueprint(BootstrappedClass bootstrappedClass) {
-        return new ClassTransformingBlueprint(bootstrappedClass);
+        return new ClassTransformingBlueprint(bootstrappedClass, this.exceptionManager);
     }
 
     @Override
@@ -136,7 +143,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
         try {
             return this.annotationManager.construct(constructed);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw Exceptions.rethrow(e);
         }
     }
 
@@ -164,7 +171,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
             return result;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw Exceptions.rethrow(e);
         }
     }
 

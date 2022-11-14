@@ -5,9 +5,10 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.bytebuddy.MethodDelegator;
-import tv.isshoni.winry.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.entity.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -18,15 +19,18 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
 
     private static AraragiLogger logger;
 
+    private final IExceptionManager exceptionManager;
+
     private final List<Pair<MethodDelegator, Integer>> delegators;
 
     private final List<Function<DynamicType.Builder.MethodDefinition.ParameterDefinition, DynamicType.Builder.MethodDefinition.ParameterDefinition>> parameterTransformers;
 
     private boolean removeParameters = false;
 
-    public WinryMethodTransformer(BootstrappedMethod method) {
+    public WinryMethodTransformer(BootstrappedMethod method, IExceptionManager exceptionManager) {
         logger = method.getWinryContext().getLoggerFactory().createLogger("WinryMethodTransformer");
 
+        this.exceptionManager = exceptionManager;
         this.delegators = new LinkedList<>();
         this.parameterTransformers = new LinkedList<>();
     }
@@ -54,6 +58,6 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
             method = builder.method(ElementMatchers.is(element));
         }
 
-        return method.intercept(MethodDelegation.to(new WinryBytebuddyDelegator(this.delegators)));
+        return method.intercept(MethodDelegation.to(new WinryBytebuddyDelegator(this.delegators, this.exceptionManager)));
     }
 }

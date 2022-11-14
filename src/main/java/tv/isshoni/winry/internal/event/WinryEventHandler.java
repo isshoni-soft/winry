@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.event;
 
 import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.entity.event.IEvent;
-import tv.isshoni.winry.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.entity.event.IEventHandler;
+import tv.isshoni.winry.api.event.IEvent;
+import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.entity.event.IEventHandler;
 
 import java.util.HashMap;
 

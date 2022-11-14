@@ -4,7 +4,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.util.FileUtil;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.entity.context.IWinryContext;
+import tv.isshoni.winry.api.context.IWinryContext;
 
 import java.io.IOException;
 import java.util.HashMap;
