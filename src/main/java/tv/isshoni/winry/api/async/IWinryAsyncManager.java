@@ -15,4 +15,6 @@ public interface IWinryAsyncManager extends IAsyncManager {
     Future<?> submitToMain(Runnable runnable);
 
     <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException;
+
+    Runnable nextMainCall();
 }

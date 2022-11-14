@@ -94,7 +94,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
         while (!future.isDone()) {
             if (!this.calls.isEmpty()) {
-                this.calls.pop().run();
+                nextMainCall().run();
             } else {
                 synchronized (this.calls) {
                     try {
@@ -105,5 +105,10 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
         }
 
         return future.get();
+    }
+
+    @Override
+    public Runnable nextMainCall() {
+        return this.calls.pop();
     }
 }
