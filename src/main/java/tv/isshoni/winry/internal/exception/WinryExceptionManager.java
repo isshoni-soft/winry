@@ -4,11 +4,13 @@ import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
 import tv.isshoni.araragi.data.collection.map.SubMap;
 import tv.isshoni.araragi.data.collection.map.TypeMap;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
+import tv.isshoni.winry.api.exception.UnhandledException;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
@@ -19,6 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WinryExceptionManager implements IExceptionManager {
@@ -42,30 +47,87 @@ public class WinryExceptionManager implements IExceptionManager {
     }
 
     @Override
-    public void toss(Throwable throwable) {
-        getGlobalHandlersStream(throwable.getClass())
+    public <T extends Throwable> void toss(T throwable) {
+        if (!this.globalHandlers.containsKey(throwable.getClass())) {
+            if (!(throwable instanceof UnhandledException)) {
+                throw new UnhandledException(throwable);
+            } else {
+                throw (UnhandledException) throwable;
+            }
+        }
+
+        this.logger.debug("Tossing exception: " + throwable);
+
+        getGlobalHandlersFor((Class<T>) throwable.getClass()).stream()
+                .map(this::newOrSingleton)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .forEach(h -> h.handle(throwable));
     }
 
     @Override
-    public void toss(Throwable throwable, Method context) {
+    public <T extends Throwable> void toss(T throwable, Method context) {
         if (context == null || !this.methodHandlers.containsKey(context)) {
             toss(throwable);
             return;
         }
 
+        if (!this.methodHandlers.getOrDefault(context).containsKey(throwable.getClass()) && !this.globalHandlers.containsKey(throwable.getClass())) {
+            if (!(throwable instanceof UnhandledException)) {
+                throw new UnhandledException(throwable);
+            } else {
+                throw (UnhandledException) throwable;
+            }
+        }
+
+        this.logger.debug("Tossing exception: " + throwable + " with method context: " + context);
+
         Streams.to(this.methodHandlers.getOrDefault(context).getOrDefault(throwable.getClass(), new LinkedList<>()))
                 .map(eh -> {
                     if (eh.useSingleton()) {
-                        return getSingleton(eh.value());
+                        return getSingleton((Class<IExceptionHandler<T>>) eh.value());
                     } else {
-                        return newOrSingleton(eh.value());
+                        return newOrSingleton((Class<IExceptionHandler<T>>) eh.value());
                     }
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .add(getGlobalHandlersStream(throwable.getClass()).toList())
+                .add(getGlobalHandlersStream((Class<T>) throwable.getClass()).toList())
                 .forEach(h -> h.handle(throwable));
+    }
+
+    @Override
+    public <R> Supplier<R> unboxCallable(Callable<R> callable) {
+        return () -> {
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                try {
+                    this.toss(e);
+                } catch (UnhandledException e2) {
+                    throw Exceptions.rethrow(e2);
+                }
+            }
+
+            return null;
+        };
+    }
+
+    @Override
+    public <R> Supplier<R> unboxCallable(Callable<R> callable, Method context) {
+        return () -> {
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                try {
+                    this.toss(e, context);
+                } catch (UnhandledException e2) {
+                    throw Exceptions.rethrow(e2);
+                }
+            }
+
+            return null;
+        };
     }
 
     @Override
@@ -87,7 +149,7 @@ public class WinryExceptionManager implements IExceptionManager {
         try {
             this.globalHandlers.add(handlerMeta.value(), clazz);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw Exceptions.rethrow(e);
         }
     }
 
@@ -102,8 +164,10 @@ public class WinryExceptionManager implements IExceptionManager {
     }
 
     @Override
-    public List<Class<? extends IExceptionHandler<?>>> getGlobalHandlersFor(Class<? extends Throwable> clazz) {
-        return this.globalHandlers.get(clazz);
+    public <T extends Throwable> List<Class<? extends IExceptionHandler<T>>> getGlobalHandlersFor(Class<T> clazz) {
+        return Streams.to(this.globalHandlers.get(clazz))
+                .map(c -> (Class<? extends IExceptionHandler<T>>) c)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -111,7 +175,7 @@ public class WinryExceptionManager implements IExceptionManager {
         return Collections.unmodifiableMap(this.globalHandlers);
     }
 
-    public Optional<IExceptionHandler<Throwable>> newOrSingleton(Class<? extends IExceptionHandler<?>> clazz) {
+    public <T extends Throwable, H extends IExceptionHandler<T>> Optional<H> newOrSingleton(Class<H> clazz) {
         if (!clazz.isAnnotationPresent(Handler.class)) {
             throw new RuntimeException("IExceptionHandlers require @Handler metadata!");
         }
@@ -123,15 +187,15 @@ public class WinryExceptionManager implements IExceptionManager {
         }
 
         try {
-            return Optional.of((IExceptionHandler<Throwable>) this.annotationManager.construct(clazz));
+            return Optional.of(this.annotationManager.construct(clazz));
         } catch (Throwable e) {
             return Optional.empty();
         }
     }
 
-    public Optional<IExceptionHandler<Throwable>> getSingleton(Class<? extends IExceptionHandler<?>> clazz) {
+    public <T extends Throwable, H extends IExceptionHandler<T>> Optional<H> getSingleton(Class<H> clazz) {
         if (this.singletons.containsKey(clazz)) {
-            return Optional.ofNullable(this.singletons.get(clazz));
+            return Optional.ofNullable((H) this.singletons.get(clazz));
         }
 
         IExceptionHandler<Throwable> handler;
@@ -143,11 +207,11 @@ public class WinryExceptionManager implements IExceptionManager {
 
         this.singletons.put(clazz, handler);
 
-        return Optional.of(handler);
+        return Optional.of((H) handler);
     }
 
-    private Stream<IExceptionHandler<Throwable>> getGlobalHandlersStream(Class<? extends Throwable> clazz) {
-        return Streams.to(getGlobalHandlersFor(clazz))
+    private <T extends Throwable, H extends IExceptionHandler<T>> Stream<H> getGlobalHandlersStream(Class<T> clazz) {
+        return (Stream<H>) Streams.to(getGlobalHandlersFor(clazz))
                 .map(this::newOrSingleton)
                 .filter(Optional::isPresent)
                 .map(Optional::get);

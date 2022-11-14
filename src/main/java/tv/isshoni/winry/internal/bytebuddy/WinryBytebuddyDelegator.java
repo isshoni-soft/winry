@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class WinryBytebuddyDelegator {
@@ -33,33 +32,21 @@ public class WinryBytebuddyDelegator {
     }
 
     @RuntimeType
-    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) throws Exception {
-        try {
+    public Object executeMethod(@This Object object, @Origin Method method, @SuperCall Callable<Object> zuper, @AllArguments Object[] args) {
             if (this.delegators.isEmpty()) {
-                return zuper.call();
+                return this.exceptionManager.unboxCallable(zuper, method).get();
             }
 
-            MethodDelegator delegator = this.delegators.poll();
-
-            return delegator.delegate(object, method, args, getNext(object, method, args, () -> {
-                try {
-                    return zuper.call();
-                } catch (Exception e) {
-                    this.exceptionManager.toss(e, method);
-                    throw new RuntimeException(e);
-                }
-            }));
-        } catch (Throwable throwable) {
-            this.exceptionManager.toss(throwable, method);
-            throw throwable;
-        }
+            return this.delegators.poll().delegate(object, method, args,
+                    this.exceptionManager.unboxCallable(getNext(object, method, args, zuper), method));
     }
 
-    private Supplier<Object> getNext(Object object, Method method, Object[] args, Supplier<Object> zuper) {
+    private Callable<Object> getNext(Object object, Method method, Object[] args, Callable<Object> zuper) {
         if (this.delegators.isEmpty()) {
             return zuper;
         } else {
-            return () -> this.delegators.poll().delegate(object, method, args, getNext(object, method, args, zuper));
+            return () -> this.delegators.poll().delegate(object, method, args,
+                    this.exceptionManager.unboxCallable(getNext(object, method, args, zuper), method));
         }
     }
 }

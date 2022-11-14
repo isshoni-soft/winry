@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.bootstrap;
 
 import tv.isshoni.araragi.data.collection.map.TypeMap;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
@@ -142,7 +143,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
         try {
             return this.annotationManager.construct(constructed);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw Exceptions.rethrow(e);
         }
     }
 
@@ -170,7 +171,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
             return result;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw Exceptions.rethrow(e);
         }
     }
 

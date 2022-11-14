@@ -7,12 +7,19 @@ import tv.isshoni.winry.api.exception.IExceptionHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public interface IExceptionManager {
 
-    void toss(Throwable throwable);
+    <T extends Throwable> void toss(T throwable);
 
-    void toss(Throwable throwable, Method context);
+    <T extends Throwable> void toss(T throwable, Method context);
+
+    <R> Supplier<R> unboxCallable(Callable<R> callable);
+
+    <R> Supplier<R> unboxCallable(Callable<R> callable, Method context);
 
     void registerGlobal(Class<? extends IExceptionHandler<?>> clazz);
 
@@ -20,7 +27,9 @@ public interface IExceptionManager {
 
     void registerMethod(Method method, ExceptionHandler handler);
 
-    List<Class<? extends IExceptionHandler<?>>> getGlobalHandlersFor(Class<? extends Throwable> clazz);
+    <T extends Throwable> List<Class<? extends IExceptionHandler<T>>> getGlobalHandlersFor(Class<T> clazz);
 
     Map<Class<? extends Throwable>, List<Class<? extends IExceptionHandler<?>>>> getGlobalHandlers();
+
+    <T extends Throwable, H extends IExceptionHandler<T>> Optional<H> getSingleton(Class<H> clazz);
 }

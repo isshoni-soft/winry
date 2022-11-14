@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.async;
 
 import tv.isshoni.araragi.async.AsyncManager;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Stack;
@@ -37,7 +38,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
             try {
                 return CompletableFuture.completedFuture(callable.call());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw Exceptions.rethrow(e);
             }
         }
 

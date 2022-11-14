@@ -1,5 +1,9 @@
 package integration.test;
 
+import model.exception.TestException;
+import model.exception.TestExceptionHandler;
+import model.integration.TestBootstrapper;
+import model.integration.TestCaseService;
 import model.integration.event.TestEvent;
 import model.integration.model.TestInjectedClass;
 import model.service.OneLastTestService;
@@ -10,23 +14,23 @@ import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.annotation.Logger;
+import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.parameter.Event;
+import tv.isshoni.winry.api.async.AsyncService;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
-import tv.isshoni.winry.api.async.AsyncService;
 import tv.isshoni.winry.api.service.VersionService;
-import model.integration.TestBootstrapper;
-import model.integration.TestCaseService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @Bootstrap(
@@ -78,10 +82,13 @@ public class TestBootstrappedClass {
     }
 
     @Listener(TestEvent.class)
+    @ExceptionHandler(TestExceptionHandler.class)
     public void onTestEvent(@Event TestEvent event) {
         LOGGER.info("Test Event: " + event.getData());
 
         event.setData(event.getData() * 2);
+
+        throw new TestException();
     }
 
     @Listener(WinryPostInitEvent.class)
@@ -98,6 +105,10 @@ public class TestBootstrappedClass {
         assertEquals(1, this.injectedClass.getNumCalled());
         assertEquals(2, this.oneLastService.getInjectedClassVal());
         assertEquals(0, secondInjectedClass.getNumCalled());
+
+        assertTrue(context.getExceptionManager()
+                .getSingleton(TestExceptionHandler.class)
+                .map(TestExceptionHandler::hasRun).orElse(false));
     }
 
     @Listener(WinryShutdownEvent.class)
