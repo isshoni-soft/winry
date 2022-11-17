@@ -49,10 +49,10 @@ public class WinryExceptionManager implements IExceptionManager {
     @Override
     public <T extends Throwable> void toss(T throwable) {
         if (!this.globalHandlers.containsKey(throwable.getClass())) {
-            if (!(throwable instanceof UnhandledException)) {
-                throw new UnhandledException(throwable);
+            if (throwable instanceof RuntimeException) {
+                throw (RuntimeException) throwable;
             } else {
-                throw (UnhandledException) throwable;
+                throw new UnhandledException(throwable);
             }
         }
 
@@ -73,10 +73,10 @@ public class WinryExceptionManager implements IExceptionManager {
         }
 
         if (!this.methodHandlers.getOrDefault(context).containsKey(throwable.getClass()) && !this.globalHandlers.containsKey(throwable.getClass())) {
-            if (!(throwable instanceof UnhandledException)) {
-                throw new UnhandledException(throwable);
+            if (throwable instanceof RuntimeException) {
+                throw (RuntimeException) throwable;
             } else {
-                throw (UnhandledException) throwable;
+                throw new UnhandledException(throwable);
             }
         }
 
