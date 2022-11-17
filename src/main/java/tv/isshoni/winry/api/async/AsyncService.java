@@ -28,4 +28,8 @@ public class AsyncService {
     public <T> Future<T> async(Callable<T> callable) {
         return this.context.getAsyncManager().submit(callable);
     }
+
+    public Runnable nextMainCall() {
+        return this.context.getAsyncManager().nextMainCall();
+    }
 }
