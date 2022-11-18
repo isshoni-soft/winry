@@ -4,7 +4,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAdvancedAnnotationProcessor;
+import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
 

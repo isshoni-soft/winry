@@ -4,7 +4,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationProcessor;
+import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;

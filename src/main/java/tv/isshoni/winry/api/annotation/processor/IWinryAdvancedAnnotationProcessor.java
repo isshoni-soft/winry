@@ -1,4 +1,4 @@
-package tv.isshoni.winry.internal.entity.annotation;
+package tv.isshoni.winry.api.annotation.processor;
 
 import tv.isshoni.araragi.annotation.model.IParameterSupplier;
 

@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.entity.annotation.prepare;
 
 import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationProcessor;
+import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
