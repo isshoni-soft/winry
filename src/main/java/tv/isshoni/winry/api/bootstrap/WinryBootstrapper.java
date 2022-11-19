@@ -15,12 +15,10 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
-import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.event.WinryEventBus;
-import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 
 import java.util.Arrays;
@@ -41,21 +39,21 @@ public class WinryBootstrapper implements IBootstrapper {
 
     private Map<Class<?>, Object> provided;
 
+    private Class<?> bootstrapped;
+
     public WinryBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
-        WinryAnnotationManager annotationManager = new WinryAnnotationManager(loggerFactory, this);
-        WinryExceptionManager exceptionManager = new WinryExceptionManager(loggerFactory, annotationManager);
-        ElementBootstrapper elementBootstrapper = new ElementBootstrapper(this, annotationManager, loggerFactory, exceptionManager);
+        WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
 
         this.context = WinryContext.builder(bootstrap, this)
-                .exceptionManager(exceptionManager)
+                .exceptionManager(annotationManager.getExceptionManager())
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
-                .elementBootstrapper(elementBootstrapper)
-                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, exceptionManager))
-                .injectionRegistry(new InjectionRegistry(elementBootstrapper))
+                .elementBootstrapper(annotationManager.getElementBootstrapper())
+                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, annotationManager.getExceptionManager()))
+                .injectionRegistry(new InjectionRegistry(annotationManager.getElementBootstrapper()))
                 .build();
 
         LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");
@@ -73,15 +71,28 @@ public class WinryBootstrapper implements IBootstrapper {
 
     @Override
     public void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided) {
-        this.getContext().getAnnotationManager().initialize(bootstrap);
-
-        provided.values().forEach(this.getContext()::registerToContext);
-
+        this.bootstrapped = clazz;
         this.provided = Collections.unmodifiableMap(provided);
 
-        LOGGER.debug("${dashes%50} Element Bootstrapping ${dashes%50}");
-        bootstrapClasses(clazz, this.context.getAnnotationManager().getAllManuallyLoaded(bootstrap), this.context.getAnnotationManager().getAllLoadedPackages(bootstrap), provided);
+        LOGGER.debug("Attaching provided instances...");
+        provided.forEach((c, o) -> {
+            this.context.getElementBootstrapper().bootstrap(c);
+            BootstrappedClass bootstrapped = this.context.getElementBootstrapper().getBootstrappedClass(c);
+
+            bootstrapped.setProvided(true);
+            bootstrapped.setObject(o);
+            this.context.registerToContext(o);
+        });
+
+        LOGGER.debug("${dashes%50} Bootstrapping ${dashes%50}");
+        this.context.getAnnotationManager().initialize();
         LOGGER.debug("Finished class discovery and instantiation...");
+
+        LOGGER.debug("Recompiling annotations of provided bootstrapped classes...");
+        provided.forEach((c, o) ->
+                this.context.getElementBootstrapper().getBootstrappedClass(c).compileAnnotations());
+
+//        bootstrapClasses(clazz, this.context.getAnnotationManager().getAllManuallyLoaded(bootstrap), this.context.getAnnotationManager().getAllLoadedPackages(bootstrap), provided);
 
         List<IExecutable> run = compileRunList();
         Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
@@ -120,7 +131,7 @@ public class WinryBootstrapper implements IBootstrapper {
             executed.add(executable);
 
             if (prevEventSize < this.context.getExecutables().size()) {
-                LOGGER.info("${dashes%10}> Detected new executable registration, preforming hotswap...");
+                LOGGER.info("----------> Detected new executable registration, preforming hotswap...");
                 broken = true;
                 break;
             }
@@ -128,7 +139,7 @@ public class WinryBootstrapper implements IBootstrapper {
 
         if (broken) {
             executables = fuseExecutables(executables);
-            LOGGER.info("${dashes%10}> New executable list size: " + executables.size() + "; pruning: " + executed.size() + "...");
+            LOGGER.info("----------> New executable list size: " + executables.size() + "; pruning: " + executed.size() + "...");
             execute(Streams.to(executables).filterInverted(executed::contains).toList());
         }
     }
@@ -136,25 +147,30 @@ public class WinryBootstrapper implements IBootstrapper {
     @Override
     public List<IExecutable> compileRunList() {
         LOGGER.debug("Compiling run order...");
-        return Streams.to(this.getContext().getElementBootstrapper().getBootstrappedClasses())
+        return Streams.to(this.context.getElementBootstrapper().getBootstrappedClasses())
                 .peek((c -> {
                     LOGGER.debug("Finalizing: " + c.getBootstrappedElement().getName());
 
                     Streams.to(c.getBootstrappedElement().getDeclaredFields())
-                            .filter(this.getContext().getAnnotationManager()::hasManagedAnnotation)
-                            .forEach(this.getContext().getElementBootstrapper()::bootstrap);
+                            .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                            .forEach(this.context.getElementBootstrapper()::bootstrap);
                     LOGGER.debug("Discovered " + c.getFields().size() + " fields");
 
                     Streams.to(c.getBootstrappedElement().getDeclaredMethods())
-                            .filter(this.getContext().getAnnotationManager()::hasManagedAnnotation)
-                            .forEach(this.getContext().getElementBootstrapper()::bootstrap);
+                            .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                            .forEach(this.context.getElementBootstrapper()::bootstrap);
                     LOGGER.debug("Discovered " + c.getMethods().size() + " methods");
                 }))
                 .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
-                .peek(getContext()::registerToContext)
+                .peek(this.context::registerToContext)
                 .peek(IBootstrappedElement::transform)
                 .cast(IExecutable.class)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Class<?> getBootstrapped() {
+        return this.bootstrapped;
     }
 
     @Override

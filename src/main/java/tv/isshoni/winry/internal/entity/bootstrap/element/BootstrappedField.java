@@ -10,6 +10,7 @@ import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -29,13 +30,23 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
     private boolean injected = false;
 
     public BootstrappedField(Field field, BootstrappedClass target, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
-
         this.field = field;
         this.bootstrapper = bootstrapper;
         this.target = target;
         this.modifiers = ReflectedModifier.getModifiers(field);
-        this.annotations = annotationManager.getManagedAnnotationsOn(field);
+        this.annotations = new LinkedList<>();
+
+        compileAnnotations();
+    }
+
+    @Override
+    public void compileAnnotations() {
+        IWinryAnnotationManager annotationManager = this.bootstrapper.getContext().getAnnotationManager();
+
+        List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.field);
+
+        this.annotations.clear();
+        this.annotations.addAll(annotations);
 
         if (annotationManager.hasConflictingAnnotations(this.annotations)) {
             throw new IllegalStateException(this.field.getName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));

@@ -18,4 +18,6 @@ public interface IBootstrapper {
     void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided);
 
     List<IExecutable> compileRunList();
+
+    Class<?> getBootstrapped();
 }

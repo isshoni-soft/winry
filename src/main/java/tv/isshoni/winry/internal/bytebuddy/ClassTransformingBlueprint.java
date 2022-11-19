@@ -183,12 +183,17 @@ public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     @Override
     public boolean hasTransformers(Method method) {
-        return this.getMethodTransformers().containsKey(method);
-    }
+        if (!this.getMethodTransformers().containsKey(method)) {
+            return false;
+        }
 
-    @Override
-    public boolean hasTransformers(Field field) {
-        return this.getFieldTransformers().containsKey(field);
+        MethodTransformingPlan transformingPlan = getMethodTransformingPlan(method);
+
+        if (!transformingPlan.isWinry()) {
+            return true;
+        }
+
+        return transformingPlan.asWinry().get().hasDelegators();
     }
 
     private <E extends AnnotatedElement, B extends IBootstrappedElement<E>> DynamicType.Builder<?> executeTransformation(DynamicType.Builder<?> builder, E element, B bootstrapped, ITransformingPlan<E, B> plan) {

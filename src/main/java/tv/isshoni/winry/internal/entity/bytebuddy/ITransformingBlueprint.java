@@ -33,7 +33,4 @@ public interface ITransformingBlueprint {
     Map<Field, ITransformingPlan<Field, BootstrappedField>> getFieldTransformers();
 
     boolean hasTransformers(Method method);
-
-    boolean hasTransformers(Field field);
-
 }

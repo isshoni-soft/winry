@@ -13,7 +13,7 @@ import tv.isshoni.winry.api.exception.IExceptionHandler;
 import tv.isshoni.winry.api.exception.UnhandledException;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
-import tv.isshoni.winry.internal.logging.LoggerFactory;
+import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -37,7 +37,7 @@ public class WinryExceptionManager implements IExceptionManager {
 
     private final TypeMap<Class<? extends IExceptionHandler<?>>, IExceptionHandler<Throwable>> singletons;
 
-    public WinryExceptionManager(LoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
+    public WinryExceptionManager(ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
         this.logger = loggerFactory.createLogger(getClass());
         this.annotationManager = annotationManager;
         this.globalHandlers = Maps.bucket(new TypeMap<>());

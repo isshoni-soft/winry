@@ -27,7 +27,7 @@ public interface IElementBootstrapper {
 
     Collection<BootstrappedField> getBootstrappedField();
 
-    void bootstrap(Class<?> clazz);
+    BootstrappedClass bootstrap(Class<?> clazz);
 
     void bootstrap(Method method);
 

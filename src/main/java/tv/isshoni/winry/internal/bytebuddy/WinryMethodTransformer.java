@@ -47,6 +47,10 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
         this.removeParameters = true;
     }
 
+    public boolean hasDelegators() {
+        return this.delegators.size() > 0;
+    }
+
     @Override
     public DynamicType.Builder<?> transform(Method element, BootstrappedMethod bootstrapped, DynamicType.Builder<?> builder) {
         logger.debug("Transforming: " + element);

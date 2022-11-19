@@ -27,6 +27,8 @@ public interface IBootstrappedElement<E extends AnnotatedElement> extends IExecu
 
     String getSimpleName();
 
+    void compileAnnotations();
+
     default String getDisplay() {
         return getSimpleName() + ": " + getBootstrappedElement().toString() + " [" + Streams.to(getAnnotations()).collapse((Annotation a, String s) -> {
             String result = (Objects.isNull(s) ? "" : s);

@@ -10,6 +10,7 @@ import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -27,13 +28,23 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     private boolean executed;
 
     public BootstrappedMethod(Method method, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
-
         this.method = method;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(method);
-        this.annotations = annotationManager.getManagedAnnotationsOn(method);
+        this.annotations = new LinkedList<>();
         this.executed = false;
+
+        compileAnnotations();
+    }
+
+    @Override
+    public void compileAnnotations() {
+        IWinryAnnotationManager annotationManager = this.bootstrapper.getContext().getAnnotationManager();
+
+        List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.method);
+
+        this.annotations.clear();
+        this.annotations.addAll(annotations);
 
         if (annotationManager.hasConflictingAnnotations(this.annotations)) {
             throw new IllegalStateException(this.method.getName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));

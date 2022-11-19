@@ -87,21 +87,16 @@ public class ElementBootstrapper implements IElementBootstrapper {
     }
 
     @Override
-    public void bootstrap(Class<?> clazz) {
-        if (!this.annotationManager.hasManagedAnnotation(clazz)) {
-            return;
-        }
-
+    public BootstrappedClass bootstrap(Class<?> clazz) {
         LOGGER.debug("Bootstrapping Class: " + clazz.getName());
-        this.bootstrappedClasses.put(clazz, new BootstrappedClass(clazz, this.bootstrapper));
+        BootstrappedClass result = new BootstrappedClass(clazz, this.bootstrapper);
+        this.bootstrappedClasses.put(clazz, result);
+
+        return result;
     }
 
     @Override
     public void bootstrap(Method method) {
-        if (!this.annotationManager.hasManagedAnnotation(method)) {
-            return;
-        }
-
         LOGGER.debug("Bootstrapping Method: " + method.getName());
         BootstrappedMethod bootstrappedMethod = new BootstrappedMethod(method, this.bootstrapper);
 
@@ -112,10 +107,6 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public void bootstrap(Field field) {
-        if (!this.annotationManager.hasManagedAnnotation(field)) {
-            return;
-        }
-
         LOGGER.debug("Bootstrapping Field: " + field.getName());
         BootstrappedField bootstrappedField = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
 

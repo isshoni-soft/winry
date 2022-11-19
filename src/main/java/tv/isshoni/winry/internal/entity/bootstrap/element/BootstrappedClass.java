@@ -43,20 +43,16 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     private boolean injectable = true;
 
     public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
-        IWinryAnnotationManager annotationManager = bootstrapper.getContext().getAnnotationManager();
-
         this.LOGGER = bootstrapper.getContext().getLoggerFactory().createLogger("BootstrappedClass");
         this.clazz = clazz;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(clazz);
-        this.annotations = annotationManager.getManagedAnnotationsOn(clazz);
         this.transformingBlueprint = bootstrapper.getContext().getElementBootstrapper().supplyTransformingBlueprint(this);
+        this.annotations = new LinkedList<>();
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
 
-        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
-            throw new IllegalStateException(this.clazz.getSimpleName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));
-        }
+        compileAnnotations();
     }
 
     public void addField(BootstrappedField field) {
@@ -116,6 +112,20 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     @Override
     public String getSimpleName() {
         return "Class";
+    }
+
+    @Override
+    public void compileAnnotations() {
+        IWinryAnnotationManager annotationManager = this.bootstrapper.getContext().getAnnotationManager();
+
+        List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.clazz);
+
+        this.annotations.clear();
+        this.annotations.addAll(annotations);
+
+        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
+            throw new IllegalStateException(this.clazz.getSimpleName() + " has conflicting annotations! " + annotationManager.getConflictingAnnotations(this.annotations));
+        }
     }
 
     @Override

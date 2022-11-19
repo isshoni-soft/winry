@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
+import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
-import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.manager.AnnotationManager;
 import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
@@ -12,17 +12,22 @@ import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
+import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.entity.bootstrap.IExecutableProvider;
+import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
 import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class WinryAnnotationManager extends AnnotationManager implements IWinryAnnotationManager {
 
@@ -30,8 +35,20 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
     private final IBootstrapper bootstrapper;
 
-    public WinryAnnotationManager(ILoggerFactory loggerFactory, IBootstrapper bootstrapper) {
+    private final IAnnotationDiscoverer annotationDiscoverer;
+
+    private final IElementBootstrapper elementBootstrapper;
+
+    private final IExceptionManager exceptionManager;
+
+    private final Bootstrap bootstrap;
+
+    public WinryAnnotationManager(Bootstrap bootstrap, ILoggerFactory loggerFactory, IBootstrapper bootstrapper) {
+        this.bootstrap = bootstrap;
         this.bootstrapper = bootstrapper;
+        this.exceptionManager = new WinryExceptionManager(loggerFactory, this);
+        this.annotationDiscoverer = new WinryAnnotationDiscoverer(this);
+        this.elementBootstrapper = new ElementBootstrapper(bootstrapper, this, loggerFactory, this.exceptionManager);
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
@@ -40,21 +57,24 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     }
 
     @Override
-    public void initialize(Bootstrap bootstrap) {
+    public void initialize() {
         LOGGER.debug("Initializing...");
+        LOGGER.debug("Configuring annotation discoverer...");
+        this.annotationDiscoverer.withPackages(getAllLoadedPackages(this.bootstrap));
+
         LOGGER.debug("Performing annotation discovery...");
-
-        IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
-        discoverer.withPackages(getAllLoadedPackages(bootstrap));
-
-        LOGGER.debug("Loading all other annotations...");
-        discoverer.discoverAnnotations();
+        this.annotationDiscoverer.discoverAnnotations();
 
         LOGGER.debug("Attaching requested processors...");
-        discoverer.discoverAttachedProcessors();
+        this.annotationDiscoverer.discoverAttachedProcessors();
 
         LOGGER.debug("Discovered " + getManagedAnnotations().size() + " annotations and " + getTotalProcessors() + " annotation processors.");
         LOGGER.debug("Done initializing!");
+    }
+
+    @Override
+    public Bootstrap getBootstrap() {
+        return this.bootstrap;
     }
 
     @Override
@@ -76,6 +96,11 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     }
 
     @Override
+    public String[] getAllLoadedPackages() {
+        return this.getAllLoadedPackages(this.bootstrap);
+    }
+
+    @Override
     public Class<?>[] getAllManuallyLoaded(Bootstrap bootstrap) {
         ArrayList<Class<?>> result = new ArrayList<>(Arrays.asList(bootstrap.loader().manualLoad()));
 
@@ -87,6 +112,31 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
                 .forEach(result::add);
 
         return result.toArray(new Class<?>[0]);
+    }
+
+    @Override
+    public Class<?>[] getAllManuallyLoaded() {
+        return this.getAllManuallyLoaded(this.bootstrap);
+    }
+
+    @Override
+    public IAnnotationDiscoverer getAnnotationDiscoverer() {
+        return this.annotationDiscoverer;
+    }
+
+    @Override
+    public IElementBootstrapper getElementBootstrapper() {
+        return this.elementBootstrapper;
+    }
+
+    @Override
+    public IExceptionManager getExceptionManager() {
+        return this.exceptionManager;
+    }
+
+    @Override
+    public IBootstrapper getBootstrapper() {
+        return this.bootstrapper;
     }
 
     @Override
@@ -108,10 +158,13 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     }
 
     @Override
-    public void register(Class<? extends Annotation> annotation, IAnnotationProcessor<?>... processors) {
-        super.register(annotation, processors);
+    public Class<? extends IExecutableProvider>[] getAllProviders() {
+        return this.getAllProviders(this.bootstrap);
+    }
 
-        this.bootstrapper.getContext().registerToContext((Object[]) processors);
+    @Override
+    protected void postRegisterProcessors(Class<? extends Annotation> annotation, Collection<IAnnotationProcessor<Annotation>> processors) {
+        this.bootstrapper.getContext().registerToContext(processors.toArray(Object[]::new));
     }
 
     @Override
@@ -122,5 +175,10 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public boolean isWinry(IPreparedAnnotationProcessor processor) {
         return IWinryPreparedAnnotationProcessor.class.isAssignableFrom(processor.getClass());
+    }
+
+    @Override
+    public boolean canRegister(Class<? extends Annotation> clazz) {
+        return clazz.isAnnotationPresent(Processor.class);
     }
 }
