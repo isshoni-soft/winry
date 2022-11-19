@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.entity.annotation.inject;
 
-import tv.isshoni.araragi.annotation.model.IAnnotationWeightEnum;
+import tv.isshoni.araragi.annotation.processor.weight.IAnnotationWeightEnum;
 import tv.isshoni.winry.api.annotation.Injected;
 
 public enum InjectedType implements IAnnotationWeightEnum {

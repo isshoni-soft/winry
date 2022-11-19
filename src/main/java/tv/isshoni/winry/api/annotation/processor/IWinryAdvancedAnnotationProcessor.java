@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.annotation.processor;
 
-import tv.isshoni.araragi.annotation.model.IParameterSupplier;
+import tv.isshoni.araragi.annotation.processor.IParameterSupplier;
 
 import java.lang.annotation.Annotation;
 

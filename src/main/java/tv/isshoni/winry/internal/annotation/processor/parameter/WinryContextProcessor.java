@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.parameter;
 
-import tv.isshoni.araragi.annotation.model.IParameterSupplier;
+import tv.isshoni.araragi.annotation.processor.IParameterSupplier;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;

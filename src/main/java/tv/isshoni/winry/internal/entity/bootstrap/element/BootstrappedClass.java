@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.entity.bootstrap.element;
 
-import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IContextual;

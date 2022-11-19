@@ -1,18 +1,18 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
+import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
-import tv.isshoni.araragi.annotation.internal.AnnotationManager;
-import tv.isshoni.araragi.annotation.model.IAnnotationDiscoverer;
-import tv.isshoni.araragi.annotation.model.IAnnotationProcessor;
-import tv.isshoni.araragi.annotation.model.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.annotation.manager.AnnotationManager;
+import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
+import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
-import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
+import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
+import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAnnotationProcessor;
@@ -46,9 +46,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         IAnnotationDiscoverer discoverer = new SimpleAnnotationDiscoverer(this);
         discoverer.withPackages(getAllLoadedPackages(bootstrap));
-
-        LOGGER.debug("Loading parameter supplier annotations...");
-        discoverer.discoverParameterAnnotations();
 
         LOGGER.debug("Loading all other annotations...");
         discoverer.discoverAnnotations();
