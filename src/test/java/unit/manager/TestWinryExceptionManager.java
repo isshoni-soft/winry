@@ -38,7 +38,7 @@ public class TestWinryExceptionManager {
 
     @Before
     public void before() {
-        this.exceptionManager = new WinryExceptionManager(loggerFactory, this.annotationManager);
+        this.exceptionManager = new WinryExceptionManager(this.annotationManager, loggerFactory);
     }
 
     @Test

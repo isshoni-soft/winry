@@ -88,31 +88,45 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public BootstrappedClass bootstrap(Class<?> clazz) {
-        LOGGER.debug("Bootstrapping Class: " + clazz.getName());
-        BootstrappedClass result = new BootstrappedClass(clazz, this.bootstrapper);
-        this.bootstrappedClasses.put(clazz, result);
+        BootstrappedClass result;
+        if (this.bootstrappedClasses.containsKey(clazz)) {
+            result = this.bootstrappedClasses.get(clazz);
+            result.build();
+        } else {
+            LOGGER.debug("Bootstrapping Class: " + clazz.getName());
+            result = new BootstrappedClass(clazz, this.bootstrapper, this.bootstrapper.getContext());
+            this.bootstrappedClasses.put(clazz, result);
+        }
 
         return result;
     }
 
     @Override
-    public void bootstrap(Method method) {
+    public BootstrappedMethod bootstrap(Method method) {
+        if (this.bootstrappedMethods.containsKey(method)) {
+            return this.bootstrappedMethods.get(method);
+        }
+
         LOGGER.debug("Bootstrapping Method: " + method.getName());
-        BootstrappedMethod bootstrappedMethod = new BootstrappedMethod(method, this.bootstrapper);
+        BootstrappedMethod result = new BootstrappedMethod(method, this.bootstrapper);
 
-        getDeclaringClass(method).addMethod(bootstrappedMethod);
+        this.bootstrappedMethods.put(method, result);
 
-        this.bootstrappedMethods.put(method, bootstrappedMethod);
+        return result;
     }
 
     @Override
-    public void bootstrap(Field field) {
+    public BootstrappedField bootstrap(Field field) {
+        if (this.bootstrappedFields.containsKey(field)) {
+            return this.bootstrappedFields.get(field);
+        }
+
         LOGGER.debug("Bootstrapping Field: " + field.getName());
-        BootstrappedField bootstrappedField = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
+        BootstrappedField result = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
 
-        getDeclaringClass(field).addField(bootstrappedField);
+        this.bootstrappedFields.put(field, result);
 
-        this.bootstrappedFields.put(field, bootstrappedField);
+        return result;
     }
 
     @Override
@@ -128,8 +142,9 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public <T> T construct(BootstrappedClass bootstrapped) {
-        Class<T> clazz = (Class<T>) bootstrapped.getBootstrappedElement();
-        Class<T> constructed = (bootstrapped.hasWrappedClass() ? (Class<T>) bootstrapped.getWrappedClass() : clazz);
+        Class<T> constructed = (Class<T>) bootstrapped.findClass();
+
+        LOGGER.debug("Constructing: " + constructed);
 
         try {
             return this.annotationManager.construct(constructed);
@@ -156,6 +171,8 @@ public class ElementBootstrapper implements IElementBootstrapper {
             }
         }
 
+
+        LOGGER.debug("Executing: " + bootstrapped.getDeclaringClass().findClass() + " -- " + method);
         try {
             T result = this.annotationManager.execute(method, target, runtimeContext);
             bootstrapped.setExecuted(true);

@@ -1,11 +1,5 @@
 package tv.isshoni.winry.api.bootstrap;
 
-import org.reflections8.Reflections;
-import org.reflections8.scanners.ResourcesScanner;
-import org.reflections8.scanners.SubTypesScanner;
-import org.reflections8.scanners.TypeAnnotationsScanner;
-import org.reflections8.util.ConfigurationBuilder;
-import org.reflections8.util.FilterBuilder;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
@@ -17,18 +11,14 @@ import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.internal.entity.bootstrap.element.IBootstrappedElement;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class WinryBootstrapper implements IBootstrapper {
@@ -148,70 +138,14 @@ public class WinryBootstrapper implements IBootstrapper {
     public List<IExecutable> compileRunList() {
         LOGGER.debug("Compiling run order...");
         return Streams.to(this.context.getElementBootstrapper().getBootstrappedClasses())
-                .peek((c -> {
-                    LOGGER.debug("Finalizing: " + c.getBootstrappedElement().getName());
-
-                    Streams.to(c.getBootstrappedElement().getDeclaredFields())
-                            .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
-                            .forEach(this.context.getElementBootstrapper()::bootstrap);
-                    LOGGER.debug("Discovered " + c.getFields().size() + " fields");
-
-                    Streams.to(c.getBootstrappedElement().getDeclaredMethods())
-                            .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
-                            .forEach(this.context.getElementBootstrapper()::bootstrap);
-                    LOGGER.debug("Discovered " + c.getMethods().size() + " methods");
-                }))
-                .expand(IBootstrappedElement.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
+                .peek(BootstrappedClass::build)
+                .expand(IExecutable.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
                 .peek(this.context::registerToContext)
-                .peek(IBootstrappedElement::transform)
-                .cast(IExecutable.class)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Class<?> getBootstrapped() {
         return this.bootstrapped;
-    }
-
-    @Override
-    public void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided) {
-        LOGGER.debug("Performing class discovery...");
-
-        Set<Class<?>> classes = new HashSet<>();
-        classes.add(baseClass);
-        classes.addAll(provided.keySet());
-        classes.addAll(Arrays.asList(manual));
-
-        LOGGER.debug("Discovered " + manual.length + " manually loaded classes!");
-        LOGGER.debug("Discovered " + provided.keySet() + " provided classes!");
-        LOGGER.debug("Searching " + Arrays.toString(packages) + " packages for classes...");
-
-        if (packages.length > 0) {
-            FilterBuilder filter = new FilterBuilder().includePackage(packages);
-
-            Reflections reflections = new Reflections(new ConfigurationBuilder()
-                    .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new ResourcesScanner())
-                    .forPackages(packages)
-                    .filterInputsBy(filter));
-
-            Streams.to(this.getContext().getAnnotationManager().getManagedAnnotations())
-                    .flatMap(a -> reflections.getTypesAnnotatedWith(a).stream())
-                    .add(Arrays.asList(manual))
-                    .peek(c -> LOGGER.debug("Found: " + c.getName()))
-                    .addTo(classes);
-        }
-
-        LOGGER.debug("Discovered " + classes.size() + " classes!");
-        classes.forEach(c -> LOGGER.debug("Discovered: " + c.getName()));
-        LOGGER.debug("Performing bootstrap...");
-        classes.forEach(this.getContext().getElementBootstrapper()::bootstrap);
-
-        LOGGER.debug("Attaching provided instances...");
-        provided.forEach((c, o) -> {
-            BootstrappedClass bootstrapped = this.getContext().getElementBootstrapper().getBootstrappedClass(c);
-
-            bootstrapped.setProvided(true);
-            bootstrapped.setObject(o);
-        });
     }
 }

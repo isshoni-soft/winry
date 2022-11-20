@@ -1,6 +1,5 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
-import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.manager.AnnotationManager;
 import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
@@ -46,8 +45,8 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     public WinryAnnotationManager(Bootstrap bootstrap, ILoggerFactory loggerFactory, IBootstrapper bootstrapper) {
         this.bootstrap = bootstrap;
         this.bootstrapper = bootstrapper;
-        this.exceptionManager = new WinryExceptionManager(loggerFactory, this);
-        this.annotationDiscoverer = new WinryAnnotationDiscoverer(this);
+        this.exceptionManager = new WinryExceptionManager(this, loggerFactory);
+        this.annotationDiscoverer = new WinryAnnotationDiscoverer(this, loggerFactory);
         this.elementBootstrapper = new ElementBootstrapper(bootstrapper, this, loggerFactory, this.exceptionManager);
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
@@ -175,10 +174,5 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public boolean isWinry(IPreparedAnnotationProcessor processor) {
         return IWinryPreparedAnnotationProcessor.class.isAssignableFrom(processor.getClass());
-    }
-
-    @Override
-    public boolean canRegister(Class<? extends Annotation> clazz) {
-        return clazz.isAnnotationPresent(Processor.class);
     }
 }

@@ -41,7 +41,4 @@ public interface IWinryAnnotationManager extends IAnnotationManager {
     boolean isWinry(IAnnotationProcessor<Annotation> processor);
 
     boolean isWinry(IPreparedAnnotationProcessor processor);
-
-    @Deprecated // upstream
-    boolean canRegister(Class<? extends Annotation> clazz);
 }

@@ -37,7 +37,7 @@ public class WinryExceptionManager implements IExceptionManager {
 
     private final TypeMap<Class<? extends IExceptionHandler<?>>, IExceptionHandler<Throwable>> singletons;
 
-    public WinryExceptionManager(ILoggerFactory loggerFactory, IWinryAnnotationManager annotationManager) {
+    public WinryExceptionManager(IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         this.logger = loggerFactory.createLogger(getClass());
         this.annotationManager = annotationManager;
         this.globalHandlers = Maps.bucket(new TypeMap<>());
@@ -159,6 +159,8 @@ public class WinryExceptionManager implements IExceptionManager {
         }
 
         Class<? extends Throwable> throwableClazz = handler.value().getAnnotation(Handler.class).value();
+
+        logger.info("Registering method level handler for: " + method + " handling: " + throwableClazz);
         this.methodHandlers.getOrDefault(method).add(throwableClazz, handler);
     }
 

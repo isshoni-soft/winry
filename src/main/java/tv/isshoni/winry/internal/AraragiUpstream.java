@@ -1,44 +1,23 @@
 package tv.isshoni.winry.internal;
 
-import tv.isshoni.araragi.reflect.ReflectionUtil;
-import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.function.Predicate;
 
 // This class is basically a staging ground for methods that will be upstreamed into Araragi
 @Deprecated
 public class AraragiUpstream {
 
-    public static Set<Class<?>> getAllTypesForConstruction(IWinryAnnotationManager annotationManager, Class<?> clazz) {
-        HashSet<Class<?>> result = new HashSet<>();
-        Constructor<?> constructor = annotationManager.discoverConstructor(clazz, false);
+    public static <T> int simpleCompare(T f, T s, Predicate<T> comparator) {
+        boolean fResult = comparator.test(f);
+        boolean sResult = comparator.test(s);
 
-        if (constructor == null) {
-            return result;
+        if (fResult && sResult) {
+            return 0;
+        } else if (sResult) {
+            return 1;
+        } else if (fResult) {
+            return -1;
         }
 
-        result.addAll(Arrays.asList(constructor.getParameterTypes()));
-
-        return result;
-    }
-
-    public static Set<Class<? extends Annotation>> getAllAnnotationsForConstruction(IWinryAnnotationManager annotationManager, Class<?> clazz) {
-        HashSet<Class<? extends Annotation>> result = new HashSet<>();
-        Constructor<?> constructor = annotationManager.discoverConstructor(clazz, false);
-
-        if (constructor == null) {
-            return result;
-        }
-
-        result.addAll(ReflectionUtil.getAllParameterAnnotationTypes(constructor));
-        Streams.to(constructor.getParameterTypes()).forEach(c ->
-                result.addAll(getAllAnnotationsForConstruction(annotationManager, c)));
-
-        return result;
+        return 2;
     }
 }

@@ -108,9 +108,9 @@ public class WinryContext implements IWinryContext {
 
     @Override
     public void registerToContext(Object object) {
-        CONTEXT_REGISTRY.putIfAbsent(object, this);
-
-        this.logger.debug("Context: Registering: " + object);
+        if (CONTEXT_REGISTRY.putIfAbsent(object, this) == null) {
+            this.logger.debug("Context: Registering: " + object);
+        }
     }
 
     @Override

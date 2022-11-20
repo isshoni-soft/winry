@@ -15,8 +15,6 @@ public interface IBootstrapper {
 
     void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided);
 
-    void bootstrapClasses(Class<?> baseClass, Class<?>[] manual, String[] packages, Map<Class<?>, Object> provided);
-
     List<IExecutable> compileRunList();
 
     Class<?> getBootstrapped();

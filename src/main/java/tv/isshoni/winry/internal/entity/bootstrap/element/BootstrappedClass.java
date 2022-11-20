@@ -3,7 +3,9 @@ package tv.isshoni.winry.internal.entity.bootstrap.element;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IContextual;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
@@ -24,6 +26,8 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
 
     private final IBootstrapper bootstrapper;
 
+    private final IWinryContext context;
+
     private final Class<?> clazz;
     private Class<?> wrappedClazz;
 
@@ -41,8 +45,10 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
 
     private boolean provided = false;
     private boolean injectable = true;
+    private boolean built = false;
 
-    public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper) {
+    public BootstrappedClass(Class<?> clazz, IBootstrapper bootstrapper, IWinryContext context) {
+        this.context = context;
         this.LOGGER = bootstrapper.getContext().getLoggerFactory().createLogger("BootstrappedClass");
         this.clazz = clazz;
         this.bootstrapper = bootstrapper;
@@ -52,23 +58,53 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
         this.fields = new LinkedList<>();
         this.methods = new LinkedList<>();
 
+        build();
+    }
+
+    public void build() {
+        if (!this.built) {
+            this.built = true;
+            LOGGER.debug("Building: " + getBootstrappedElement().getName());
+        }
+
         compileAnnotations();
+
+        if (this.built) {
+            LOGGER.debug("Rebuilding: " + getBootstrappedElement().getName());
+        }
+
+        this.fields.clear();
+        this.methods.clear();
+
+        Streams.to(getBootstrappedElement().getDeclaredFields())
+                .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                .map(this.context.getElementBootstrapper()::bootstrap)
+                .forEach(this::addField);
+        LOGGER.debug("Discovered " + getFields().size() + " fields");
+
+        Streams.to(getBootstrappedElement().getDeclaredMethods())
+                .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                .map(this.context.getElementBootstrapper()::bootstrap)
+                .forEach(this::addMethod);
+        LOGGER.debug("Discovered " + getMethods().size() + " methods");
     }
 
     public void addField(BootstrappedField field) {
+        this.context.registerToContext(field);
         this.fields.add(field);
     }
 
     public void addField(Collection<BootstrappedField> fields) {
-        this.fields.addAll(fields);
+        fields.forEach(this::addField);
     }
 
     public void addMethod(BootstrappedMethod method) {
+        this.context.registerToContext(method);
         this.methods.add(method);
     }
 
     public void addMethod(Collection<BootstrappedMethod> methods) {
-        this.methods.addAll(methods);
+        methods.forEach(this::addMethod);
     }
 
     public void setProvided(boolean provided) {
@@ -92,6 +128,10 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
 
     public Object newInstance() {
         return getBootstrapper().getContext().getElementBootstrapper().construct(this);
+    }
+
+    public Class<?> findClass() {
+        return (hasWrappedClass() ? getWrappedClass() : this.clazz);
     }
 
     @Override
@@ -138,12 +178,20 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     }
 
     // TODO: maybe refactor these two methods to be a little less copy and pasted
+//    @Override
+//    public void execute() {
+//        IBootstrappedElement.super.execute();
+//    }
+
     @Override
-    public void execute() {
+    public void transform() {
+        IBootstrappedElement.super.transform();
+
+        getFields().forEach(IBootstrappedElement::transform);
+        getMethods().forEach(IBootstrappedElement::transform);
+
         LOGGER.debug("Executing transformation blueprint for " + this.clazz.getName());
         this.transformingBlueprint.transform();
-
-        IBootstrappedElement.super.execute();
     }
 
     @Override

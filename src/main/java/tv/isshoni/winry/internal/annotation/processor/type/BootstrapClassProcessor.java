@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.annotation.processor.type;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -14,7 +15,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annotation> {
 
@@ -36,17 +37,17 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         List<Class<?>> found = Streams.to(discoverer.findWithAnnotations(clazz))
                 .filter(c -> Objects.nonNull(annotationManager.discoverConstructor(c)))
                 .sorted((first, second) -> {
-                    Set<Class<? extends Annotation>> firstAnno = AraragiUpstream.getAllAnnotationsForConstruction(annotationManager, first);
-                    Set<Class<? extends Annotation>> secondAnno = AraragiUpstream.getAllAnnotationsForConstruction(annotationManager, second);
+                    Set<Class<? extends Annotation>> firstAnno = annotationManager.getAllAnnotationsForConstruction(first);
+                    Set<Class<? extends Annotation>> secondAnno = annotationManager.getAllAnnotationsForConstruction(second);
 
-                    int simpleCompare = simpleCompare(firstAnno, secondAnno, Set::isEmpty);
+                    int simpleCompare = AraragiUpstream.simpleCompare(firstAnno, secondAnno, Set::isEmpty);
 
                     if (simpleCompare != 2) {
                         return simpleCompare;
                     }
 
-                    Set<Class<?>> firstDeps = AraragiUpstream.getAllTypesForConstruction(annotationManager, first);
-                    Set<Class<?>> secondDeps = AraragiUpstream.getAllTypesForConstruction(annotationManager, second);
+                    Set<Class<?>> firstDeps = annotationManager.getAllTypesForConstruction(first);
+                    Set<Class<?>> secondDeps = annotationManager.getAllTypesForConstruction(second);
 
                     if (firstDeps.isEmpty() && secondDeps.isEmpty()) {
                         return 0;
@@ -74,7 +75,18 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         found.forEach(c -> LOGGER.debug("-> " + c.getName()));
 
         found.forEach(c -> {
+            Set<Class<? extends Annotation>> transformers = Streams.to(annotationManager.getAllAnnotationsIn(c))
+                    .filter(ac -> ac.isAnnotationPresent(Transformer.class))
+                    .collect(Collectors.toSet());
+
             BootstrappedClass bootstrappedClass = annotationManager.getElementBootstrapper().bootstrap(c);
+
+            for (Class<? extends Annotation> transformer : transformers) {
+                if (!annotationManager.isManagedAnnotation(transformer)) {
+                    throw new IllegalStateException("Unable to bootstrap class: " + c + " found transformer: " + transformer + " that is not managed (no processor? not found during scan?)");
+                }
+            }
+            bootstrappedClass.transform();
 
             Object instance = bootstrappedClass.newInstance();
 
@@ -82,41 +94,4 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
             bootstrappedClass.setObject(instance);
         });
     }
-
-    private <T> int simpleCompare(T f, T s, Predicate<T> comparator) {
-        boolean fResult = comparator.test(f);
-        boolean sResult = comparator.test(s);
-
-        if (fResult && sResult) {
-            return 0;
-        } else if (sResult) {
-            return 1;
-        } else if (fResult) {
-            return -1;
-        }
-
-        return 2;
-    }
-
-    //    @Override
-//    public void executeClass(BootstrappedClass bootstrappedClass, Annotation annotation) {
-//        if (bootstrappedClass.isProvided()) {
-//            return;
-//        }
-//
-//        if (bootstrappedClass.hasObject()) {
-//            LOGGER.warn("Two basic class processors present on type " + bootstrappedClass.getDisplay());
-//            return;
-//        }
-//
-//        if (bootstrappedClass.hasWrappedClass()) {
-//            LOGGER.debug("Produced wrapped class: " + bootstrappedClass.getWrappedClass().getName());
-//        }
-//
-//        Object instance = bootstrappedClass.newInstance();
-//
-//        bootstrappedClass.getBootstrapper().getContext().registerToContext(instance);
-//
-//        bootstrappedClass.setObject(instance);
-//    }
 }

@@ -29,11 +29,10 @@ public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<Exce
     @Override
     public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, ExceptionHandler annotation, ITransformingBlueprint blueprint) {
         if (blueprint.hasTransformers(bootstrappedMethod.getBootstrappedElement())) {
-            LOGGER.debug("Skipping method: " + bootstrappedMethod.getBootstrappedElement().getName() + " -- transformers already present!");
             return;
         }
 
-        LOGGER.debug("Method with exception handler has not been delegated! Registering a simple passthrough delegation to inject exception handling!");
+        LOGGER.debug("Registering pass-through exception handler to: " + bootstrappedMethod.getDisplay());
         methodPlan.asWinry().ifPresentOrElse(mt ->
                 mt.addDelegator((c, m, args, next) -> next.get(), Integer.MAX_VALUE),
                         NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));

@@ -115,6 +115,6 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
 
     @Override
     public String toString() {
-        return "BootstrappedField[field=" + this.field.getName() + ",target=" + (this.target != null ? this.target.getBootstrappedElement().getName() : "null") + ",weight=" + this.getWeight() + "]";
+        return "BootstrappedField[field=" + this.field.getName() + ",annotations=" + this.annotations + ",target=" + (this.target != null ? this.target.getBootstrappedElement().getName() : "null") + ",weight=" + this.getWeight() + "]";
     }
 }
