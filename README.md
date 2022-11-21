@@ -3,6 +3,8 @@ Isshoni Winry Bootstrapper
 The bootstrapper designed and developed for Isshoni, with the intention to support a wide-range
 of Java applications to facilitate innovation while not wasting time on boilerplate design requirements.
 
+**This tool is currently in beta until the version number says 1.0.0, please expect bugs when using it.**
+
 Table of Contents
 -----------------
 - [Basic Usage](#basic-usage)
