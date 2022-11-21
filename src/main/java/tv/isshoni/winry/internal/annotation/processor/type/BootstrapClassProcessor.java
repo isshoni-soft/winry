@@ -3,11 +3,11 @@ package tv.isshoni.winry.internal.annotation.processor.type;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
 
@@ -40,7 +40,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                     Set<Class<? extends Annotation>> firstAnno = annotationManager.getAllAnnotationsForConstruction(first);
                     Set<Class<? extends Annotation>> secondAnno = annotationManager.getAllAnnotationsForConstruction(second);
 
-                    int simpleCompare = AraragiUpstream.simpleCompare(firstAnno, secondAnno, Set::isEmpty);
+                    int simpleCompare = ComparatorUtil.simpleCompare(firstAnno, secondAnno, Set::isEmpty);
 
                     if (simpleCompare != 2) {
                         return simpleCompare;

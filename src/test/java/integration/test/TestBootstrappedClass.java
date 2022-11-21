@@ -122,11 +122,6 @@ public class TestBootstrappedClass {
             Thread.sleep(10);
 
             LOGGER.info("Selected num was " + this.injectedClass.getSelectedNum());
-
-            for (int x = 0; x < 10; x++) {
-                LOGGER.info(String.valueOf(x));
-            }
-
             LOGGER.info("Waiting on async future method...");
             assertEquals(this.injectedClass.getSelectedNum(), future.get().intValue());
             LOGGER.info("Async method matching expected values!");

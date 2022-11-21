@@ -4,8 +4,8 @@ import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
-import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
 
@@ -36,7 +36,7 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
         Set<Class<? extends Annotation>> all = findProcessorAnnotations();
         List<Class<? extends Annotation>> ordered = new LinkedList<>(all);
         ordered.sort((first, second) -> {
-            int simple = AraragiUpstream.simpleCompare(first, second, e -> e.isAnnotationPresent(Transformer.class));
+            int simple = ComparatorUtil.simpleCompare(first, second, e -> e.isAnnotationPresent(Transformer.class));
 
             if (simple != 2) {
                 return simple;

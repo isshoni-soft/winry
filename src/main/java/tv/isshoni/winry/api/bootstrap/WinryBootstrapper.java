@@ -96,6 +96,10 @@ public class WinryBootstrapper implements IBootstrapper {
 
         run = fuseExecutables(run);
 
+        LOGGER.debug("${dashes%50} Initial Run Order ${dashes%50}");
+        run.forEach(r -> LOGGER.debug(r.getDisplay()));
+        LOGGER.debug("${dashes%50}${dashes%19}${dashes%50}");
+
         execute(run);
     }
 
@@ -108,8 +112,6 @@ public class WinryBootstrapper implements IBootstrapper {
     }
 
     public void execute(List<IExecutable> executables) {
-        LOGGER.debug("${dashes%50} Run Order ${dashes%50}");
-        executables.forEach(r -> LOGGER.debug(r.getDisplay()));
         LOGGER.info("${dashes%50} Execution ${dashes%50}");
 
         List<IExecutable> executed = new LinkedList<>();
