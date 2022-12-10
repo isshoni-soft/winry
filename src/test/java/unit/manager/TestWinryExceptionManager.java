@@ -1,6 +1,6 @@
 package unit.manager;
 
-import model.exception.RuntimeExceptionHandler;
+import model.RuntimeExceptionHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;

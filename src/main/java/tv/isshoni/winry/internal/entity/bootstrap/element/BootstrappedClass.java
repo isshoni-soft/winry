@@ -12,7 +12,6 @@ import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,32 +78,14 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
         Streams.to(getBootstrappedElement().getDeclaredFields())
                 .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
                 .map(this.context.getElementBootstrapper()::bootstrap)
-                .forEach(this::addField);
+                .forEach(this.fields::add);
         LOGGER.debug("Discovered " + getFields().size() + " fields");
 
         Streams.to(getBootstrappedElement().getDeclaredMethods())
                 .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
                 .map(this.context.getElementBootstrapper()::bootstrap)
-                .forEach(this::addMethod);
+                .forEach(this.methods::add);
         LOGGER.debug("Discovered " + getMethods().size() + " methods");
-    }
-
-    public void addField(BootstrappedField field) {
-        this.context.registerToContext(field);
-        this.fields.add(field);
-    }
-
-    public void addField(Collection<BootstrappedField> fields) {
-        fields.forEach(this::addField);
-    }
-
-    public void addMethod(BootstrappedMethod method) {
-        this.context.registerToContext(method);
-        this.methods.add(method);
-    }
-
-    public void addMethod(Collection<BootstrappedMethod> methods) {
-        methods.forEach(this::addMethod);
     }
 
     public void setProvided(boolean provided) {
@@ -177,12 +158,6 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
         return IBootstrappedElement.super.getWeight();
     }
 
-    // TODO: maybe refactor these two methods to be a little less copy and pasted
-//    @Override
-//    public void execute() {
-//        IBootstrappedElement.super.execute();
-//    }
-
     @Override
     public void transform() {
         IBootstrappedElement.super.transform();
@@ -248,5 +223,19 @@ public class BootstrappedClass implements IBootstrappedElement<Class<?>>, IConte
     @Override
     public String toString() {
         return "BootstrappedClass[class=" + this.clazz.getName() + ",bootstrapped=" + this.hasObject() + ",weight=" + this.getWeight() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getBootstrappedElement().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BootstrappedClass oc)) {
+            return false;
+        }
+
+        return oc.clazz.equals(this.clazz) && oc.context.equals(this.context);
     }
 }

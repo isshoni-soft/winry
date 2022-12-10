@@ -166,7 +166,7 @@ public class WinryExceptionManager implements IExceptionManager {
 
     @Override
     public <T extends Throwable> List<Class<? extends IExceptionHandler<T>>> getGlobalHandlersFor(Class<T> clazz) {
-        return Streams.to(this.globalHandlers.get(clazz))
+        return Streams.to(this.globalHandlers.getOrDefault(clazz, new LinkedList<>()))
                 .map(c -> (Class<? extends IExceptionHandler<T>>) c)
                 .collect(Collectors.toList());
     }

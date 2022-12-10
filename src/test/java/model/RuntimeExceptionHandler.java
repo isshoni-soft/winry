@@ -1,4 +1,4 @@
-package model.exception;
+package model;
 
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;

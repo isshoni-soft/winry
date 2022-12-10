@@ -2,6 +2,7 @@ package tv.isshoni.winry.api.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
+import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.annotation.processor.type.ExecutableEventProcessor;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Weight(Integer.MAX_VALUE - 5000)
-@Processor(ExecutableEventProcessor.class)
+@Processor({ExecutableEventProcessor.class, BootstrapClassProcessor.class})
 public @interface ExecutableEvent {
     int value();
 }

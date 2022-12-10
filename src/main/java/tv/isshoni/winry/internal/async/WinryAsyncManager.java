@@ -4,9 +4,10 @@ import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
-import java.util.Stack;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -16,20 +17,18 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private Thread newMain;
 
-    private final Stack<Runnable> calls;
+    private final Queue<Runnable> calls;
 
     public WinryAsyncManager(String contextName) {
         super();
 
         this.contextName = contextName;
-        this.calls = new Stack<>();
+        this.calls = new ConcurrentLinkedQueue<>();
     }
 
     @Override
     public boolean isRunning() {
-        synchronized (this.calls) {
-            return this.newMain != null && !this.calls.isEmpty();
-        }
+        return this.newMain != null && !this.calls.isEmpty();
     }
 
     @Override
@@ -44,7 +43,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
         CompletableFuture<T> future = new CompletableFuture<>();
         synchronized (this.calls) {
-            this.calls.push(() -> {
+            this.calls.add(() -> {
                 try {
                     future.complete(callable.call());
                 } catch (Exception e) {
@@ -66,7 +65,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
         CompletableFuture<String> future = new CompletableFuture<>();
         synchronized (this.calls) {
-            this.calls.push(() -> {
+            this.calls.add(() -> {
                 runnable.run();
                 future.complete("");
             });
@@ -109,6 +108,6 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public Runnable nextMainCall() {
-        return this.calls.pop();
+        return this.calls.poll();
     }
 }

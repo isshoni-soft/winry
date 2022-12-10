@@ -190,6 +190,20 @@ public class WinryContext implements IWinryContext {
         return "WinryContext[bootstrapper=" + this.bootstrapper.getClass().getName() + ",created=" + this.created.toString() + "]";
     }
 
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WinryContext wc)) {
+            return false;
+        }
+
+        return this.id == wc.id;
+    }
+
     public static Builder builder(Bootstrap bootstrap, IBootstrapper bootstrapper) {
         Builder builder = new Builder();
         builder.bootstrap = bootstrap;

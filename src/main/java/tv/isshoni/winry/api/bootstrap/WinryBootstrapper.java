@@ -82,8 +82,6 @@ public class WinryBootstrapper implements IBootstrapper {
         provided.forEach((c, o) ->
                 this.context.getElementBootstrapper().getBootstrappedClass(c).compileAnnotations());
 
-//        bootstrapClasses(clazz, this.context.getAnnotationManager().getAllManuallyLoaded(bootstrap), this.context.getAnnotationManager().getAllLoadedPackages(bootstrap), provided);
-
         List<IExecutable> run = compileRunList();
         Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
                 .map(ReflectionUtil::construct)
@@ -100,7 +98,7 @@ public class WinryBootstrapper implements IBootstrapper {
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
         LOGGER.debug("${dashes%50}${dashes%19}${dashes%50}");
 
-        execute(run);
+        execute(run, new LinkedList<>());
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {
@@ -111,10 +109,9 @@ public class WinryBootstrapper implements IBootstrapper {
                 .toList();
     }
 
-    public void execute(List<IExecutable> executables) {
+    public void execute(List<IExecutable> executables, List<IExecutable> executed) {
         LOGGER.info("${dashes%50} Execution ${dashes%50}");
 
-        List<IExecutable> executed = new LinkedList<>();
         boolean broken = false;
         for (IExecutable executable : executables) {
             int prevEventSize = this.context.getExecutables().size();
@@ -130,9 +127,12 @@ public class WinryBootstrapper implements IBootstrapper {
         }
 
         if (broken) {
-            executables = fuseExecutables(executables);
-            LOGGER.info("----------> New executable list size: " + executables.size() + "; pruning: " + executed.size() + "...");
-            execute(Streams.to(executables).filterInverted(executed::contains).toList());
+            executables = fuseExecutables(compileRunList());
+            List<IExecutable> newList = Streams.to(executables)
+                    .filterInverted(executed::contains)
+                    .toList();
+            LOGGER.info("----------> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
+            execute(newList, executed);
         }
     }
 
@@ -142,7 +142,6 @@ public class WinryBootstrapper implements IBootstrapper {
         return Streams.to(this.context.getElementBootstrapper().getBootstrappedClasses())
                 .peek(BootstrappedClass::build)
                 .expand(IExecutable.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
-                .peek(this.context::registerToContext)
                 .collect(Collectors.toList());
     }
 

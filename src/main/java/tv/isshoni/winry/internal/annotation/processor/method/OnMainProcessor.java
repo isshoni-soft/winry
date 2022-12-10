@@ -11,6 +11,7 @@ import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class OnMainProcessor implements IWinryAnnotationProcessor<OnMain> {
@@ -38,14 +39,20 @@ public class OnMainProcessor implements IWinryAnnotationProcessor<OnMain> {
         }
 
         methodPlan.asWinry().ifPresentOrElse(mt ->
-                mt.addDelegator((c, m, args, next) -> asyncManager.submitToMain(() -> {
-                    Object result = next.get();
+                mt.addDelegator((c, m, args, next) -> {
+                    try {
+                        return asyncManager.submitToMain(() -> {
+                            Object result = next.get();
 
-                    if (result instanceof Future) {
-                        return ((Future<?>) result).get();
+                            if (result instanceof Future) {
+                                return ((Future<?>) result).get();
+                            }
+
+                            return result;
+                        }).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
                     }
-
-                    return result;
-                }), 0), NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
+                }, 0), NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
     }
 }

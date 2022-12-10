@@ -96,6 +96,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
             LOGGER.debug("Bootstrapping Class: " + clazz.getName());
             result = new BootstrappedClass(clazz, this.bootstrapper, this.bootstrapper.getContext());
             this.bootstrappedClasses.put(clazz, result);
+            this.bootstrapper.getContext().registerToContext(result);
         }
 
         return result;
@@ -103,28 +104,33 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
     @Override
     public BootstrappedMethod bootstrap(Method method) {
+        BootstrappedMethod result;
         if (this.bootstrappedMethods.containsKey(method)) {
-            return this.bootstrappedMethods.get(method);
+            result = this.bootstrappedMethods.get(method);
+            result.compileAnnotations();
+        } else {
+            LOGGER.debug("Bootstrapping Method: " + method.getName());
+            result = new BootstrappedMethod(method, this.bootstrapper);
+            this.bootstrappedMethods.put(method, result);
+            this.bootstrapper.getContext().registerToContext(result);
         }
-
-        LOGGER.debug("Bootstrapping Method: " + method.getName());
-        BootstrappedMethod result = new BootstrappedMethod(method, this.bootstrapper);
-
-        this.bootstrappedMethods.put(method, result);
 
         return result;
     }
 
     @Override
     public BootstrappedField bootstrap(Field field) {
+        BootstrappedField result;
+
         if (this.bootstrappedFields.containsKey(field)) {
-            return this.bootstrappedFields.get(field);
+            result = this.bootstrappedFields.get(field);
+            result.compileAnnotations();
+        } else {
+            LOGGER.debug("Bootstrapping Field: " + field.getName());
+            result = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
+            this.bootstrappedFields.put(field, result);
+            this.bootstrapper.getContext().registerToContext(result);
         }
-
-        LOGGER.debug("Bootstrapping Field: " + field.getName());
-        BootstrappedField result = new BootstrappedField(field, getBootstrappedClass(field.getType()), this.bootstrapper);
-
-        this.bootstrappedFields.put(field, result);
 
         return result;
     }
