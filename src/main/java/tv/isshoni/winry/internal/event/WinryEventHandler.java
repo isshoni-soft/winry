@@ -1,7 +1,6 @@
 package tv.isshoni.winry.internal.event;
 
 import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.event.IEventHandler;
 
@@ -19,7 +18,7 @@ public class WinryEventHandler implements IEventHandler {
     }
 
     @Override
-    public void execute(IEvent event) {
+    public void execute(Object event) {
         this.method.getBootstrapper().getContext().getElementBootstrapper().execute(this.method, new HashMap<>() {{
             put("event", event);
         }});
@@ -31,7 +30,7 @@ public class WinryEventHandler implements IEventHandler {
     }
 
     @Override
-    public Class<? extends IEvent> getTargetEvent() {
+    public Class<?> getTargetEvent() {
         return this.listener.value();
     }
 

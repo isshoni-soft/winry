@@ -1,8 +1,6 @@
 package tv.isshoni.winry.api.event;
 
-public class WinryPostInitEvent extends WinryEvent {
+import tv.isshoni.winry.api.annotation.Event;
 
-    public WinryPostInitEvent() {
-        super("PostInit", false);
-    }
-}
+@Event("winry-post-init")
+public class WinryPostInitEvent { }

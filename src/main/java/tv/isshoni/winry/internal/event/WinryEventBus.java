@@ -1,15 +1,16 @@
 package tv.isshoni.winry.internal.event;
 
+import tv.isshoni.araragi.data.collection.map.BucketMap;
+import tv.isshoni.araragi.data.collection.map.Maps;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.api.annotation.ExecutableEvent;
+import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.event.ICancellable;
-import tv.isshoni.winry.api.event.IEvent;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.event.IEventBus;
 import tv.isshoni.winry.internal.entity.event.IEventHandler;
@@ -20,14 +21,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Consumer;
 
 public class WinryEventBus implements IEventBus {
 
-    private final Map<Class<? extends IEvent>, List<IEventHandler>> handlers;
+    private final BucketMap<Class<?>, IEventHandler> handlers;
 
     private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
@@ -41,12 +41,39 @@ public class WinryEventBus implements IEventBus {
         this.annotationManager = annotationManager;
         this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
-        this.handlers = new HashMap<>();
+        this.handlers = Maps.bucket(new HashMap<>());
     }
 
     @Override
-    public <T extends IEvent> T fire(T event) {
-        this.LOGGER.debug("Firing event: " + event.getName());
+    public Event findAnnotation(Object o) {
+        Class<?> clazz;
+        if (o instanceof Class<?>) {
+            clazz = (Class<?>) o;
+        } else {
+            clazz = o.getClass();
+        }
+
+        return clazz.getAnnotation(Event.class);
+    }
+
+    @Override
+    public boolean isEvent(Object o) {
+        return findAnnotation(o) != null;
+    }
+
+    @Override
+    public <T> T fire(T event) {
+        Event eventMeta = findAnnotation(event);
+
+        if (eventMeta == null) {
+            throw new IllegalArgumentException("Event type missing Event annotation!");
+        }
+
+        if (eventMeta.value().isBlank()) {
+            throw new IllegalArgumentException("Event must have a name!");
+        }
+
+        this.LOGGER.debug("Firing event: " + eventMeta.value());
         List<IEventHandler> handlers = getHandlersFor(event);
 
         Consumer<? super IEventHandler> execute = h -> {
@@ -54,7 +81,7 @@ public class WinryEventBus implements IEventBus {
                 h.execute(event);
             } catch (Throwable throwable) {
                 try {
-                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", IEvent.class));
+                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", Object.class));
                 } catch (NoSuchMethodException e) {
                     throw new EventExecutionException(event.getClass(), e);
                 }
@@ -77,7 +104,7 @@ public class WinryEventBus implements IEventBus {
 
         Consumer<? super IEventHandler> consumer = runner;
 
-        if (event.isAsync()) {
+        if (eventMeta.async()) {
             consumer = h -> this.asyncManager.submit(() -> runner.accept(h));
         }
 
@@ -87,7 +114,7 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public <T extends IEvent> T fire(Class<T> clazz) {
+    public <T> T fire(Class<T> clazz) {
         T event;
         try {
             event = this.annotationManager.construct(clazz);
@@ -107,41 +134,42 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public <T extends IEvent> void registerExecutable(Class<T> clazz) {
-        if (!clazz.isAnnotationPresent(ExecutableEvent.class)) {
+    public void registerExecutable(Class<?> clazz) {
+        Event event = findAnnotation(clazz);
+
+        if (event == null) {
             return;
         }
 
-        registerExecutable(clazz, clazz.getAnnotation(ExecutableEvent.class).value());
+        if (!event.executable()) {
+            return;
+        }
+
+        registerExecutable(clazz, event.weight());
     }
 
     @Override
-    public <T extends IEvent> void registerExecutable(Class<T> clazz, int weight) {
-        getWinryContext().registerExecutable(new WinryEventExecutable<>(clazz, weight, this));
+    public void registerExecutable(Class<?> clazz, int weight) {
+        getWinryContext().registerExecutable(new WinryEventExecutable(clazz, weight, this));
     }
 
     @Override
     public void registerListener(BootstrappedMethod method, Listener listener) {
-        if (!this.handlers.containsKey(listener.value())) {
-            this.handlers.put(listener.value(), new LinkedList<>());
-        }
-
-        List<IEventHandler> handlers = this.handlers.get(listener.value());
-        handlers.add(new WinryEventHandler(method, listener));
+        this.handlers.add(listener.value(), new WinryEventHandler(method, listener));
     }
 
     @Override
-    public List<IEventHandler> getHandlersFor(IEvent event) {
+    public List<IEventHandler> getHandlersFor(Object event) {
         Class<?> current = event.getClass();
         List<IEventHandler> result = new LinkedList<>();
         Stack<Class<?>> next = new Stack<>();
         Consumer<Class<?>> consumer = c -> {
-            if (Objects.nonNull(c) && IEvent.class.isAssignableFrom(c)) {
+            if (Objects.nonNull(c) && isEvent(c)) {
                 next.push(c);
             }
         };
 
-        while (Objects.nonNull(current) && IEvent.class.isAssignableFrom(current)) {
+        while (Objects.nonNull(current) && isEvent(current)) {
             consumer.accept(current.getSuperclass());
             Streams.to(current.getInterfaces()).forEach(consumer);
 

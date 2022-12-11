@@ -1,8 +1,6 @@
 package tv.isshoni.winry.api.event;
 
-public class WinryShutdownEvent extends WinryEvent {
+import tv.isshoni.winry.api.annotation.Event;
 
-    public WinryShutdownEvent() {
-        super("Shutdown", false);
-    }
-}
+@Event("winry-shutdown")
+public class WinryShutdownEvent { }

@@ -26,6 +26,10 @@ public interface IWinryContext {
 
     void registerExecutable(IExecutable... executable);
 
+    void suppressShutdown();
+
+    void shutdown();
+
     Instant getCreated();
 
     IBootstrapper getBootstrapper();

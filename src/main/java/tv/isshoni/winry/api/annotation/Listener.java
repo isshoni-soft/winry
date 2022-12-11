@@ -2,7 +2,6 @@ package tv.isshoni.winry.api.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.internal.annotation.processor.method.ListenerProcessor;
 
 import java.lang.annotation.ElementType;
@@ -16,13 +15,11 @@ import java.lang.annotation.Target;
 @Processor(ListenerProcessor.class)
 public @interface Listener {
 
-    Class<? extends IEvent> value() default DummyEvent.class;
+    Class<?> value();
 
     int weight() default 100;
 
     boolean ignoreCancelled() default false;
 
     boolean needsMainThread() default false;
-
-    interface DummyEvent extends IEvent { }
 }

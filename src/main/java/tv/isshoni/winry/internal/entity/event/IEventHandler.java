@@ -1,15 +1,14 @@
 package tv.isshoni.winry.internal.entity.event;
 
-import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 
 public interface IEventHandler extends Comparable<IEventHandler> {
 
-    void execute(IEvent event);
+    void execute(Object event);
 
     BootstrappedMethod getHandler();
 
-    Class<? extends IEvent> getTargetEvent();
+    Class<?> getTargetEvent();
 
     int getWeight();
 

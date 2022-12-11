@@ -1,23 +1,27 @@
 package tv.isshoni.winry.internal.entity.event;
 
+import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.context.IContextual;
-import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 
 import java.util.List;
 
 public interface IEventBus extends IContextual {
 
-    <T extends IEvent> T fire(T event);
+    Event findAnnotation(Object o);
 
-    <T extends IEvent> T fire(Class<T> clazz);
+    boolean isEvent(Object o);
 
-    <T extends IEvent> void registerExecutable(Class<T> clazz);
+    <T> T fire(T event);
 
-    <T extends IEvent> void registerExecutable(Class<T> clazz, int weight);
+    <T> T fire(Class<T> clazz);
+
+    void registerExecutable(Class<?> clazz);
+
+    void registerExecutable(Class<?> clazz, int weight);
 
     void registerListener(BootstrappedMethod method, Listener listener);
 
-    List<IEventHandler> getHandlersFor(IEvent event);
+    List<IEventHandler> getHandlersFor(Object event);
 }

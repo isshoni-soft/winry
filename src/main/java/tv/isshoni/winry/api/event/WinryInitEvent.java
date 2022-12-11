@@ -1,8 +1,6 @@
 package tv.isshoni.winry.api.event;
 
-public class WinryInitEvent extends WinryEvent {
+import tv.isshoni.winry.api.annotation.Event;
 
-    public WinryInitEvent() {
-        super("Init", false);
-    }
-}
+@Event("winry-init")
+public class WinryInitEvent { }

@@ -1,36 +1,35 @@
 package tv.isshoni.winry.api.bootstrap;
 
-import tv.isshoni.winry.api.event.IEvent;
 import tv.isshoni.winry.internal.entity.event.IEventBus;
 
-public class WinryEventExecutable<T extends IEvent> implements IExecutable {
+public class WinryEventExecutable implements IExecutable {
 
     private final int weight;
 
-    private final Class<T> eventClass;
+    private final Class<?> eventClass;
 
-    private T event;
+    private Object event;
 
     private final IEventBus bus;
 
-    public WinryEventExecutable(Class<T> eventClass, int weight, IEventBus bus) {
+    public WinryEventExecutable(Class<?> eventClass, int weight, IEventBus bus) {
         this.eventClass = eventClass;
         this.weight = weight;
         this.bus = bus;
     }
 
-    public WinryEventExecutable(T event, int weight, IEventBus bus) {
+    public WinryEventExecutable(Object event, int weight, IEventBus bus) {
         this.event = event;
         this.weight = weight;
         this.bus = bus;
-        this.eventClass = (Class<T>) event.getClass();
+        this.eventClass = event.getClass();
     }
 
-    public T getEvent() {
+    public Object getEvent() {
         return this.event;
     }
 
-    public Class<T> getEventClass() {
+    public Class<?> getEventClass() {
         return this.eventClass;
     }
 

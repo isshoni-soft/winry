@@ -4,6 +4,8 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
+import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
@@ -128,6 +130,20 @@ public class WinryContext implements IWinryContext {
     @Override
     public void registerExecutable(IExecutable... executable) {
         Streams.to(executable).forEach(this::registerExecutable);
+    }
+
+    @Override
+    public void suppressShutdown() {
+        this.executables.removeAll(Streams.to(this.executables)
+                .filter(e -> e instanceof WinryEventExecutable)
+                .cast(WinryEventExecutable.class)
+                .filter(e -> e.getEventClass().equals(WinryShutdownEvent.class))
+                .toList());
+    }
+
+    @Override
+    public void shutdown() {
+        this.executables.add(new WinryEventExecutable(WinryShutdownEvent.class, Integer.MIN_VALUE, this.eventBus));
     }
 
     @Override

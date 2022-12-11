@@ -1,13 +1,13 @@
 package model.integration.event;
 
-import tv.isshoni.winry.api.event.WinryEvent;
+import tv.isshoni.winry.api.annotation.Event;
 
-public class TestEvent extends WinryEvent {
+@Event("TestEvent")
+public class TestEvent {
 
     private int data;
 
     public TestEvent(int data) {
-        super("TestEvent", false);
         this.data = data;
     }
 

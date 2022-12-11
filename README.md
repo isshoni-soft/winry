@@ -3,7 +3,7 @@ Isshoni Winry Bootstrapper
 The bootstrapper designed and developed for Isshoni, with the intention to support a wide-range
 of Java applications to facilitate innovation while not wasting time on boilerplate design requirements.
 
-**This tool is currently in beta until the version number says 1.0.0, please expect bugs when using it.**
+**This tool is currently in beta until the version number says 1.0.0, please expect bugs/instability when using it.**
 
 Table of Contents
 -----------------
@@ -12,7 +12,6 @@ Table of Contents
 - [About](#about)
 - [How it Works](#how-it-works)
 - [Advanced Usage](#advanced-usage)
-- [Theoretical Applications](#theoretical-applications)
 
 Basic Usage
 -----------
@@ -31,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'tv.isshoni:winry:0.55.1'
+    implementation 'tv.isshoni:winry:0.55.0'
 }
 ```
 
@@ -51,12 +50,6 @@ TODO
 
 Advanced Usage
 --------------
-TODO  
-  
-[Return to Table of Contents](#table-of-contents)
-
-Theoretical Applications
-------------------------
 TODO  
   
 [Return to Table of Contents](#table-of-contents)
