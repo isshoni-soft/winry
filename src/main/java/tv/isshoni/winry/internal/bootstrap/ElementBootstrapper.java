@@ -90,6 +90,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
     public BootstrappedClass bootstrap(Class<?> clazz) {
         BootstrappedClass result;
         if (this.bootstrappedClasses.containsKey(clazz)) {
+            LOGGER.debug("Reloading Class: " + clazz.getName());
             result = this.bootstrappedClasses.get(clazz);
             result.build();
         } else {
@@ -106,6 +107,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
     public BootstrappedMethod bootstrap(Method method) {
         BootstrappedMethod result;
         if (this.bootstrappedMethods.containsKey(method)) {
+            LOGGER.debug("Reloading Method: " + method.getName());
             result = this.bootstrappedMethods.get(method);
             result.compileAnnotations();
         } else {
@@ -123,6 +125,7 @@ public class ElementBootstrapper implements IElementBootstrapper {
         BootstrappedField result;
 
         if (this.bootstrappedFields.containsKey(field)) {
+            LOGGER.debug("Reloading Field: " + field.getName());
             result = this.bootstrappedFields.get(field);
             result.compileAnnotations();
         } else {

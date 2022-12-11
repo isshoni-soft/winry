@@ -263,7 +263,7 @@ public class WinryContext implements IWinryContext {
         public IWinryContext build() {
             if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
                 Objects.isNull(this.asyncManager) || Objects.isNull(this.elementBootstrapper) || Objects.isNull(this.annotationManager) ||
-                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry)) {
+                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry) || Objects.isNull(this.exceptionManager)) {
                 throw new IllegalStateException("Cannot build without all managers present!");
             }
 

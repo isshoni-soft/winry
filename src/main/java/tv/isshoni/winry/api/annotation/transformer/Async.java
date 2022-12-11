@@ -15,4 +15,6 @@ import java.lang.annotation.Target;
 @Transformer
 @Processor(AsyncProcessor.class)
 @Weight(100000000)
-public @interface Async { }
+public @interface Async {
+    boolean block() default false;
+}

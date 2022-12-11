@@ -15,4 +15,6 @@ import java.lang.annotation.Target;
 @Transformer
 @Processor(OnMainProcessor.class)
 @Weight(100000000)
-public @interface OnMain { }
+public @interface OnMain {
+    boolean block() default false;
+}

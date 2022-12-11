@@ -1,16 +1,17 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
 import tv.isshoni.araragi.async.IAsyncManager;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.transformer.Async;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
 
-import java.lang.reflect.Method;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
@@ -29,17 +30,12 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
     public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, Async annotation, ITransformingBlueprint blueprint) {
         IAsyncManager asyncManager = this.context.getAsyncManager();
 
-        Method method = bootstrappedMethod.getBootstrappedElement();
-        LOGGER.debug("Async-ifying: " + bootstrappedMethod);
-
-        if (!(method.getReturnType().isAssignableFrom(Future.class) || method.getReturnType().equals(Void.TYPE))) {
-            // TODO: Make specialized exception for this
-            throw new RuntimeException("Tried to make async method with non-void/future return type!");
-        }
+        LOGGER.debug("Applying transformation to: " + bootstrappedMethod);
 
         methodPlan.asWinry().ifPresentOrElse(mt ->
-                mt.addDelegator((c, m, args, next) ->
-                        asyncManager.submit(() -> {
+                mt.addDelegator((c, m, args, next) -> {
+                    try {
+                        Future<?> onOther = asyncManager.submit(() -> {
                             Object result = next.get();
 
                             if (result instanceof Future) {
@@ -47,6 +43,17 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
                             }
 
                             return result;
-                        }), 0), NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
+                        });
+
+                        if (Future.class.isAssignableFrom(m.getReturnType()) ||
+                                (m.getReturnType().equals(Void.TYPE) && !annotation.block())) {
+                            return onOther;
+                        }
+
+                        return onOther.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw Exceptions.rethrow(e);
+                    }
+                }, 0), NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
     }
 }
