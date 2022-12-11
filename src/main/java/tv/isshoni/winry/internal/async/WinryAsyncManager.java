@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManager {
 
@@ -19,16 +20,19 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private final Queue<Runnable> calls;
 
+    private final AtomicBoolean running;
+
     public WinryAsyncManager(String contextName) {
         super();
 
+        this.running = new AtomicBoolean(false);
         this.contextName = contextName;
         this.calls = new ConcurrentLinkedQueue<>();
     }
 
     @Override
     public boolean isRunning() {
-        return this.newMain != null && !this.calls.isEmpty();
+        return this.newMain != null && !this.calls.isEmpty() || this.running.get();
     }
 
     @Override
@@ -77,6 +81,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException {
+        this.running.set(true);
         CompletableFuture<T> future = new CompletableFuture<>();
         this.newMain = new Thread(() -> {
             try {
@@ -91,7 +96,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
         }, "WinryManagerThread-" + this.contextName);
         this.newMain.start();
 
-        while (!future.isDone()) {
+        while (isRunning()) {
             if (!this.calls.isEmpty()) {
                 nextMainCall().run();
             } else {
@@ -109,5 +114,10 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
     @Override
     public Runnable nextMainCall() {
         return this.calls.poll();
+    }
+
+    @Override
+    public void shutdown() {
+        this.running.set(false);
     }
 }

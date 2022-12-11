@@ -6,6 +6,7 @@ import tv.isshoni.winry.api.context.IContextual;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface IEventBus extends IContextual {
 
@@ -21,7 +22,9 @@ public interface IEventBus extends IContextual {
 
     void registerExecutable(Class<?> clazz, int weight);
 
+    <T> void registerListener(Consumer<T> handler, Class<T> type, int weight);
+
     void registerListener(BootstrappedMethod method, Listener listener);
 
-    List<IEventHandler> getHandlersFor(Object event);
+    List<IEventHandler<Object>> getHandlersFor(Object event);
 }

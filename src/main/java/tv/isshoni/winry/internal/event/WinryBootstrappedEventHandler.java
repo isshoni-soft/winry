@@ -6,13 +6,13 @@ import tv.isshoni.winry.internal.entity.event.IEventHandler;
 
 import java.util.HashMap;
 
-public class WinryEventHandler implements IEventHandler {
+public class WinryBootstrappedEventHandler implements IEventHandler<Object> {
 
     private final BootstrappedMethod method;
 
     private final Listener listener;
 
-    public WinryEventHandler(BootstrappedMethod method, Listener listener) {
+    public WinryBootstrappedEventHandler(BootstrappedMethod method, Listener listener) {
         this.method = method;
         this.listener = listener;
     }
@@ -24,7 +24,6 @@ public class WinryEventHandler implements IEventHandler {
         }});
     }
 
-    @Override
     public BootstrappedMethod getHandler() {
         return this.method;
     }

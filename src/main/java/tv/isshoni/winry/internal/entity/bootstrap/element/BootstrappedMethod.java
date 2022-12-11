@@ -28,8 +28,6 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
     private boolean executed;
 
     public BootstrappedMethod(Method method, IBootstrapper bootstrapper) {
-        System.out.println("BOOTSTRAPPING: " + method.toString());
-
         this.method = method;
         this.bootstrapper = bootstrapper;
         this.modifiers = ReflectedModifier.getModifiers(method);
@@ -44,7 +42,6 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
         IWinryAnnotationManager annotationManager = this.bootstrapper.getContext().getAnnotationManager();
 
         List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.method);
-        System.out.println("=====================> " + annotations);
 
         this.annotations.clear();
         this.annotations.addAll(annotations);

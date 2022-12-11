@@ -17,4 +17,6 @@ public interface IWinryAsyncManager extends IAsyncManager {
     <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException;
 
     Runnable nextMainCall();
+
+    void shutdown();
 }

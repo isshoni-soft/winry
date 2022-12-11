@@ -62,10 +62,10 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
         LOGGER.debug("Getting injected for type: " + clazz);
         if (IWinryContext.class.isAssignableFrom(clazz) || clazz.equals(IWinryContext.class)) {
-            LOGGER.info("Injecting context...");
+            LOGGER.debug("Injecting context...");
             return this.context;
         }
-        LOGGER.info("Injecting other....");
+        LOGGER.debug("Injecting other....");
 
         if (annotation.value().equals(Inject.DEFAULT)) { // No perceivable change in initial functionality
             injected = getInjected(clazz);

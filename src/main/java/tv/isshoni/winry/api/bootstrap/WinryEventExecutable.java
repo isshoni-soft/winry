@@ -55,4 +55,13 @@ public class WinryEventExecutable implements IExecutable {
     public String getDisplay() {
         return "Event: " + this.getEventClass().getName() + " (" + this.getWeight() + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WinryEventExecutable other)) {
+            return false;
+        }
+
+        return other.bus.equals(this.bus) && other.eventClass.equals(this.eventClass) && other.weight == this.weight;
+    }
 }

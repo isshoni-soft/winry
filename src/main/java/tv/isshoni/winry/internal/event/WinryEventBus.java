@@ -9,6 +9,7 @@ import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.api.event.ICancellable;
+import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
@@ -27,7 +28,7 @@ import java.util.function.Consumer;
 
 public class WinryEventBus implements IEventBus {
 
-    private final BucketMap<Class<?>, IEventHandler> handlers;
+    private final BucketMap<Class<?>, IEventHandler<?>> handlers;
 
     private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
@@ -42,6 +43,8 @@ public class WinryEventBus implements IEventBus {
         this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
+
+        registerListener(event -> asyncManager.shutdown(), WinryShutdownEvent.class, Integer.MIN_VALUE);
     }
 
     @Override
@@ -74,9 +77,9 @@ public class WinryEventBus implements IEventBus {
         }
 
         this.LOGGER.debug("Firing event: " + eventMeta.value());
-        List<IEventHandler> handlers = getHandlersFor(event);
+        List<IEventHandler<Object>> handlers = getHandlersFor(event);
 
-        Consumer<? super IEventHandler> execute = h -> {
+        Consumer<? super IEventHandler<Object>> execute = h -> {
             try {
                 h.execute(event);
             } catch (Throwable throwable) {
@@ -88,7 +91,7 @@ public class WinryEventBus implements IEventBus {
             }
         };
 
-        Consumer<? super IEventHandler> runner = h -> {
+        Consumer<? super IEventHandler<Object>> runner = h -> {
             if (event instanceof ICancellable) {
                 if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
                     return;
@@ -102,7 +105,7 @@ public class WinryEventBus implements IEventBus {
             }
         };
 
-        Consumer<? super IEventHandler> consumer = runner;
+        Consumer<? super IEventHandler<Object>> consumer = runner;
 
         if (eventMeta.async()) {
             consumer = h -> this.asyncManager.submit(() -> runner.accept(h));
@@ -154,14 +157,19 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public void registerListener(BootstrappedMethod method, Listener listener) {
-        this.handlers.add(listener.value(), new WinryEventHandler(method, listener));
+    public <T> void registerListener(Consumer<T> handler, Class<T> type, int weight) {
+        this.handlers.add(type, new WinryLambdaEventHandler<>(handler, type, weight));
     }
 
     @Override
-    public List<IEventHandler> getHandlersFor(Object event) {
+    public void registerListener(BootstrappedMethod method, Listener listener) {
+        this.handlers.add(listener.value(), new WinryBootstrappedEventHandler(method, listener));
+    }
+
+    @Override
+    public List<IEventHandler<Object>> getHandlersFor(Object event) {
         Class<?> current = event.getClass();
-        List<IEventHandler> result = new LinkedList<>();
+        List<IEventHandler<Object>> result = new LinkedList<>();
         Stack<Class<?>> next = new Stack<>();
         Consumer<Class<?>> consumer = c -> {
             if (Objects.nonNull(c) && isEvent(c)) {
@@ -174,7 +182,7 @@ public class WinryEventBus implements IEventBus {
             Streams.to(current.getInterfaces()).forEach(consumer);
 
             if (this.handlers.containsKey(current)) {
-                result.addAll(this.handlers.get(current));
+                result.addAll(Streams.to(this.handlers.get(current)).map(h -> (IEventHandler<Object>) h).toList());
             }
 
             if (next.isEmpty()) {

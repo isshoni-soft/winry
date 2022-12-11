@@ -15,6 +15,7 @@ import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -114,12 +115,14 @@ public class WinryBootstrapper implements IBootstrapper {
 
         boolean broken = false;
         for (IExecutable executable : executables) {
-            int prevEventSize = this.context.getExecutables().size();
+            List<IExecutable> prevExecs = new LinkedList<>(this.context.getExecutables());
             LOGGER.info("Executing: " + executable.getDisplay());
             executable.execute();
             executed.add(executable);
 
-            if (prevEventSize < this.context.getExecutables().size()) {
+            // TODO: Check for change in executable in list.
+            if (prevExecs.size() != this.context.getExecutables().size() ||
+                    !new HashSet<>(this.context.getExecutables()).containsAll(prevExecs)) {
                 LOGGER.info("----------> Detected new executable registration, preforming hotswap...");
                 broken = true;
                 break;
