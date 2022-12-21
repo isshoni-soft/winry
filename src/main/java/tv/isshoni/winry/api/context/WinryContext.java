@@ -143,7 +143,7 @@ public class WinryContext implements IWinryContext {
 
     @Override
     public void shutdown() {
-        this.executables.add(new WinryEventExecutable(WinryShutdownEvent.class, Integer.MIN_VALUE, this.eventBus));
+        this.eventBus.fire(WinryShutdownEvent.class);
     }
 
     @Override

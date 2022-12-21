@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.async;
 
 import tv.isshoni.araragi.async.AsyncManager;
 import tv.isshoni.araragi.exception.Exceptions;
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Queue;
@@ -118,6 +119,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public void shutdown() {
+        AraragiLogger.create("WinryAsyncManager|" + this.contextName).info("Shutting down...");
         this.running.set(false);
     }
 }

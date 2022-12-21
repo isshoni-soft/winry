@@ -29,6 +29,10 @@ public class AsyncService {
         return this.context.getAsyncManager().submit(callable);
     }
 
+    public boolean isRunning() {
+        return this.context.getAsyncManager().isRunning();
+    }
+
     public Runnable nextMainCall() {
         return this.context.getAsyncManager().nextMainCall();
     }
