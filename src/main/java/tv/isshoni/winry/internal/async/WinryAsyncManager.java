@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManager {
 
@@ -53,6 +54,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                     future.complete(callable.call());
                 } catch (Exception e) {
                     future.completeExceptionally(e);
+                    throw Exceptions.rethrow(e);
                 }
             });
             this.calls.notify();
@@ -84,10 +86,12 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
     public <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException {
         this.running.set(true);
         CompletableFuture<T> future = new CompletableFuture<>();
+        AtomicReference<Throwable> error = new AtomicReference<>(null);
         this.newMain = new Thread(() -> {
             try {
                 future.complete(cont.call());
             } catch (Exception e) {
+                error.set(e);
                 future.completeExceptionally(e);
             }
 
@@ -106,6 +110,10 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                         this.calls.wait();
                     } catch (InterruptedException ignored) { }
                 }
+            }
+
+            if (future.isDone() && future.isCompletedExceptionally() && error.get() != null) {
+                throw Exceptions.rethrow(error.get());
             }
         }
 
