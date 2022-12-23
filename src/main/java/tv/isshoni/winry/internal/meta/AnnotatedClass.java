@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedClass {
+public class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedClass {
 
     protected final IWinryContext context;
 
@@ -95,5 +95,10 @@ public abstract class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITrans
 
     public boolean isDirty() {
         return true;
+    }
+
+    @Override
+    public String getDisplay() {
+        return null;
     }
 }

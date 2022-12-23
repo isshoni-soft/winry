@@ -15,10 +15,18 @@ public class SingletonAnnotatedClass extends AnnotatedClass {
     @Override
     public Object newInstance() {
         if (!isInitialized()) {
-            this.instance = getContext().getMetaManager().construct(this, false);
+            this.instance = forceNewInstance();
         }
 
         return this.instance;
+    }
+
+    public Object forceNewInstance() {
+        return getContext().getMetaManager().construct(this, false);
+    }
+
+    public Object forceNewDirtyInstance() {
+        return getContext().getMetaManager().construct(this, true);
     }
 
     public Object getInstance() {
