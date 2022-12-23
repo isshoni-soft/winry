@@ -1,7 +1,6 @@
 package tv.isshoni.winry.internal.bootstrap;
 
 import tv.isshoni.araragi.data.collection.map.TypeMap;
-import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
@@ -158,7 +157,8 @@ public class ElementBootstrapper implements IElementBootstrapper {
         try {
             return this.annotationManager.construct(constructed);
         } catch (Throwable e) {
-            throw Exceptions.rethrow(e);
+            this.exceptionManager.toss(e);
+            return null;
         }
     }
 
@@ -180,7 +180,6 @@ public class ElementBootstrapper implements IElementBootstrapper {
             }
         }
 
-
         LOGGER.debug("Executing: " + bootstrapped.getDeclaringClass().findClass() + " -- " + method);
         try {
             T result = this.annotationManager.execute(method, target, runtimeContext);
@@ -188,25 +187,30 @@ public class ElementBootstrapper implements IElementBootstrapper {
 
             return result;
         } catch (Throwable e) {
-            throw Exceptions.rethrow(e);
+            this.exceptionManager.toss(e);
+            return null;
         }
     }
 
     @Override
     public void inject(BootstrappedField bootstrapped, Object injected) {
-        Object target = null;
-        Field field = bootstrapped.getBootstrappedElement();
+        try {
+            Object target = null;
+            Field field = bootstrapped.getBootstrappedElement();
 
-        if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
-            target = getDeclaringClass(field).getObject();
+            if (!bootstrapped.getModifiers().contains(ReflectedModifier.STATIC)) {
+                target = getDeclaringClass(field).getObject();
 
-            if (target == null) {
-                throw new RuntimeException("Tried injecting into null instance " + bootstrapped.getDisplay());
+                if (target == null) {
+                    throw new RuntimeException("Tried injecting into null instance " + bootstrapped.getDisplay());
+                }
             }
-        }
 
-        ReflectionUtil.injectField(field, target, injected);
-        bootstrapped.setInjected(true);
+            ReflectionUtil.injectField(field, target, injected);
+            bootstrapped.setInjected(true);
+        } catch (Throwable t) {
+            this.exceptionManager.toss(t);
+        }
     }
 
     @Override
