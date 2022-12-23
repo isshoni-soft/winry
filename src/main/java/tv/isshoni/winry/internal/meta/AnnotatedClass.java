@@ -17,21 +17,25 @@ import java.util.Set;
 
 public abstract class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedClass {
 
-    private final IWinryContext context;
+    protected final IWinryContext context;
 
-    private final Set<Annotation> annotations;
+    protected final Set<Annotation> annotations;
 
-    private final Set<ReflectedModifier> modifiers;
+    protected final Set<ReflectedModifier> modifiers;
 
-    private final Class<?> element;
+    protected final Class<?> element;
 
-    private Class<?> transformed;
+    protected Class<?> transformed;
 
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         this.context = context;
         this.element = element;
         this.modifiers = ReflectedModifier.getModifiers(element);
         this.annotations = new HashSet<>();
+    }
+
+    public Object newInstance() {
+        return getContext().getMetaManager().construct(this, true);
     }
 
     @Override
@@ -87,5 +91,9 @@ public abstract class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITrans
     @Override
     public boolean isTransformed() {
         return Objects.nonNull(this.transformed);
+    }
+
+    public boolean isDirty() {
+        return true;
     }
 }
