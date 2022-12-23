@@ -3,12 +3,12 @@ package tv.isshoni.winry.api.annotation.processor;
 import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.context.IContextual;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.entity.bytebuddy.FieldTransformingPlan;
-import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.bytebuddy.FieldTransformingPlan;
+import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

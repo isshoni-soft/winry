@@ -5,8 +5,8 @@ import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedField;
 
 import java.lang.reflect.Parameter;
 import java.util.Map;

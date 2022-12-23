@@ -2,14 +2,14 @@ package tv.isshoni.winry.api.context;
 
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.entity.annotation.inject.IInjectionRegistry;
+import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
-import tv.isshoni.winry.internal.entity.event.IEventBus;
-import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
-import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.internal.model.event.IEventBus;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 
 import java.time.Instant;
 import java.util.List;

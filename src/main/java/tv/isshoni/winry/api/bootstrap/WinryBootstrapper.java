@@ -9,8 +9,8 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
-import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 

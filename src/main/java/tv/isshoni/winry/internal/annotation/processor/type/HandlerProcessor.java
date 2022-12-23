@@ -6,7 +6,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
 
 public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
 

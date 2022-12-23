@@ -7,8 +7,8 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.internal.entity.bytebuddy.MethodDelegator;
-import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;

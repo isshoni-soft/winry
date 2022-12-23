@@ -4,7 +4,7 @@ import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 
 import java.lang.annotation.ElementType;

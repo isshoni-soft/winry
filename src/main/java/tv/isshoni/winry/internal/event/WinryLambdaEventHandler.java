@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.event;
 
-import tv.isshoni.winry.internal.entity.event.IEventHandler;
+import tv.isshoni.winry.internal.model.event.IEventHandler;
 
 import java.util.function.Consumer;
 

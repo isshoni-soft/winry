@@ -7,9 +7,9 @@ import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.transformer.OnMain;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.entity.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

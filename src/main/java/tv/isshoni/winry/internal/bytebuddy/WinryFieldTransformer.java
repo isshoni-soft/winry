@@ -1,8 +1,8 @@
 package tv.isshoni.winry.internal.bytebuddy;
 
 import net.bytebuddy.dynamic.DynamicType;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedField;
-import tv.isshoni.winry.internal.entity.bytebuddy.FieldTransformingPlan;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedField;
+import tv.isshoni.winry.internal.model.bytebuddy.FieldTransformingPlan;
 
 import java.lang.reflect.Field;
 

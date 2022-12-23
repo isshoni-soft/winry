@@ -5,7 +5,7 @@ import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
 
 public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
 

@@ -5,7 +5,7 @@ import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
-import tv.isshoni.winry.internal.entity.bootstrap.IExecutableProvider;
+import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
 
 import java.util.List;
 

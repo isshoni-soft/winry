@@ -11,12 +11,12 @@ import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.entity.event.IEventBus;
-import tv.isshoni.winry.internal.entity.event.IEventHandler;
-import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
-import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.event.IEventBus;
+import tv.isshoni.winry.internal.model.event.IEventHandler;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;

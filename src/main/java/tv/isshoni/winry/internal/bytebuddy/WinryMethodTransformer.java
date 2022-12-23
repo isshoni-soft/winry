@@ -5,10 +5,10 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.internal.entity.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.entity.bytebuddy.MethodDelegator;
-import tv.isshoni.winry.internal.entity.bytebuddy.MethodTransformingPlan;
-import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;

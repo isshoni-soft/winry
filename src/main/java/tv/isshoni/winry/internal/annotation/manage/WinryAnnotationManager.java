@@ -12,15 +12,15 @@ import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcess
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
 import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
-import tv.isshoni.winry.internal.entity.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.entity.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.annotation.prepare.WinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.entity.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
-import tv.isshoni.winry.internal.entity.bootstrap.IExecutableProvider;
-import tv.isshoni.winry.internal.entity.exception.IExceptionManager;
-import tv.isshoni.winry.internal.entity.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 
 import java.lang.annotation.Annotation;

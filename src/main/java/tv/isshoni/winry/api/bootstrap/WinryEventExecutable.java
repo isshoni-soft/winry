@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.bootstrap;
 
-import tv.isshoni.winry.internal.entity.event.IEventBus;
+import tv.isshoni.winry.internal.model.event.IEventBus;
 
 public class WinryEventExecutable implements IExecutable {
 

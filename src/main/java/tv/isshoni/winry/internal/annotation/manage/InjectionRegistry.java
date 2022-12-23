@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
-import tv.isshoni.winry.internal.entity.annotation.inject.IInjectionRegistry;
-import tv.isshoni.winry.internal.entity.bootstrap.IElementBootstrapper;
+import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
+import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 
 import java.util.HashMap;
 import java.util.Map;
