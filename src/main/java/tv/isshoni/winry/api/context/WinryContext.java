@@ -6,6 +6,8 @@ import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.meta.IMetaManager;
+import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
@@ -62,6 +64,7 @@ public class WinryContext implements IWinryContext {
     private final ILoggerFactory loggerFactory;
 
     private final IElementBootstrapper elementBootstrapper;
+    private final IMetaManager metaManager;
 
     private final IWinryAsyncManager asyncManager;
 
@@ -84,6 +87,7 @@ public class WinryContext implements IWinryContext {
         this.loggerFactory = builder.loggerFactory;
         this.asyncManager = builder.asyncManager;
         this.elementBootstrapper = builder.elementBootstrapper;
+        this.metaManager = builder.metaManager;
         this.eventBus = builder.eventBus;
         this.injectionRegistry = builder.injectionRegistry;
         this.exceptionManager = builder.exceptionManager;
@@ -192,6 +196,11 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
+    public IMetaManager getMetaManager() {
+        return this.metaManager;
+    }
+
+    @Override
     public List<IExecutable> getExecutables() {
         return Collections.unmodifiableList(this.executables);
     }
@@ -234,6 +243,7 @@ public class WinryContext implements IWinryContext {
         private IWinryAnnotationManager annotationManager;
         private ILoggerFactory loggerFactory;
         private IElementBootstrapper elementBootstrapper;
+        private IMetaManager metaManager;
         private IWinryAsyncManager asyncManager;
         private IEventBus eventBus;
         private IInjectionRegistry injectionRegistry;
@@ -261,6 +271,11 @@ public class WinryContext implements IWinryContext {
             return this;
         }
 
+        public Builder metaManager(MetaManager metaManager) {
+            this.metaManager = metaManager;
+            return this;
+        }
+
         public Builder asyncManager(IWinryAsyncManager asyncManager) {
             this.asyncManager = asyncManager;
             return this;
@@ -279,7 +294,8 @@ public class WinryContext implements IWinryContext {
         public IWinryContext build() {
             if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
                 Objects.isNull(this.asyncManager) || Objects.isNull(this.elementBootstrapper) || Objects.isNull(this.annotationManager) ||
-                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry) || Objects.isNull(this.exceptionManager)) {
+                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry) || Objects.isNull(this.exceptionManager) ||
+                Objects.isNull(this.metaManager)) {
                 throw new IllegalStateException("Cannot build without all managers present!");
             }
 

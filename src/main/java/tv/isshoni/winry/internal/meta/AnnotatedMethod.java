@@ -1,0 +1,49 @@
+package tv.isshoni.winry.internal.meta;
+
+import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.meta.ITransformable;
+
+import java.lang.reflect.Method;
+import java.util.Set;
+
+public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements ITransformable<Method> {
+
+    protected final Set<ReflectedModifier> modifiers;
+
+    protected boolean transformed;
+
+    public AnnotatedMethod(IWinryContext context, Method method) {
+        super(context, method);
+        this.modifiers = ReflectedModifier.getModifiers(method.getModifiers());
+    }
+
+    @Override
+    public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor) {
+//        preparedAnnotationProcessor.transformMethod(this, get);
+
+        this.transformed = true;
+    }
+
+    @Override
+    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
+        preparedAnnotationProcessor.executeMethod(this.getElement());
+    }
+
+    @Override
+    public Set<ReflectedModifier> getModifiers() {
+        return this.modifiers;
+    }
+
+    @Override
+    public String getDisplay() {
+        return this.element.getName();
+    }
+
+    @Override
+    public boolean isTransformed() {
+        return this.transformed;
+    }
+}

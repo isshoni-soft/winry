@@ -3,54 +3,40 @@ package tv.isshoni.winry.internal.meta;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.ITransformedClass;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedClass {
-
-    protected final IWinryContext context;
-
-    protected final Set<Annotation> annotations;
+public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements ITransformedClass {
 
     protected final Set<ReflectedModifier> modifiers;
 
-    protected final Class<?> element;
-
     protected Class<?> transformed;
 
+    protected final List<AnnotatedMethod> methods;
+
+    protected final List<IAnnotatedMeta<Field>> fields;
+
     public AnnotatedClass(IWinryContext context, Class<?> element) {
-        this.context = context;
-        this.element = element;
+        super(context, element);
         this.modifiers = ReflectedModifier.getModifiers(element);
-        this.annotations = new HashSet<>();
+        this.methods = new LinkedList<>();
+        this.fields = new LinkedList<>();
+    }
+
+    public List<AnnotatedMethod> getMethods() {
+        return this.methods;
     }
 
     public Object newInstance() {
         return getContext().getMetaManager().construct(this, true);
-    }
-
-    @Override
-    public void reloadAnnotations() {
-        IWinryAnnotationManager annotationManager = this.context.getAnnotationManager();
-
-        List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.element);
-
-        this.annotations.clear();
-        this.annotations.addAll(annotations);
-
-        if (annotationManager.hasConflictingAnnotations(this.annotations)) {
-            throw new IllegalStateException(this.element.getSimpleName() + " has conflicting annotations! "
-                    + annotationManager.getConflictingAnnotations(this.annotations));
-        }
     }
 
     @Override
@@ -61,16 +47,8 @@ public class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedCla
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor) {
 //        preparedAnnotationProcessor.transformClass();
-    }
 
-    @Override
-    public Set<Annotation> getAnnotations() {
-        return Collections.unmodifiableSet(this.annotations);
-    }
-
-    @Override
-    public Class<?> getElement() {
-        return this.element;
+        getMethods().forEach(AnnotatedMethod::transform);
     }
 
     @Override
@@ -84,11 +62,6 @@ public class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedCla
     }
 
     @Override
-    public IWinryContext getContext() {
-        return this.context;
-    }
-
-    @Override
     public boolean isTransformed() {
         return Objects.nonNull(this.transformed);
     }
@@ -99,6 +72,6 @@ public class AnnotatedClass implements IAnnotatedMeta<Class<?>>, ITransformedCla
 
     @Override
     public String getDisplay() {
-        return null;
+        return this.element.getSimpleName();
     }
 }

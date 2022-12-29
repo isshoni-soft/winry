@@ -10,7 +10,7 @@ import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
-import tv.isshoni.winry.internal.model.meta.IMetaManager;
+import tv.isshoni.winry.api.meta.IMetaManager;
 
 import java.time.Instant;
 import java.util.List;

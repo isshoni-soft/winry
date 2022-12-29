@@ -9,6 +9,7 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
+import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.event.WinryEventBus;
@@ -38,6 +39,7 @@ public class WinryBootstrapper implements IBootstrapper {
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
 
         this.context = WinryContext.builder(bootstrap, this)
+                .metaManager(new MetaManager())
                 .exceptionManager(annotationManager.getExceptionManager())
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
