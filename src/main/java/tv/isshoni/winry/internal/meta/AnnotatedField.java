@@ -13,11 +13,14 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements ITra
 
     protected final Set<ReflectedModifier> modifiers;
 
+    protected final AnnotatedClass parent;
+
     protected boolean transformed;
 
-    public AnnotatedField(IWinryContext context, Field field) {
+    public AnnotatedField(IWinryContext context, AnnotatedClass parent, Field field) {
         super(context, field);
         this.modifiers = ReflectedModifier.getModifiers(field);
+        this.parent = parent;
     }
 
     @Override

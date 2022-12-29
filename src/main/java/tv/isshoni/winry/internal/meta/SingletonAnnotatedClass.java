@@ -4,6 +4,8 @@ import tv.isshoni.winry.api.context.IWinryContext;
 
 import java.util.Objects;
 
+// TODO: remove completely & replace with InstanceManager instance management.
+@Deprecated
 public class SingletonAnnotatedClass extends AnnotatedClass {
 
     protected Object instance;
