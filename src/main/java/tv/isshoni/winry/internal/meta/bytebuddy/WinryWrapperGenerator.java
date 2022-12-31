@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.meta.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.SuperMethodCall;
@@ -11,6 +12,7 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IClassTransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IFieldTransformer;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodDelegator;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodTransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.ITransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
@@ -50,15 +52,6 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         this.fieldTransformers = new HashMap<>();
     }
 
-    public IWinryContext getContext() {
-        return this.context;
-    }
-
-    @Override
-    public void setClassTransformer(IClassTransformer classTransformer) {
-        this.classTransformer = classTransformer;
-    }
-
     @Override
     public Class<?> generate() {
         logger.debug("Transforming: " + this.toWrap.getDisplay());
@@ -95,13 +88,54 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
             builder = executeTransformation(builder, entry.getKey(), entry.getValue());
         }
 
-//        this.bootstrappedClass.setWrappedClass(builder
-//                .name(packageName + ".WinryWrapped" + this.bootstrappedClass.getBootstrappedElement().getSimpleName())
-//                .make()
-//                .load(ClassLoader.getSystemClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
-//                .getLoaded());
+        return builder
+                .name(packageName + ".WinryWrapped" + this.toWrap.getElement().getSimpleName())
+                .make()
+                .load(ClassLoader.getSystemClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                .getLoaded();
+    }
 
-        return null;
+    public IWinryContext getContext() {
+        return this.context;
+    }
+
+    @Override
+    public void setClassTransformer(IClassTransformer classTransformer) {
+        this.classTransformer = classTransformer;
+    }
+
+    @Override
+    public void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer) {
+        setMethodTransformer(method, transformer, false);
+    }
+
+    @Override
+    public void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer, boolean force) {
+        if (!force && this.methodTransformers.containsKey(method)) {
+            logger.warn("Cannot set multiple method transformers for one method!");
+            return;
+        }
+
+        this.methodTransformers.put(method, transformer);
+    }
+
+    @Override
+    public void delegateMethod(IAnnotatedMeta<Method> method, int weight, IMethodDelegator delegator) {
+        WinryMethodDelegator methodDelegator = new WinryMethodDelegator(this.context);
+
+        if (this.methodTransformers.containsKey(method)) {
+            IMethodTransformer transformer = this.methodTransformers.get(method);
+
+            if (transformer instanceof WinryMethodDelegator) {
+                methodDelegator = (WinryMethodDelegator) transformer;
+            } else {
+                throw new IllegalStateException("Cannot register method delegator to method with pre-existing non-delegator transformer type!");
+            }
+        } else {
+            setMethodTransformer(method, methodDelegator);
+        }
+
+        methodDelegator.registerDelegator(delegator, weight);
     }
 
     @Override

@@ -11,4 +11,8 @@ public interface IAnnotatedClass extends IAnnotatedMeta<Class<?>> {
     List<IAnnotatedMeta<Method>> getMethods();
 
     List<IAnnotatedMeta<Field>> getFields();
+
+    IAnnotatedMeta<Method> getMethod(Method method);
+
+    IAnnotatedMeta<Method> getMethod(String name);
 }

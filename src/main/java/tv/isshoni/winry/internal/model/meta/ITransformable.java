@@ -2,7 +2,7 @@ package tv.isshoni.winry.internal.model.meta;
 
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -18,13 +18,13 @@ public interface ITransformable<E extends AnnotatedElement> {
 
     IWinryContext getContext();
 
-    void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, ITransformingBlueprint blueprint);
+    void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator);
 
-    default void transform() {
+    default void transform(IWrapperGenerator generator) {
         getContext().getAnnotationManager().toExecutionList(this.getElement(), this.getAnnotations())
                 .stream()
                 .filter(getContext().getAnnotationManager()::isWinry)
                 .map(p -> (IWinryPreparedAnnotationProcessor) p)
-                .forEach(this::transform);
+                .forEach(p -> transform(p, generator));
     }
 }

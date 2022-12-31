@@ -6,7 +6,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.model.bytebuddy.MethodDelegator;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodDelegator;
 import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 
@@ -21,7 +21,7 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
 
     private final IExceptionManager exceptionManager;
 
-    private final List<Pair<MethodDelegator, Integer>> delegators;
+    private final List<Pair<IMethodDelegator, Integer>> delegators;
 
     private final List<Function<DynamicType.Builder.MethodDefinition.ParameterDefinition, DynamicType.Builder.MethodDefinition.ParameterDefinition>> parameterTransformers;
 
@@ -35,7 +35,7 @@ public class WinryMethodTransformer implements MethodTransformingPlan {
         this.parameterTransformers = new LinkedList<>();
     }
 
-    public void addDelegator(MethodDelegator delegator, int weight) {
+    public void addDelegator(IMethodDelegator delegator, int weight) {
         this.delegators.add(new Pair<>(delegator, weight));
     }
 

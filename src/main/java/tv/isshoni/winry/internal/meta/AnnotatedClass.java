@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.meta;
 
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -9,12 +10,15 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.ITransformedClass;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,20 +28,20 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected Class<?> transformed;
 
-    protected final List<IAnnotatedMeta<Method>> methods;
+    protected final Map<Method, IAnnotatedMeta<Method>> methods;
 
     protected final List<IAnnotatedMeta<Field>> fields;
 
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         super(context, element);
         this.modifiers = ReflectedModifier.getModifiers(element);
-        this.methods = new LinkedList<>();
+        this.methods = new HashMap<>();
         this.fields = new LinkedList<>();
     }
 
     @Override
     public List<IAnnotatedMeta<Method>> getMethods() {
-        return this.methods;
+        return new LinkedList<>(this.methods.values());
     }
 
     @Override
@@ -46,33 +50,39 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
+    public IAnnotatedMeta<Method> getMethod(Method method) {
+        return this.methods.get(method);
+    }
+
+    @Override
+    public IAnnotatedMeta<Method> getMethod(String name) {
+        return Streams.to(this.methods)
+                .find(p -> p.getFirst().getName().equals(name))
+                .map(Pair::getSecond)
+                .orElse(null);
+    }
+
+    @Override
     public <R> R newInstance() throws Throwable {
         return (R) this.context.getAnnotationManager().construct(this.element);
     }
 
     @Override
-    public void transform() {
-        ITransformedClass.super.transform();
-
+    public void transform(IWrapperGenerator generator) {
         Streams.to(getMethods())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
-                .forEach(ITransformable::transform);
+                .forEach(t -> t.transform(generator));
 
         Streams.to(getFields())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
-                .forEach(ITransformable::transform);
+                .forEach(t -> t.transform(generator));
     }
 
     @Override
     public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
         preparedAnnotationProcessor.executeClass(this.getElement());
-    }
-
-    @Override
-    public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor) {
-//        preparedAnnotationProcessor.transformClass(this, );
     }
 
     @Override
@@ -88,6 +98,11 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public boolean isTransformed() {
         return Objects.nonNull(this.transformed);
+    }
+
+    @Override
+    public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
+        preparedAnnotationProcessor.transformClass(this, generator);
     }
 
     @Override
