@@ -35,6 +35,8 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements ITra
 
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor) {
+
+
         this.transformed = true;
     }
 

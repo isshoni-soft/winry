@@ -3,6 +3,7 @@ package tv.isshoni.winry.api.context;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
@@ -10,7 +11,6 @@ import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
-import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
@@ -107,6 +107,16 @@ public class WinryContext implements IWinryContext {
         CONTEXT_BY_ID.put(this.id, this);
 
         this.metaManager.setContext(this);
+    }
+
+    @Override
+    public AraragiLogger createLogger(String name) {
+        return this.loggerFactory.createLogger(name);
+    }
+
+    @Override
+    public AraragiLogger createLogger(Class<?> clazz) {
+        return this.loggerFactory.createLogger(clazz);
     }
 
     @Override

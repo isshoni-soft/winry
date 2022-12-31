@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.model.meta;
 
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -17,7 +18,7 @@ public interface ITransformable<E extends AnnotatedElement> {
 
     IWinryContext getContext();
 
-    void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor);
+    void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, ITransformingBlueprint blueprint);
 
     default void transform() {
         getContext().getAnnotationManager().toExecutionList(this.getElement(), this.getAnnotations())

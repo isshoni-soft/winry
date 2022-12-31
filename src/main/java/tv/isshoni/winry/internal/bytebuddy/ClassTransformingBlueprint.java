@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Deprecated
 public class ClassTransformingBlueprint implements ITransformingBlueprint {
 
     private static final ByteBuddy BYTE_BUDDY = new ByteBuddy();
