@@ -26,7 +26,7 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
     }
 
     @Override
-    public void reloadAnnotations() {
+    public void regenerate() {
         IWinryAnnotationManager annotationManager = this.context.getAnnotationManager();
 
         List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.element);

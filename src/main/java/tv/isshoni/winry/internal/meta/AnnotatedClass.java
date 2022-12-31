@@ -2,25 +2,31 @@ package tv.isshoni.winry.internal.meta;
 
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.ITransformedClass;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements ITransformedClass {
+public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements ITransformedClass, IAnnotatedClass {
 
     protected final Set<ReflectedModifier> modifiers;
 
     protected Class<?> transformed;
 
-    protected final List<AnnotatedMethod> methods;
+    protected final List<IAnnotatedMeta<Method>> methods;
 
-    protected final List<AnnotatedField> fields;
+    protected final List<IAnnotatedMeta<Field>> fields;
 
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         super(context, element);
@@ -29,24 +35,34 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
         this.fields = new LinkedList<>();
     }
 
-    public List<AnnotatedMethod> getMethods() {
+    @Override
+    public List<IAnnotatedMeta<Method>> getMethods() {
         return this.methods;
     }
 
-    public List<AnnotatedField> getFields() {
+    @Override
+    public List<IAnnotatedMeta<Field>> getFields() {
         return this.fields;
     }
 
-    public Object newInstance() {
-        return getContext().getMetaManager().construct(this, true);
+    @Override
+    public <R> R newInstance() throws Throwable {
+        return (R) this.context.getAnnotationManager().construct(this.element);
     }
 
     @Override
     public void transform() {
         ITransformedClass.super.transform();
 
-        getMethods().forEach(AnnotatedMethod::transform);
-        getFields().forEach(AnnotatedField::transform);
+        Streams.to(getMethods())
+                .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
+                .cast(ITransformable.class)
+                .forEach(ITransformable::transform);
+
+        Streams.to(getFields())
+                .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
+                .cast(ITransformable.class)
+                .forEach(ITransformable::transform);
     }
 
     @Override
@@ -72,12 +88,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public boolean isTransformed() {
         return Objects.nonNull(this.transformed);
-    }
-
-    // Get rid of me -- favor a generally 'stateless' approach, should remove all dirty markers for metas.
-    @Deprecated
-    public boolean isDirty() {
-        return true;
     }
 
     @Override

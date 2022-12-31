@@ -79,6 +79,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                     .filter(ac -> ac.isAnnotationPresent(Transformer.class))
                     .collect(Collectors.toSet());
 
+            // TODO: Replace with AnnotatedClass flow.
             BootstrappedClass bootstrappedClass = annotationManager.getElementBootstrapper().bootstrap(c);
 
             for (Class<? extends Annotation> transformer : transformers) {

@@ -1,27 +1,34 @@
 package tv.isshoni.winry.api.meta;
 
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
 
 public interface IMetaManager {
 
-    IAnnotatedMeta<Class<?>> generateMeta(Class<?> element);
+    void setContext(IWinryContext context);
 
-    <E extends AnnotatedElement> IAnnotatedMeta<E> getMetaFor(E element);
+    IWinryContext getContext();
 
-    <E extends AnnotatedElement, R extends IAnnotatedMeta<E>> R getMeta(E element, Class<R> type);
+    IAnnotatedClass generateMeta(Class<?> element);
 
-    Object construct(IAnnotatedMeta<Class<?>> meta, boolean dirty);
+    IAnnotatedClass getMeta(Object element);
 
-    default <T> T construct(Class<T> type, boolean dirty) {
-        IAnnotatedMeta<Class<?>> meta = getMetaFor(type);
+    <R> R construct(IAnnotatedClass meta) throws Throwable;
+
+    default <T> T construct(Class<T> type) {
+        IAnnotatedClass meta = getMeta(type);
 
         if (Objects.isNull(meta)) {
             meta = generateMeta(type);
         }
 
-        return (T) construct(meta, dirty);
+        try {
+            return construct(meta);
+        } catch (Throwable e) {
+            getContext().getExceptionManager().toss(e);
+            return null;
+        }
     }
 }

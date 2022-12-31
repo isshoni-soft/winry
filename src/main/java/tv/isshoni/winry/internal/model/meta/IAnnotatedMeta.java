@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface IAnnotatedMeta<E extends AnnotatedElement> extends IExecutable {
 
-    void reloadAnnotations();
+    void regenerate();
 
     void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor);
 

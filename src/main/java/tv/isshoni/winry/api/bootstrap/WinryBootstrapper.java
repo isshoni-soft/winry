@@ -39,7 +39,7 @@ public class WinryBootstrapper implements IBootstrapper {
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
 
         this.context = WinryContext.builder(bootstrap, this)
-                .metaManager(new MetaManager())
+                .metaManager(new MetaManager(loggerFactory))
                 .exceptionManager(annotationManager.getExceptionManager())
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)

@@ -105,6 +105,8 @@ public class WinryContext implements IWinryContext {
         registerToContext(this.exceptionManager);
 
         CONTEXT_BY_ID.put(this.id, this);
+
+        this.metaManager.setContext(this);
     }
 
     @Override
