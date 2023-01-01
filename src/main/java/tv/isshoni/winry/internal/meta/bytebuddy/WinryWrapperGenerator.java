@@ -11,6 +11,7 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IClassTransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IFieldTransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodDelegator;
@@ -20,7 +21,6 @@ import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
 
     private IClassTransformer classTransformer;
 
-    private final Map<IAnnotatedMeta<Method>, IMethodTransformer> methodTransformers;
+    private final Map<IAnnotatedMethod, IMethodTransformer> methodTransformers;
 
     private final Map<IAnnotatedField, IFieldTransformer> fieldTransformers;
 
@@ -84,7 +84,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
             builder = executeTransformation(builder, entry.getKey(), entry.getValue());
         }
 
-        for (Map.Entry<IAnnotatedMeta<Method>, IMethodTransformer> entry : this.methodTransformers.entrySet()) {
+        for (Map.Entry<IAnnotatedMethod, IMethodTransformer> entry : this.methodTransformers.entrySet()) {
             builder = executeTransformation(builder, entry.getKey(), entry.getValue());
         }
 
@@ -105,12 +105,12 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
     }
 
     @Override
-    public void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer) {
+    public void setMethodTransformer(IAnnotatedMethod method, IMethodTransformer transformer) {
         setMethodTransformer(method, transformer, false);
     }
 
     @Override
-    public void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer, boolean force) {
+    public void setMethodTransformer(IAnnotatedMethod method, IMethodTransformer transformer, boolean force) {
         if (!force && this.methodTransformers.containsKey(method)) {
             logger.warn("Cannot set multiple method transformers for one method!");
             return;
@@ -120,7 +120,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
     }
 
     @Override
-    public void delegateMethod(IAnnotatedMeta<Method> method, int weight, IMethodDelegator delegator) {
+    public void delegateMethod(IAnnotatedMethod method, int weight, IMethodDelegator delegator) {
         WinryMethodDelegator methodDelegator = new WinryMethodDelegator(this.context);
 
         if (this.methodTransformers.containsKey(method)) {
@@ -136,6 +136,11 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         }
 
         methodDelegator.registerDelegator(delegator, weight);
+    }
+
+    @Override
+    public boolean hasTransformer(IAnnotatedMethod method) {
+        return this.methodTransformers.containsKey(method) && this.methodTransformers.get(method) != null;
     }
 
     @Override

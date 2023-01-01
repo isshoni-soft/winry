@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // TODO: Rewrite to use AnnotatedMeta structure
+@Deprecated
 public class InjectionRegistry implements IInjectionRegistry {
 
     private final Map<String, Object> injected = new HashMap<>();

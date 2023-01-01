@@ -10,7 +10,7 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodDelegator;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodTransformer;
 
@@ -39,7 +39,7 @@ public class WinryMethodDelegator implements IMethodTransformer {
     }
 
     @Override
-    public DynamicType.Builder<?> transform(Method element, IAnnotatedMeta<Method> bootstrapped, DynamicType.Builder<?> builder) {
+    public DynamicType.Builder<?> transform(Method element, IAnnotatedMethod meta, DynamicType.Builder<?> builder) {
         return builder.method(ElementMatchers.is(element)).intercept(MethodDelegation.to(this));
     }
 

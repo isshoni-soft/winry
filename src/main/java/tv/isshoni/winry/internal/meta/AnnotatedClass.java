@@ -8,7 +8,7 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.ITransformedClass;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
@@ -28,7 +28,7 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected Class<?> transformed;
 
-    protected final Map<Method, IAnnotatedMeta<Method>> methods;
+    protected final Map<Method, IAnnotatedMethod> methods;
 
     protected final Map<Field, IAnnotatedField> fields;
 
@@ -40,7 +40,7 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public List<IAnnotatedMeta<Method>> getMethods() {
+    public List<IAnnotatedMethod> getMethods() {
         return new LinkedList<>(this.methods.values());
     }
 
@@ -50,12 +50,12 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public IAnnotatedMeta<Method> getMethod(Method method) {
+    public IAnnotatedMethod getMethod(Method method) {
         return this.methods.get(method);
     }
 
     @Override
-    public IAnnotatedMeta<Method> getMethod(String name) {
+    public IAnnotatedMethod getMethod(String name) {
         return Streams.to(this.methods)
                 .find(p -> p.getFirst().getName().equals(name))
                 .map(Pair.second())

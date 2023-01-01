@@ -1,9 +1,7 @@
 package tv.isshoni.winry.internal.model.meta.bytebuddy;
 
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
-
-import java.lang.reflect.Method;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 public interface IWrapperGenerator {
 
@@ -11,11 +9,13 @@ public interface IWrapperGenerator {
 
     void setClassTransformer(IClassTransformer classTransformer);
 
-    void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer);
+    void setMethodTransformer(IAnnotatedMethod method, IMethodTransformer transformer);
 
-    void setMethodTransformer(IAnnotatedMeta<Method> method, IMethodTransformer transformer, boolean force);
+    void setMethodTransformer(IAnnotatedMethod method, IMethodTransformer transformer, boolean force);
 
-    void delegateMethod(IAnnotatedMeta<Method> method, int weight, IMethodDelegator delegator);
+    void delegateMethod(IAnnotatedMethod method, int weight, IMethodDelegator delegator);
+
+    boolean hasTransformer(IAnnotatedMethod method);
 
     IAnnotatedClass toWrap();
 

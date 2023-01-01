@@ -6,9 +6,7 @@ import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
@@ -47,13 +45,9 @@ public interface IWinryContext {
 
     IInstanceManager getInstanceManager();
 
-    IElementBootstrapper getElementBootstrapper();
-
     IWinryAsyncManager getAsyncManager();
 
     IEventBus getEventBus();
-
-    IInjectionRegistry getInjectionRegistry();
 
     IExceptionManager getExceptionManager();
 

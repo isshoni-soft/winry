@@ -6,7 +6,6 @@ import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 
@@ -27,8 +26,6 @@ public interface IWinryAnnotationManager extends IAnnotationManager {
     Class<?>[] getAllManuallyLoaded();
 
     IAnnotationDiscoverer getAnnotationDiscoverer();
-
-    IElementBootstrapper getElementBootstrapper();
 
     IExceptionManager getExceptionManager();
 

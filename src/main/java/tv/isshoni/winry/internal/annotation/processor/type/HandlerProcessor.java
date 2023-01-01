@@ -3,10 +3,10 @@ package tv.isshoni.winry.internal.annotation.processor.type;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
+import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
-import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 
 public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
 
@@ -20,16 +20,16 @@ public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
     }
 
     @Override
-    public void executeClass(BootstrappedClass bootstrappedClass, Handler annotation) {
+    public void executeClass(IAnnotatedClass classMeta, Object target, Handler annotation) {
         if (!annotation.global()) {
             return;
         }
 
-        if (!IExceptionHandler.class.isAssignableFrom(bootstrappedClass.getBootstrappedElement())) {
+        if (!IExceptionHandler.class.isAssignableFrom(classMeta.getElement())) {
             return;
         }
 
-        LOGGER.info("Discovered global exception handler: " + bootstrappedClass.getBootstrappedElement().getName() + " -- " + annotation.value().getName());
-        this.context.getExceptionManager().registerGlobal((Class<? extends IExceptionHandler<?>>) bootstrappedClass.getBootstrappedElement());
+        LOGGER.info("Discovered global exception handler: " + classMeta.getDisplay() + " -- " + annotation.value().getName());
+        this.context.getExceptionManager().registerGlobal((Class<? extends IExceptionHandler<?>>) classMeta.getElement());
     }
 }

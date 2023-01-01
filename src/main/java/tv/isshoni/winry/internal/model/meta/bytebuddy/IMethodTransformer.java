@@ -1,8 +1,8 @@
 package tv.isshoni.winry.internal.model.meta.bytebuddy;
 
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.lang.reflect.Method;
 
 @FunctionalInterface
-public interface IMethodTransformer extends ITransformer<Method, IAnnotatedMeta<Method>> { }
+public interface IMethodTransformer extends ITransformer<Method, IAnnotatedMethod> { }

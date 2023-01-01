@@ -10,12 +10,11 @@ import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.annotation.inject.IInjectionRegistry;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -63,14 +62,13 @@ public class WinryContext implements IWinryContext {
 
     private final ILoggerFactory loggerFactory;
 
-    private final IElementBootstrapper elementBootstrapper;
     private final IMetaManager metaManager;
+
+    private final IInstanceManager instanceManager;
 
     private final IWinryAsyncManager asyncManager;
 
     private final IEventBus eventBus;
-
-    private final IInjectionRegistry injectionRegistry;
 
     private final IExceptionManager exceptionManager;
 
@@ -86,23 +84,22 @@ public class WinryContext implements IWinryContext {
         this.annotationManager = builder.annotationManager;
         this.loggerFactory = builder.loggerFactory;
         this.asyncManager = builder.asyncManager;
-        this.elementBootstrapper = builder.elementBootstrapper;
         this.metaManager = builder.metaManager;
         this.eventBus = builder.eventBus;
-        this.injectionRegistry = builder.injectionRegistry;
         this.exceptionManager = builder.exceptionManager;
+        this.instanceManager = builder.instanceManager;
         this.executables = new LinkedList<>();
         this.logger = this.loggerFactory.createLogger("WinryContext [" + this.id + "]");
 
         registerToContext(this.bootstrapper);
         registerToContext(this.annotationManager);
         registerToContext(this.loggerFactory);
-        registerToContext(this.elementBootstrapper);
         registerToContext(this.bootstrap);
         registerToContext(this.asyncManager);
         registerToContext(this.eventBus);
-        registerToContext(this.injectionRegistry);
         registerToContext(this.exceptionManager);
+        registerToContext(this.metaManager);
+        registerToContext(this.instanceManager);
 
         CONTEXT_BY_ID.put(this.id, this);
 
@@ -183,8 +180,8 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
-    public IElementBootstrapper getElementBootstrapper() {
-        return this.elementBootstrapper;
+    public IInstanceManager getInstanceManager() {
+        return this.instanceManager;
     }
 
     @Override
@@ -195,11 +192,6 @@ public class WinryContext implements IWinryContext {
     @Override
     public IEventBus getEventBus() {
         return this.eventBus;
-    }
-
-    @Override
-    public IInjectionRegistry getInjectionRegistry() {
-        return this.injectionRegistry;
     }
 
     @Override
@@ -254,14 +246,18 @@ public class WinryContext implements IWinryContext {
         private IBootstrapper bootstrapper;
         private IWinryAnnotationManager annotationManager;
         private ILoggerFactory loggerFactory;
-        private IElementBootstrapper elementBootstrapper;
         private IMetaManager metaManager;
         private IWinryAsyncManager asyncManager;
         private IEventBus eventBus;
-        private IInjectionRegistry injectionRegistry;
         private IExceptionManager exceptionManager;
+        private IInstanceManager instanceManager;
 
         private Builder() { }
+
+        public Builder instanceManager(IInstanceManager instanceManager) {
+            this.instanceManager = instanceManager;
+            return this;
+        }
 
         public Builder exceptionManager(IExceptionManager exceptionManager) {
             this.exceptionManager = exceptionManager;
@@ -275,11 +271,6 @@ public class WinryContext implements IWinryContext {
 
         public Builder loggerFactory(ILoggerFactory loggerFactory) {
             this.loggerFactory = loggerFactory;
-            return this;
-        }
-
-        public Builder elementBootstrapper(IElementBootstrapper elementBootstrapper) {
-            this.elementBootstrapper = elementBootstrapper;
             return this;
         }
 
@@ -298,16 +289,11 @@ public class WinryContext implements IWinryContext {
             return this;
         }
 
-        public Builder injectionRegistry(IInjectionRegistry injectionRegistry) {
-            this.injectionRegistry = injectionRegistry;
-            return this;
-        }
-
         public IWinryContext build() {
             if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
-                Objects.isNull(this.asyncManager) || Objects.isNull(this.elementBootstrapper) || Objects.isNull(this.annotationManager) ||
-                Objects.isNull(this.loggerFactory) || Objects.isNull(this.injectionRegistry) || Objects.isNull(this.exceptionManager) ||
-                Objects.isNull(this.metaManager)) {
+                Objects.isNull(this.asyncManager) || Objects.isNull(this.annotationManager) ||
+                Objects.isNull(this.loggerFactory) || Objects.isNull(this.instanceManager) ||
+                Objects.isNull(this.exceptionManager) || Objects.isNull(this.metaManager)) {
                 throw new IllegalStateException("Cannot build without all managers present!");
             }
 

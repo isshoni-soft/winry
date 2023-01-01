@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.model.annotation.inject;
 
+@Deprecated
 public interface IInjectionRegistry {
 
     Object getSingletonInjection(Class<?> key);

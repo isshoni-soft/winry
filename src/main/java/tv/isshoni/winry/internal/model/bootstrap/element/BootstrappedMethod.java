@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Deprecated
 public class BootstrappedMethod implements IBootstrappedElement<Method>, IContextual {
 
     private final IBootstrapper bootstrapper;
@@ -95,7 +96,7 @@ public class BootstrappedMethod implements IBootstrappedElement<Method>, IContex
 
     @Override
     public Consumer<IWinryPreparedAnnotationProcessor> transformClass() {
-        return (processor) -> processor.transformMethod(this, getDeclaringClass().getTransformingBlueprint());
+        throw new UnsupportedOperationException();
     }
 
     @Override

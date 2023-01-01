@@ -7,13 +7,14 @@ import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.context.WinryContext;
-import tv.isshoni.winry.internal.annotation.manage.InjectionRegistry;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
-import tv.isshoni.winry.internal.meta.MetaManager;
-import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedClass;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
+import tv.isshoni.winry.internal.meta.InstanceManager;
+import tv.isshoni.winry.internal.meta.MetaManager;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,16 +38,17 @@ public class WinryBootstrapper implements IBootstrapper {
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
+        IExceptionManager exceptionManager = annotationManager.getExceptionManager();
+        MetaManager metaManager = new MetaManager(loggerFactory);
 
         this.context = WinryContext.builder(bootstrap, this)
-                .metaManager(new MetaManager(loggerFactory))
-                .exceptionManager(annotationManager.getExceptionManager())
+                .exceptionManager(exceptionManager)
+                .metaManager(metaManager)
+                .instanceManager(new InstanceManager(loggerFactory, metaManager))
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
-                .elementBootstrapper(annotationManager.getElementBootstrapper())
                 .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, annotationManager.getExceptionManager()))
-                .injectionRegistry(new InjectionRegistry(annotationManager.getElementBootstrapper()))
                 .build();
 
         LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");
@@ -67,14 +69,12 @@ public class WinryBootstrapper implements IBootstrapper {
         this.bootstrapped = clazz;
         this.provided = Collections.unmodifiableMap(provided);
 
-        LOGGER.debug("Attaching provided instances...");
+        LOGGER.debug("Registering provided instances...");
         provided.forEach((c, o) -> {
-            this.context.getElementBootstrapper().bootstrap(c);
-            BootstrappedClass bootstrapped = this.context.getElementBootstrapper().getBootstrappedClass(c);
+            IAnnotatedClass classMeta = this.context.getMetaManager().generateMeta(c);
 
-            bootstrapped.setProvided(true);
-            bootstrapped.setObject(o);
             this.context.registerToContext(o);
+            this.context.getInstanceManager().registerSingletonInstance(classMeta, o);
         });
 
         LOGGER.debug("${dashes%50} Bootstrapping ${dashes%50}");
@@ -82,8 +82,7 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("Finished class discovery and instantiation...");
 
         LOGGER.debug("Recompiling annotations of provided bootstrapped classes...");
-        provided.forEach((c, o) ->
-                this.context.getElementBootstrapper().getBootstrappedClass(c).compileAnnotations());
+        provided.forEach((c, o) -> this.context.getMetaManager().getMeta(c).regenerate());
 
         List<IExecutable> run = compileRunList();
         Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
@@ -144,9 +143,9 @@ public class WinryBootstrapper implements IBootstrapper {
     @Override
     public List<IExecutable> compileRunList() {
         LOGGER.debug("Compiling run order...");
-        return Streams.to(this.context.getElementBootstrapper().getBootstrappedClasses())
-                .peek(BootstrappedClass::build)
-                .expand(IExecutable.class, BootstrappedClass::getMethods, BootstrappedClass::getFields)
+        return Streams.to(this.context.getMetaManager().getAllClasses())
+                .peek(IAnnotatedClass::regenerate)
+                .expand(IExecutable.class, IAnnotatedClass::getMethods, IAnnotatedClass::getFields)
                 .collect(Collectors.toList());
     }
 

@@ -12,11 +12,11 @@ import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -162,8 +162,8 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public void registerListener(BootstrappedMethod method, Listener listener) {
-        this.handlers.add(listener.value(), new WinryBootstrappedEventHandler(method, listener));
+    public void registerListener(IAnnotatedMethod method, Object target, Listener listener) {
+        this.handlers.add(listener.value(), new EventHandlerMeta(method, target, listener));
     }
 
     @Override

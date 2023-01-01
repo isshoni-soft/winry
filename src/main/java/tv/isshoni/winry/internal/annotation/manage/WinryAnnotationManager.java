@@ -11,17 +11,15 @@ import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
-import tv.isshoni.winry.internal.bootstrap.ElementBootstrapper;
+import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
-import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -36,8 +34,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
     private final IAnnotationDiscoverer annotationDiscoverer;
 
-    private final IElementBootstrapper elementBootstrapper;
-
     private final IExceptionManager exceptionManager;
 
     private final Bootstrap bootstrap;
@@ -47,7 +43,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         this.bootstrapper = bootstrapper;
         this.exceptionManager = new WinryExceptionManager(this, loggerFactory);
         this.annotationDiscoverer = new WinryAnnotationDiscoverer(this, loggerFactory);
-        this.elementBootstrapper = new ElementBootstrapper(bootstrapper, this, loggerFactory, this.exceptionManager);
 
         LOGGER = loggerFactory.createLogger("AnnotationManager");
 
@@ -121,11 +116,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     @Override
     public IAnnotationDiscoverer getAnnotationDiscoverer() {
         return this.annotationDiscoverer;
-    }
-
-    @Override
-    public IElementBootstrapper getElementBootstrapper() {
-        return this.elementBootstrapper;
     }
 
     @Override

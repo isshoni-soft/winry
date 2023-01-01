@@ -3,7 +3,7 @@ package tv.isshoni.winry.internal.model.event;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.context.IContextual;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ public interface IEventBus extends IContextual {
 
     <T> void registerListener(Consumer<T> handler, Class<T> type, int weight);
 
-    void registerListener(BootstrappedMethod method, Listener listener);
+    void registerListener(IAnnotatedMethod method, Object target, Listener listener);
 
     List<IEventHandler<Object>> getHandlersFor(Object event);
 }

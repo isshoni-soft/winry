@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Deprecated
 public class BootstrappedField implements IBootstrappedElement<Field>, IContextual {
 
     private final IBootstrapper bootstrapper;
@@ -110,7 +111,7 @@ public class BootstrappedField implements IBootstrappedElement<Field>, IContextu
 
     @Override
     public Consumer<IWinryPreparedAnnotationProcessor> transformClass() {
-        return (processor) -> processor.transformField(this, getDeclaringClass().getTransformingBlueprint());
+        throw new UnsupportedOperationException();
     }
 
     @Override

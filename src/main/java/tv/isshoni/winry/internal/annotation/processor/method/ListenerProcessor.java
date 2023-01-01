@@ -3,9 +3,9 @@ package tv.isshoni.winry.internal.annotation.processor.method;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
 
@@ -20,8 +20,8 @@ public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
     }
 
     @Override
-    public void executeMethod(BootstrappedMethod method, Listener annotation) {
+    public void executeMethod(IAnnotatedMethod method, Object target, Listener annotation) {
         LOGGER.debug("Register listener for: " + annotation.value().getName() + " - " + method.getDisplay());
-        this.context.getEventBus().registerListener(method, annotation);
+        this.context.getEventBus().registerListener(method, target, annotation);
     }
 }

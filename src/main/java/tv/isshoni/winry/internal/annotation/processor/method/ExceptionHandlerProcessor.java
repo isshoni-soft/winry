@@ -3,11 +3,10 @@ package tv.isshoni.winry.internal.annotation.processor.method;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
-import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
-import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
-import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<ExceptionHandler> {
 
@@ -21,20 +20,18 @@ public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<Exce
     }
 
     @Override
-    public void executeMethod(BootstrappedMethod method, ExceptionHandler annotation) {
+    public void executeMethod(IAnnotatedMethod method, Object target, ExceptionHandler annotation) {
         LOGGER.debug("Register ExceptionHandler for: " + annotation.value().getName() + " - " + method.getDisplay());
-        this.context.getExceptionManager().registerMethod(method.getBootstrappedElement(), annotation);
+        this.context.getExceptionManager().registerMethod(method.getElement(), annotation);
     }
 
     @Override
-    public void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, ExceptionHandler annotation, ITransformingBlueprint blueprint) {
-        if (blueprint.hasTransformers(bootstrappedMethod.getBootstrappedElement())) {
+    public void transformMethod(IAnnotatedMethod method, IWrapperGenerator generator, ExceptionHandler annotation) {
+        if (generator.hasTransformer(method)) {
             return;
         }
 
-        LOGGER.debug("Registering pass-through exception handler to: " + bootstrappedMethod.getDisplay());
-        methodPlan.asWinry().ifPresentOrElse(mt ->
-                mt.addDelegator((c, m, args, next) -> next.get(), Integer.MAX_VALUE),
-                        NO_WINRY_METHOD_TRANSFORMER.apply(LOGGER));
+        LOGGER.debug("Registering pass-through exception handler to: " + method.getDisplay());
+        generator.delegateMethod(method, 0, (c, m, args, next) -> next.get());
     }
 }

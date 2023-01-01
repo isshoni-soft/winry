@@ -9,8 +9,14 @@ import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class MetaManager implements IMetaManager {
 
@@ -61,6 +67,11 @@ public class MetaManager implements IMetaManager {
     }
 
     @Override
+    public Set<IAnnotatedClass> getAllClasses() {
+        return new HashSet<>(this.storedClassMetas.values());
+    }
+
+    @Override
     public <R> R construct(IAnnotatedClass meta) throws Throwable {
         return meta.newInstance();
     }
@@ -82,6 +93,28 @@ public class MetaManager implements IMetaManager {
             ReflectionUtil.injectField(field, target, value);
         } catch (Throwable t) {
             this.context.getExceptionManager().toss(t);
+        }
+    }
+
+    @Override
+    public <R> R execute(IAnnotatedMethod meta, Object instance, Map<String, Object> runtimeContext) {
+        Method method = meta.getElement();
+        Object target = null;
+
+        if (!meta.getModifiers().contains(ReflectedModifier.STATIC)) {
+            target = instance;
+
+            if (Objects.isNull(target)) {
+                logger.error("Non-static target is null for: " + meta.getDisplay());
+            }
+        }
+
+        logger.debug("Executing: " + meta.getDeclaringClass().getDisplay() + " -- " + method);
+        try {
+            return this.context.getAnnotationManager().execute(method, target, runtimeContext);
+        } catch (Throwable e) {
+            this.context.getExceptionManager().toss(e);
+            return null;
         }
     }
 }
