@@ -10,8 +10,6 @@ import java.util.Set;
 
 public interface ITransformable<E extends AnnotatedElement> {
 
-    boolean isTransformed();
-
     E getElement();
 
     Set<Annotation> getAnnotations();

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Deprecated
 public class ElementBootstrapper implements IElementBootstrapper {
 
     private static AraragiLogger LOGGER;

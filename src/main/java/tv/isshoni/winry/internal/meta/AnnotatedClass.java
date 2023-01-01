@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements ITransformedClass, IAnnotatedClass {
@@ -93,11 +92,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public Set<ReflectedModifier> getModifiers() {
         return Collections.unmodifiableSet(this.modifiers);
-    }
-
-    @Override
-    public boolean isTransformed() {
-        return Objects.nonNull(this.transformed);
     }
 
     @Override

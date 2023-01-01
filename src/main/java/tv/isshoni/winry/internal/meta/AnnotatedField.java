@@ -5,6 +5,7 @@ import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
+import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -14,8 +15,6 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements ITra
     protected final Set<ReflectedModifier> modifiers;
 
     protected final AnnotatedClass parent;
-
-    protected boolean transformed;
 
     public AnnotatedField(IWinryContext context, AnnotatedClass parent, Field field) {
         super(context, field);
@@ -34,19 +33,12 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements ITra
     }
 
     @Override
-    public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor) {
-
-
-        this.transformed = true;
-    }
-
-    @Override
     public Set<ReflectedModifier> getModifiers() {
         return this.modifiers;
     }
 
     @Override
-    public boolean isTransformed() {
-        return this.transformed;
+    public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
+        preparedAnnotationProcessor.transformField(this,  generator);
     }
 }

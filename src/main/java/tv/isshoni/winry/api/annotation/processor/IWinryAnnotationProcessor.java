@@ -10,6 +10,7 @@ import tv.isshoni.winry.internal.model.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.annotation.Annotation;
@@ -29,17 +30,27 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     @Deprecated
     default void transformMethod(BootstrappedMethod bootstrappedMethod, MethodTransformingPlan methodPlan, A annotation, ITransformingBlueprint blueprint) { }
 
+    default void transformMethod(IAnnotatedMeta<Method> method, IWrapperGenerator generator, A annotation) { }
+
     @Deprecated
     default void transformField(BootstrappedField bootstrappedField, FieldTransformingPlan fieldPlan, A annotation, ITransformingBlueprint blueprint) { }
+
+    default void transformField(IAnnotatedMeta<Field> field, IWrapperGenerator generator, A annotation) { }
 
     @Deprecated
     default void executeClass(BootstrappedClass clazz, A annotation) { }
 
+    default void executeClass(IAnnotatedClass clazz, A annotation) { }
+
     @Deprecated
     default void executeField(BootstrappedField field, A annotation) { }
 
+    default void executeField(IAnnotatedMeta<Field> field, A annotation) { }
+
     @Deprecated
     default void executeMethod(BootstrappedMethod method, A annotation) { }
+
+    default void executeMethod(IAnnotatedMeta<Method> method, A annotation) { }
 
     @Deprecated
     default void executeClass(Class<?> clazz, A annotation) {
