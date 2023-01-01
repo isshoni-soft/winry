@@ -36,6 +36,6 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
 
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
-        preparedAnnotationProcessor.transformField(this, generator);
+        preparedAnnotationProcessor.transformMethod(this, generator);
     }
 }

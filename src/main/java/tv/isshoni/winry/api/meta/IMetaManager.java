@@ -2,6 +2,7 @@ package tv.isshoni.winry.api.meta;
 
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 
 import java.util.Objects;
 
@@ -16,6 +17,8 @@ public interface IMetaManager {
     IAnnotatedClass getMeta(Object element);
 
     <R> R construct(IAnnotatedClass meta) throws Throwable;
+
+    void inject(IAnnotatedField field, Object instance, Object value);
 
     default <T> T construct(Class<T> type) {
         IAnnotatedClass meta = getMeta(type);

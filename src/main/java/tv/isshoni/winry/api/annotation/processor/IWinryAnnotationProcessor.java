@@ -10,6 +10,7 @@ import tv.isshoni.winry.internal.model.bytebuddy.FieldTransformingPlan;
 import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.model.bytebuddy.MethodTransformingPlan;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
@@ -35,7 +36,7 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     @Deprecated
     default void transformField(BootstrappedField bootstrappedField, FieldTransformingPlan fieldPlan, A annotation, ITransformingBlueprint blueprint) { }
 
-    default void transformField(IAnnotatedMeta<Field> field, IWrapperGenerator generator, A annotation) { }
+    default void transformField(IAnnotatedField field, IWrapperGenerator generator, A annotation) { }
 
     @Deprecated
     default void executeClass(BootstrappedClass clazz, A annotation) { }
@@ -45,7 +46,7 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     @Deprecated
     default void executeField(BootstrappedField field, A annotation) { }
 
-    default void executeField(IAnnotatedMeta<Field> field, A annotation) { }
+    default void executeField(IAnnotatedField field, Object target, A annotation) { }
 
     @Deprecated
     default void executeMethod(BootstrappedMethod method, A annotation) { }
@@ -57,9 +58,9 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
         this.executeClass(this.getWinryContext().getElementBootstrapper().getBootstrappedClass(clazz), annotation);
     }
 
-    @Deprecated
-    default void executeField(Field field, A annotation) {
-        this.executeField(this.getWinryContext().getElementBootstrapper().getBootstrappedField(field), annotation);
+    default void executeField(Field field, Object target, A annotation) {
+        this.executeField(this.getWinryContext().getMetaManager().getMeta(field.getDeclaringClass())
+                .getField(field), target, annotation);
     }
 
     @Deprecated
@@ -72,7 +73,7 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     }
 
     default void executeField(Object obj, Field field, A annotation) {
-        this.executeField(field, annotation);
+        this.executeField(field, obj, annotation);
     }
 
     default void executeMethod(Object obj, Method method, A annotation) {

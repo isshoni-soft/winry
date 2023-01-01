@@ -7,11 +7,11 @@ import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedField;
 import tv.isshoni.winry.internal.model.bootstrap.element.BootstrappedMethod;
 import tv.isshoni.winry.internal.model.bytebuddy.ITransformingBlueprint;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public interface IWinryPreparedAnnotationProcessor<AP extends IWinryAnnotationProcessor<Annotation>> extends IPreparedAnnotationProcessor<AP> {
@@ -39,7 +39,7 @@ public interface IWinryPreparedAnnotationProcessor<AP extends IWinryAnnotationPr
         this.getProcessor().transformField(bootstrappedField, blueprint.getFieldTransformingPlan(bootstrappedField.getBootstrappedElement()), this.getAnnotation(), blueprint);
     }
 
-    default void transformField(IAnnotatedMeta<Field> field, IWrapperGenerator generator) {
+    default void transformField(IAnnotatedField field, IWrapperGenerator generator) {
         this.getProcessor().transformField(field, generator, this.getAnnotation());
     }
 }

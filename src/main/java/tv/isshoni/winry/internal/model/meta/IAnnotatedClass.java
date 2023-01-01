@@ -10,9 +10,13 @@ public interface IAnnotatedClass extends IAnnotatedMeta<Class<?>> {
 
     List<IAnnotatedMeta<Method>> getMethods();
 
-    List<IAnnotatedMeta<Field>> getFields();
+    List<IAnnotatedField> getFields();
 
     IAnnotatedMeta<Method> getMethod(Method method);
 
     IAnnotatedMeta<Method> getMethod(String name);
+
+    IAnnotatedField getField(Field field);
+
+    IAnnotatedField getField(String name);
 }

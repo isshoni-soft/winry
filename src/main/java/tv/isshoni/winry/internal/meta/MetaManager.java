@@ -2,10 +2,15 @@ package tv.isshoni.winry.internal.meta;
 
 import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.ReflectedModifier;
+import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
+
+import java.lang.reflect.Field;
 
 public class MetaManager implements IMetaManager {
 
@@ -58,5 +63,25 @@ public class MetaManager implements IMetaManager {
     @Override
     public <R> R construct(IAnnotatedClass meta) throws Throwable {
         return meta.newInstance();
+    }
+
+    @Override
+    public void inject(IAnnotatedField meta, Object instance, Object value) {
+        try {
+            Object target = null;
+            Field field = meta.getElement();
+
+            if (!meta.getModifiers().contains(ReflectedModifier.STATIC)) {
+                target = instance;
+
+                if (target == null) {
+                    throw new RuntimeException("Tried injecting into null instance " + meta.getDisplay());
+                }
+            }
+
+            ReflectionUtil.injectField(field, target, value);
+        } catch (Throwable t) {
+            this.context.getExceptionManager().toss(t);
+        }
     }
 }

@@ -7,6 +7,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.ITransformedClass;
@@ -29,13 +30,13 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected final Map<Method, IAnnotatedMeta<Method>> methods;
 
-    protected final List<IAnnotatedMeta<Field>> fields;
+    protected final Map<Field, IAnnotatedField> fields;
 
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         super(context, element);
         this.modifiers = ReflectedModifier.getModifiers(element);
         this.methods = new HashMap<>();
-        this.fields = new LinkedList<>();
+        this.fields = new HashMap<>();
     }
 
     @Override
@@ -44,8 +45,8 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public List<IAnnotatedMeta<Field>> getFields() {
-        return this.fields;
+    public List<IAnnotatedField> getFields() {
+        return new LinkedList<>(this.fields.values());
     }
 
     @Override
@@ -57,7 +58,20 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     public IAnnotatedMeta<Method> getMethod(String name) {
         return Streams.to(this.methods)
                 .find(p -> p.getFirst().getName().equals(name))
-                .map(Pair::getSecond)
+                .map(Pair.second())
+                .orElse(null);
+    }
+
+    @Override
+    public IAnnotatedField getField(Field field) {
+        return this.fields.get(field);
+    }
+
+    @Override
+    public IAnnotatedField getField(String name) {
+        return Streams.to(this.fields)
+                .find(p -> p.getFirst().getName().equals(name))
+                .map(Pair.second())
                 .orElse(null);
     }
 

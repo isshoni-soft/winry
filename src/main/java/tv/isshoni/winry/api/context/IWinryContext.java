@@ -12,6 +12,7 @@ import tv.isshoni.winry.internal.model.bootstrap.IElementBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.time.Instant;
 import java.util.List;
@@ -43,6 +44,8 @@ public interface IWinryContext {
     IWinryAnnotationManager getAnnotationManager();
 
     ILoggerFactory getLoggerFactory();
+
+    IInstanceManager getInstanceManager();
 
     IElementBootstrapper getElementBootstrapper();
 

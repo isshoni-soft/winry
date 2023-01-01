@@ -9,6 +9,7 @@ import net.bytebuddy.implementation.SuperMethodCall;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IClassTransformer;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IFieldTransformer;
@@ -19,7 +20,6 @@ import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -42,7 +42,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
 
     private final Map<IAnnotatedMeta<Method>, IMethodTransformer> methodTransformers;
 
-    private final Map<IAnnotatedMeta<Field>, IFieldTransformer> fieldTransformers;
+    private final Map<IAnnotatedField, IFieldTransformer> fieldTransformers;
 
     public WinryWrapperGenerator(IWinryContext context, IAnnotatedClass toWrap) {
         this.context = context;
@@ -80,7 +80,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
 
         builder = executeTransformation(builder, this.toWrap, this.classTransformer);
 
-        for (Map.Entry<IAnnotatedMeta<Field>, IFieldTransformer> entry : this.fieldTransformers.entrySet()) {
+        for (Map.Entry<IAnnotatedField, IFieldTransformer> entry : this.fieldTransformers.entrySet()) {
             builder = executeTransformation(builder, entry.getKey(), entry.getValue());
         }
 
