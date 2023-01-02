@@ -15,6 +15,7 @@ Table of Contents
 
 Basic Usage
 -----------
+Requires JDK 17  
 TODO
 
 [Return to Table of Contents](#table-of-contents)
