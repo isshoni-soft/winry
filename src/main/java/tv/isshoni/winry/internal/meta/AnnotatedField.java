@@ -15,9 +15,9 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
 
     protected final Set<ReflectedModifier> modifiers;
 
-    protected final AnnotatedClass parent;
+    protected final IAnnotatedClass parent;
 
-    public AnnotatedField(IWinryContext context, AnnotatedClass parent, Field field) {
+    public AnnotatedField(IWinryContext context, IAnnotatedClass parent, Field field) {
         super(context, field);
         this.modifiers = ReflectedModifier.getModifiers(field);
         this.parent = parent;
@@ -25,7 +25,7 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
 
     @Override
     public String getDisplay() {
-        return this.element.getName();
+        return "Field: " + this.element.getName() + " (Parent " + this.parent.getElement().getSimpleName() + ") [" + this.annotations + "]";
     }
 
     @Override

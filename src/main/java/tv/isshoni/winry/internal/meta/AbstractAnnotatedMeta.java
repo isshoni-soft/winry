@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.meta;
 
+import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
@@ -13,6 +14,8 @@ import java.util.Set;
 
 public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implements IAnnotatedMeta<E> {
 
+    protected final AraragiLogger logger;
+
     protected final E element;
 
     protected final Set<Annotation> annotations;
@@ -22,11 +25,14 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
     public AbstractAnnotatedMeta(IWinryContext context, E element) {
         this.context = context;
         this.element = element;
+        this.logger = this.context.getLoggerFactory().createLogger(this.getClass().getSimpleName());
         this.annotations = new HashSet<>();
+
+        refreshAnnotations();
     }
 
-    @Override
-    public void regenerate() {
+    protected void refreshAnnotations() {
+        logger.debug(this.getElement() + " -- Refreshing annotations...");
         IWinryAnnotationManager annotationManager = this.context.getAnnotationManager();
 
         List<Annotation> annotations = annotationManager.getManagedAnnotationsOn(this.element);
@@ -38,6 +44,12 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
             throw new IllegalStateException(this.getDisplay() + " has conflicting annotations! "
                     + annotationManager.getConflictingAnnotations(this.annotations));
         }
+        logger.debug(this.getElement() + " -- Found " + this.annotations.size() + " annotations!");
+    }
+
+    @Override
+    public void regenerate() {
+        refreshAnnotations();
     }
 
     @Override

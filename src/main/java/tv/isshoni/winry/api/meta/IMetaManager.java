@@ -5,6 +5,8 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -16,6 +18,10 @@ public interface IMetaManager {
     IWinryContext getContext();
 
     IAnnotatedClass generateMeta(Class<?> element);
+
+    IAnnotatedMethod generateMeta(IAnnotatedClass parent, Method method);
+
+    IAnnotatedField generateMeta(IAnnotatedClass parent, Field field);
 
     IAnnotatedClass getMeta(Object element);
 

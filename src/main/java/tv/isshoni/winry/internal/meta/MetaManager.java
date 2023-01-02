@@ -56,6 +56,16 @@ public class MetaManager implements IMetaManager {
     }
 
     @Override
+    public IAnnotatedMethod generateMeta(IAnnotatedClass parent, Method method) {
+        return new AnnotatedMethod(this.context, parent, method);
+    }
+
+    @Override
+    public IAnnotatedField generateMeta(IAnnotatedClass parent, Field field) {
+        return new AnnotatedField(this.context, parent, field);
+    }
+
+    @Override
     public IAnnotatedClass getMeta(Object element) {
         Class<?> clazz = element.getClass();
 

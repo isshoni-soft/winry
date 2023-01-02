@@ -40,6 +40,30 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
+    public void regenerate() {
+        super.regenerate(); // regenerate annotations
+
+        this.methods.clear();
+        this.fields.clear();
+
+        logger.debug(getDisplay() + " -- Building...");
+
+        Streams.to(getElement().getDeclaredMethods())
+                .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                .map(m -> this.context.getMetaManager().generateMeta(this, m))
+                .forEach(m -> this.methods.put(m.getElement(), m));
+        logger.debug("Discovered " + getMethods().size() + " methods");
+
+        Streams.to(getElement().getDeclaredFields())
+                .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
+                .map(f -> this.context.getMetaManager().generateMeta(this, f))
+                .forEach(f -> this.fields.put(f.getElement(), f));
+        logger.debug("Discovered " + getMethods().size() + " fields");
+
+        logger.debug(getDisplay() + " -- Finished Building...");
+    }
+
+    @Override
     public List<IAnnotatedMethod> getMethods() {
         return new LinkedList<>(this.methods.values());
     }
@@ -82,6 +106,9 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     @Override
     public void transform(IWrapperGenerator generator) {
+        logger.debug(this.getDisplay() + " -- Transforming...");
+        ITransformedClass.super.transform(generator);
+
         Streams.to(getMethods())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
@@ -91,6 +118,7 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
                 .forEach(t -> t.transform(generator));
+        logger.debug(this.getDisplay() + " -- Transforming Complete!");
     }
 
     @Override
@@ -115,6 +143,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     @Override
     public String getDisplay() {
-        return this.element.getSimpleName();
+        return "Class: " + this.element.getSimpleName() + " [" + this.annotations + "]";
     }
 }
