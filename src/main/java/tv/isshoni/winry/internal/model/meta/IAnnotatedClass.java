@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public interface IAnnotatedClass extends IAnnotatedMeta<Class<?>>, ITransformable<Class<?>> {
+public interface IAnnotatedClass extends IAnnotatedMeta<Class<?>>, ITransformable<Class<?>>, ITransformedClass {
 
-    <R> R newInstance() throws Throwable;
+    Object getInstance();
+
+    Object newInstance() throws Throwable;
 
     List<IAnnotatedMethod> getMethods();
 

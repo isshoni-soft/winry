@@ -1,14 +1,10 @@
 package tv.isshoni.winry.api.bootstrap;
 
-public interface IExecutable extends Comparable<IExecutable> {
+import tv.isshoni.winry.internal.model.meta.IWeighted;
 
-    int getWeight();
+public interface IExecutable extends IWeighted {
 
     void execute();
 
     String getDisplay();
-
-    default int compareTo(IExecutable value) {
-        return Integer.compare(value.getWeight(), this.getWeight());
-    }
 }

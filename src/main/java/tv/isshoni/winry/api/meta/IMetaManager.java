@@ -19,6 +19,8 @@ public interface IMetaManager {
 
     IAnnotatedClass generateMeta(Class<?> element);
 
+    IAnnotatedClass generateMeta(Class<?> element, Object object);
+
     IAnnotatedMethod generateMeta(IAnnotatedClass parent, Method method);
 
     IAnnotatedField generateMeta(IAnnotatedClass parent, Field field);
@@ -26,8 +28,6 @@ public interface IMetaManager {
     IAnnotatedClass getMeta(Object element);
 
     Set<IAnnotatedClass> getAllClasses();
-
-    <R> R construct(IAnnotatedClass meta) throws Throwable;
 
     void inject(IAnnotatedField field, Object instance, Object value);
 
@@ -40,11 +40,6 @@ public interface IMetaManager {
             meta = generateMeta(type);
         }
 
-        try {
-            return construct(meta);
-        } catch (Throwable e) {
-            getContext().getExceptionManager().toss(e);
-            return null;
-        }
+        return (T) meta.getInstance();
     }
 }

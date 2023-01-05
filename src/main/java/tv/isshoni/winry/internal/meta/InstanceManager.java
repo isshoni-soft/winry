@@ -10,6 +10,7 @@ import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class InstanceManager implements IInstanceManager {
 
@@ -55,6 +56,8 @@ public class InstanceManager implements IInstanceManager {
 
     @Override
     public Object getKeyedInstance(String key, Class<?> type) {
-        return this.keyedInstances.get(key).get(this.metaManager.getMeta(type));
+        return Optional.ofNullable(this.keyedInstances.get(key))
+                .map(m -> m.get(this.metaManager.getMeta(type)))
+                .orElse(null);
     }
 }

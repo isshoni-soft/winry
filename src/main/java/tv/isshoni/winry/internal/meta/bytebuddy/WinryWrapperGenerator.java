@@ -65,6 +65,8 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
 
+        logger.debug("-> Subclassing: " + this.toWrap.getElement());
+
         for (Constructor<?> constructor : this.toWrap.getElement().getDeclaredConstructors()) {
             DynamicType.Builder.MethodDefinition.ParameterDefinition<?> defineParameters = builder.defineConstructor(Modifier.PUBLIC);
 

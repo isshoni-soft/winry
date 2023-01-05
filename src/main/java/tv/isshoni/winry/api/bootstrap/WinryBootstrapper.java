@@ -71,7 +71,7 @@ public class WinryBootstrapper implements IBootstrapper {
 
         LOGGER.debug("Registering provided instances...");
         provided.forEach((c, o) -> {
-            IAnnotatedClass classMeta = this.context.getMetaManager().generateMeta(c);
+            IAnnotatedClass classMeta = this.context.getMetaManager().generateMeta(c, o);
 
             this.context.registerToContext(o);
             this.context.getInstanceManager().registerSingletonInstance(classMeta, o);

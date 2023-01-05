@@ -26,7 +26,7 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
 
     @Override
     public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
-        preparedAnnotationProcessor.executeMethod(this.getElement());
+        preparedAnnotationProcessor.executeMethod(this.parent.getInstance());
     }
 
     @Override

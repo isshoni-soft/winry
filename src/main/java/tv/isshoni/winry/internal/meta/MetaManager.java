@@ -43,14 +43,17 @@ public class MetaManager implements IMetaManager {
 
     @Override
     public IAnnotatedClass generateMeta(Class<?> element) {
-        if (this.storedClassMetas.containsKey(element)) {
-            logger.warn("Returning already generated meta for class: " + element.getName());
-            return this.storedClassMetas.get(element);
-        }
+        return generateMeta(element, null);
+    }
 
+    @Override
+    public IAnnotatedClass generateMeta(Class<?> element, Object object) {
         AnnotatedClass annotatedClass = new AnnotatedClass(this.context, element);
+        annotatedClass.setInstance(object);
 
-        this.storedClassMetas.put(element, annotatedClass);
+        if (!this.storedClassMetas.containsKey(element)) {
+            this.storedClassMetas.put(element, annotatedClass);
+        }
 
         return annotatedClass;
     }
@@ -82,15 +85,12 @@ public class MetaManager implements IMetaManager {
     }
 
     @Override
-    public <R> R construct(IAnnotatedClass meta) throws Throwable {
-        return meta.newInstance();
-    }
-
-    @Override
     public void inject(IAnnotatedField meta, Object instance, Object value) {
         try {
             Object target = null;
             Field field = meta.getElement();
+
+            logger.debug("Injecting: " + field.toString());
 
             if (!meta.getModifiers().contains(ReflectedModifier.STATIC)) {
                 target = instance;
@@ -123,7 +123,7 @@ public class MetaManager implements IMetaManager {
         try {
             return this.context.getAnnotationManager().execute(method, target, runtimeContext);
         } catch (Throwable e) {
-            this.context.getExceptionManager().toss(e);
+            this.context.getExceptionManager().toss(e, method);
             return null;
         }
     }

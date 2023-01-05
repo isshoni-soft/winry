@@ -10,7 +10,6 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
-import tv.isshoni.winry.internal.model.meta.ITransformedClass;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.Field;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements ITransformedClass, IAnnotatedClass {
+public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements IAnnotatedClass {
 
     protected final Set<ReflectedModifier> modifiers;
 
@@ -32,11 +31,21 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected final Map<Field, IAnnotatedField> fields;
 
+    protected Object instance;
+
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         super(context, element);
         this.modifiers = ReflectedModifier.getModifiers(element);
         this.methods = new HashMap<>();
         this.fields = new HashMap<>();
+    }
+
+    public void setInstance(Object instance) {
+        if (this.instance != null) {
+            return;
+        }
+
+        this.instance = instance;
     }
 
     @Override
@@ -100,14 +109,32 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public <R> R newInstance() throws Throwable {
-        return (R) this.context.getAnnotationManager().construct(this.element);
+    public Object getInstance() {
+        if (this.instance == null) {
+            try {
+                this.instance = newInstance();
+            } catch (Throwable e) {
+                this.context.getExceptionManager().toss(e);
+                return null;
+            }
+        }
+
+        return this.instance;
+    }
+
+    @Override
+    public Object newInstance() throws Throwable {
+        if (this.transformed != null) {
+            return this.context.getAnnotationManager().construct(this.transformed);
+        } else {
+            return this.context.getAnnotationManager().construct(this.element);
+        }
     }
 
     @Override
     public void transform(IWrapperGenerator generator) {
         logger.debug(this.getDisplay() + " -- Transforming...");
-        ITransformedClass.super.transform(generator);
+        IAnnotatedClass.super.transform(generator);
 
         Streams.to(getMethods())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
@@ -118,12 +145,15 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
                 .forEach(t -> t.transform(generator));
+
+        this.transformed = generator.generate();
+
         logger.debug(this.getDisplay() + " -- Transforming Complete!");
     }
 
     @Override
     public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
-        preparedAnnotationProcessor.executeClass(this.getElement());
+        preparedAnnotationProcessor.executeClass(this.getInstance());
     }
 
     @Override
@@ -139,6 +169,11 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
         preparedAnnotationProcessor.transformClass(this, generator);
+    }
+
+    @Override
+    public void execute() {
+
     }
 
     @Override

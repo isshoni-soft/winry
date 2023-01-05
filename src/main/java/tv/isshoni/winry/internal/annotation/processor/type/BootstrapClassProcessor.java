@@ -89,13 +89,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
             }
             classMeta.transform(new WinryWrapperGenerator(this.context, classMeta));
 
-            Object instance;
-            try {
-                instance = classMeta.newInstance();
-            } catch (Throwable e) {
-                this.context.getExceptionManager().toss(e);
-                return;
-            }
+            Object instance = classMeta.getInstance();
 
             this.context.registerToContext(instance);
             this.context.getInstanceManager().registerSingletonInstance(classMeta, instance);
