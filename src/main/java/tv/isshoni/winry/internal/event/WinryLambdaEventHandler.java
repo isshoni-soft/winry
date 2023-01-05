@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.event;
 
 import tv.isshoni.winry.internal.model.event.IEventHandler;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class WinryLambdaEventHandler<T> implements IEventHandler<T> {
@@ -14,23 +15,23 @@ public class WinryLambdaEventHandler<T> implements IEventHandler<T> {
 
     private final boolean shouldIgnoreCancelled;
 
-    private final boolean needsMainThread;
+    private final UUID id;
 
-    public WinryLambdaEventHandler(Consumer<T> handler, Class<T> type, int weight, boolean shouldIgnoreCancelled,
-                                   boolean needsMainThread) {
+    public WinryLambdaEventHandler(Consumer<T> handler, Class<T> type, int weight, boolean shouldIgnoreCancelled) {
+        this.id = UUID.randomUUID();
         this.handler = handler;
         this.type = type;
         this.weight = weight;
         this.shouldIgnoreCancelled = shouldIgnoreCancelled;
-        this.needsMainThread = needsMainThread;
-    }
-
-    public WinryLambdaEventHandler(Consumer<T> handler, Class<T> type, int weight, boolean shouldIgnoreCancelled) {
-        this(handler, type, weight, shouldIgnoreCancelled, false);
     }
 
     public WinryLambdaEventHandler(Consumer<T> handler, Class<T> type, int weight) {
-        this(handler, type, weight, false, false);
+        this(handler, type, weight, false);
+    }
+
+    @Override
+    public UUID getId() {
+        return this.id;
     }
 
     @Override
@@ -51,10 +52,5 @@ public class WinryLambdaEventHandler<T> implements IEventHandler<T> {
     @Override
     public boolean shouldIgnoreCancelled() {
         return this.shouldIgnoreCancelled;
-    }
-
-    @Override
-    public boolean needsMainThread() {
-        return this.needsMainThread;
     }
 }

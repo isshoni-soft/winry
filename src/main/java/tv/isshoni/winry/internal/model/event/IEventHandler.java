@@ -1,6 +1,10 @@
 package tv.isshoni.winry.internal.model.event;
 
+import java.util.UUID;
+
 public interface IEventHandler<T> extends Comparable<IEventHandler<T>> {
+
+    UUID getId();
 
     void execute(T event);
 
@@ -9,8 +13,6 @@ public interface IEventHandler<T> extends Comparable<IEventHandler<T>> {
     int getWeight();
 
     boolean shouldIgnoreCancelled();
-
-    boolean needsMainThread();
 
     default int compareTo(IEventHandler o) {
         int weight = Integer.compare(this.getWeight(), o.getWeight());

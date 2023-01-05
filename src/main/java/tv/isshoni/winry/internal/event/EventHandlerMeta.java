@@ -5,6 +5,7 @@ import tv.isshoni.winry.internal.model.event.IEventHandler;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class EventHandlerMeta implements IEventHandler<Object> {
 
@@ -14,10 +15,18 @@ public class EventHandlerMeta implements IEventHandler<Object> {
 
     private final Listener listener;
 
+    private final UUID id;
+
     public EventHandlerMeta(IAnnotatedMethod method, Object target, Listener listener) {
+        this.id = UUID.randomUUID();
         this.method = method;
         this.listener = listener;
         this.target = target;
+    }
+
+    @Override
+    public UUID getId() {
+        return this.id;
     }
 
     @Override
@@ -44,10 +53,5 @@ public class EventHandlerMeta implements IEventHandler<Object> {
     @Override
     public boolean shouldIgnoreCancelled() {
         return this.listener.ignoreCancelled();
-    }
-
-    @Override
-    public boolean needsMainThread() {
-        return this.listener.needsMainThread();
     }
 }

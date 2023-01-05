@@ -101,6 +101,8 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("${dashes%50}${dashes%19}${dashes%50}");
 
         execute(run, new LinkedList<>());
+
+        this.context.getAsyncManager().awaitAsyncTermination();
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {

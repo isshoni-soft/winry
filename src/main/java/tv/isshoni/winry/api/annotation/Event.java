@@ -18,7 +18,9 @@ public @interface Event {
 
     String value() default "";
 
-    boolean async() default false;
+    boolean forceAsync() default false;
+
+    boolean forceMain() default false;
 
     boolean executable() default false;
 

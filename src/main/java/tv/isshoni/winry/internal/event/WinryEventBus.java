@@ -66,6 +66,11 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public <T> T fire(T event) {
+        return this.fire(event, true);
+    }
+
+    @Override
+    public <T> T fire(T event, boolean block) {
         Event eventMeta = findAnnotation(event);
 
         if (eventMeta == null) {
@@ -91,33 +96,31 @@ public class WinryEventBus implements IEventBus {
             }
         };
 
-        Consumer<? super IEventHandler<Object>> runner = h -> {
+        handlers.forEach(h -> {
             if (event instanceof ICancellable) {
                 if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
                     return;
                 }
             }
 
-            if (h.needsMainThread()) {
-                this.asyncManager.submitToMain(() -> execute.accept(h));
-            } else {
-                execute.accept(h);
-            }
-        };
 
-        Consumer<? super IEventHandler<Object>> consumer = runner;
+            execute.accept(h);
+        });
 
-        if (eventMeta.async()) {
-            consumer = h -> this.asyncManager.submit(() -> runner.accept(h));
+        if (block) {
+            // TODO: Block & wait for all handlers to complete here.
         }
-
-        handlers.forEach(consumer);
 
         return event;
     }
 
     @Override
     public <T> T fire(Class<T> clazz) {
+        return this.fire(clazz, true);
+    }
+
+    @Override
+    public <T> T fire(Class<T> clazz, boolean block) {
         T event;
         try {
             event = this.annotationManager.construct(clazz);
@@ -127,7 +130,7 @@ public class WinryEventBus implements IEventBus {
         }
 
         try {
-            return fire(event);
+            return fire(event, block);
         } catch (EventExecutionException e) {
             throw e;
         } catch (Throwable throwable) {

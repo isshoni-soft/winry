@@ -21,5 +21,7 @@ public @interface Listener {
 
     boolean ignoreCancelled() default false;
 
-    boolean needsMainThread() default false;
+    boolean forceMain() default false;
+
+    boolean forceAsync() default false;
 }

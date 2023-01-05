@@ -16,7 +16,11 @@ public interface IEventBus extends IContextual {
 
     <T> T fire(T event);
 
+    <T> T fire(T event, boolean block);
+
     <T> T fire(Class<T> clazz);
+
+    <T> T fire(Class<T> clazz, boolean block);
 
     void registerExecutable(Class<?> clazz);
 

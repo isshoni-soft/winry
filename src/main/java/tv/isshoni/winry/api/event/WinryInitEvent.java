@@ -2,5 +2,5 @@ package tv.isshoni.winry.api.event;
 
 import tv.isshoni.winry.api.annotation.Event;
 
-@Event("winry-init")
+@Event(value = "winry-init")
 public class WinryInitEvent { }
