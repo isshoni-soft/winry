@@ -20,17 +20,20 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 public class WinryEventBus implements IEventBus {
 
     private final BucketMap<Class<?>, IEventHandler<?>> handlers;
 
-    private final IWinryAsyncManager asyncManager;
     private final IWinryAnnotationManager annotationManager;
     private final IExceptionManager exceptionManager;
 
@@ -38,7 +41,6 @@ public class WinryEventBus implements IEventBus {
 
     public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
                          IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
-        this.asyncManager = asyncManager;
         this.annotationManager = annotationManager;
         this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
@@ -83,18 +85,7 @@ public class WinryEventBus implements IEventBus {
 
         this.LOGGER.debug("Firing event: " + eventMeta.value());
         List<IEventHandler<Object>> handlers = getHandlersFor(event);
-
-        Consumer<? super IEventHandler<Object>> execute = h -> {
-            try {
-                h.execute(event);
-            } catch (Throwable throwable) {
-                try {
-                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", Object.class));
-                } catch (NoSuchMethodException e) {
-                    throw new EventExecutionException(event.getClass(), e);
-                }
-            }
-        };
+        Set<IEventHandler<Object>> await = new HashSet<>();
 
         handlers.forEach(h -> {
             if (event instanceof ICancellable) {
@@ -103,12 +94,31 @@ public class WinryEventBus implements IEventBus {
                 }
             }
 
-
-            execute.accept(h);
+            try {
+                await.add(h);
+                h.execute(event);
+            } catch (Throwable throwable) {
+                try {
+                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", Object.class));
+                } catch (NoSuchMethodException e) {
+                    throw new EventExecutionException(event.getClass(), e);
+                }
+            } finally {
+                synchronized (await) {
+                    await.remove(h);
+                    await.notify();
+                }
+            }
         });
 
-        if (block) {
-            // TODO: Block & wait for all handlers to complete here.
+        if (block && !await.isEmpty()) {
+            synchronized (await) {
+                try {
+                    await.wait();
+                } catch (InterruptedException e) {
+                    this.exceptionManager.toss(e);
+                }
+            }
         }
 
         return event;
