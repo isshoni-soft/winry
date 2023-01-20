@@ -18,7 +18,8 @@ public class TestIntegration {
     @Parameterized.Parameters
     public static Object[][] testClasses() {
         return new Object[][] {
-                { TestBootstrappedClass.class }
+                { TestBootstrappedClass.class },
+                { TestInjectedObject.class }
         };
     }
 

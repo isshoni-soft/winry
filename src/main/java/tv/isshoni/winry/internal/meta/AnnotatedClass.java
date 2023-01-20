@@ -162,6 +162,11 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
+    public boolean isTransformed() {
+        return this.transformed != null;
+    }
+
+    @Override
     public Set<ReflectedModifier> getModifiers() {
         return Collections.unmodifiableSet(this.modifiers);
     }
@@ -169,11 +174,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
         preparedAnnotationProcessor.transformClass(this, generator);
-    }
-
-    @Override
-    public void execute() {
-
     }
 
     @Override

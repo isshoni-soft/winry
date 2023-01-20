@@ -18,10 +18,6 @@ public @interface Event {
 
     String value() default "";
 
-    boolean forceAsync() default false;
-
-    boolean forceMain() default false;
-
     boolean executable() default false;
 
     int weight() default -1;

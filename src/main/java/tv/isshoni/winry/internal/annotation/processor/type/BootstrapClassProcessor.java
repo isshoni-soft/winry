@@ -87,6 +87,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                     throw new IllegalStateException("Unable to bootstrap class: " + c + " found transformer: " + transformer + " that is not managed (no processor? not found during scan?)");
                 }
             }
+
             classMeta.transform(new WinryWrapperGenerator(this.context, classMeta));
 
             Object instance = classMeta.getInstance();
