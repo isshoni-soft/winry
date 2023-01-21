@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.model.event;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.context.IContextual;
+import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.List;
@@ -14,13 +15,13 @@ public interface IEventBus extends IContextual {
 
     boolean isEvent(Object o);
 
-    <T> T fire(T event);
+    <T> T fire(T event) throws EventExecutionException;
 
-    <T> T fire(T event, boolean block);
+    <T> T fire(T event, boolean block) throws EventExecutionException;
 
-    <T> T fire(Class<T> clazz);
+    <T> T fire(Class<T> clazz) throws EventExecutionException;
 
-    <T> T fire(Class<T> clazz, boolean block);
+    <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException;
 
     void registerExecutable(Class<?> clazz);
 

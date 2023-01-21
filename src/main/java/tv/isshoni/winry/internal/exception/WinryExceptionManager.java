@@ -11,6 +11,7 @@ import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
 import tv.isshoni.winry.api.exception.UnhandledException;
+import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
 import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
@@ -46,6 +47,46 @@ public class WinryExceptionManager implements IExceptionManager {
     }
 
     @Override
+    public void recover(Throwable throwable) {
+        if (!this.globalHandlers.containsKey(throwable.getClass())) {
+            this.logger.error(AraragiUpstream.toString(throwable));
+            this.logger.error("Recovered from error successfully!");
+            return;
+        }
+
+        this.logger.debug("Tossing exception: " + throwable);
+
+        getGlobalHandlersFor((Class<Throwable>) throwable.getClass()).stream()
+                .map(this::newOrSingleton)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(h -> h.handle(throwable));
+    }
+
+    @Override
+    public void recover(Throwable throwable, Method context) {
+        if (context == null || !this.methodHandlers.containsKey(context)) {
+            recover(throwable);
+            return;
+        }
+
+        this.logger.debug("Tossing exception: " + throwable + " with method context: " + context);
+
+        Streams.to(this.methodHandlers.getOrDefault(context).getOrDefault(throwable.getClass(), new LinkedList<>()))
+                .map(eh -> {
+                    if (eh.useSingleton()) {
+                        return getSingleton((Class<IExceptionHandler<Throwable>>) eh.value());
+                    } else {
+                        return newOrSingleton((Class<IExceptionHandler<Throwable>>) eh.value());
+                    }
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .add(getGlobalHandlersStream((Class<Throwable>) throwable.getClass()).toList())
+                .forEach(h -> h.handle(throwable));
+    }
+
+    @Override
     public <T extends Throwable> void toss(T throwable) {
         if (!this.globalHandlers.containsKey(throwable.getClass())) {
             if (throwable instanceof RuntimeException) {
@@ -55,13 +96,7 @@ public class WinryExceptionManager implements IExceptionManager {
             }
         }
 
-        this.logger.debug("Tossing exception: " + throwable);
-
-        getGlobalHandlersFor((Class<T>) throwable.getClass()).stream()
-                .map(this::newOrSingleton)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(h -> h.handle(throwable));
+        recover(throwable);
     }
 
     @Override
@@ -79,20 +114,7 @@ public class WinryExceptionManager implements IExceptionManager {
             }
         }
 
-        this.logger.debug("Tossing exception: " + throwable + " with method context: " + context);
-
-        Streams.to(this.methodHandlers.getOrDefault(context).getOrDefault(throwable.getClass(), new LinkedList<>()))
-                .map(eh -> {
-                    if (eh.useSingleton()) {
-                        return getSingleton((Class<IExceptionHandler<T>>) eh.value());
-                    } else {
-                        return newOrSingleton((Class<IExceptionHandler<T>>) eh.value());
-                    }
-                })
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .add(getGlobalHandlersStream((Class<T>) throwable.getClass()).toList())
-                .forEach(h -> h.handle(throwable));
+        recover(throwable, context);
     }
 
     @Override

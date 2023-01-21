@@ -1,5 +1,6 @@
 package tv.isshoni.winry.api.bootstrap;
 
+import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 
 public class WinryEventExecutable implements IExecutable {
@@ -44,10 +45,14 @@ public class WinryEventExecutable implements IExecutable {
 
     @Override
     public void execute() {
-        if (this.hasEvent()) {
-            this.bus.fire(this.getEvent());
-        } else {
-            this.bus.fire(this.getEventClass());
+        try {
+            if (this.hasEvent()) {
+                this.bus.fire(this.getEvent());
+            } else{
+                this.bus.fire(this.getEventClass());
+            }
+        } catch (EventExecutionException e) {
+            this.bus.getWinryContext().getExceptionManager().toss(e);
         }
     }
 

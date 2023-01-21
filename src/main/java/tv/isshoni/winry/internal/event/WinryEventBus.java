@@ -33,14 +33,12 @@ public class WinryEventBus implements IEventBus {
     private final BucketMap<Class<?>, IEventHandler<?>> handlers;
 
     private final IWinryAnnotationManager annotationManager;
-    private final IExceptionManager exceptionManager;
 
     private final AraragiLogger LOGGER;
 
     public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
                          IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
         this.annotationManager = annotationManager;
-        this.exceptionManager = exceptionManager;
         this.LOGGER = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
 
@@ -65,12 +63,12 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public <T> T fire(T event) {
+    public <T> T fire(T event) throws EventExecutionException {
         return this.fire(event, true);
     }
 
     @Override
-    public <T> T fire(T event, boolean block) {
+    public <T> T fire(T event, boolean block) throws EventExecutionException {
         Event eventMeta = findAnnotation(event);
 
         if (eventMeta == null) {
@@ -85,36 +83,38 @@ public class WinryEventBus implements IEventBus {
         List<IEventHandler<Object>> handlers = getHandlersFor(event);
         Set<IEventHandler<Object>> await = new HashSet<>();
 
-        handlers.forEach(h -> {
+        for (IEventHandler<Object> h : handlers) {
             if (event instanceof ICancellable) {
                 if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
-                    return;
+                    continue;
                 }
             }
 
             try {
-                await.add(h);
+                synchronized (await) {
+                    await.add(h);
+                }
+
                 h.execute(event);
             } catch (Throwable throwable) {
-                try {
-                    this.exceptionManager.toss(throwable, h.getClass().getMethod("execute", Object.class));
-                } catch (NoSuchMethodException e) {
-                    throw new EventExecutionException(event.getClass(), e);
-                }
+                throw new EventExecutionException(event.getClass(), throwable);
             } finally {
                 synchronized (await) {
                     await.remove(h);
-                    await.notify();
+
+                    if (await.isEmpty()) {
+                        await.notify();
+                    }
                 }
             }
-        });
+        }
 
         if (block && !await.isEmpty()) {
             synchronized (await) {
                 try {
                     await.wait();
                 } catch (InterruptedException e) {
-                    this.exceptionManager.toss(e);
+                    throw new EventExecutionException(event.getClass(), e);
                 }
             }
         }
@@ -123,17 +123,16 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public <T> T fire(Class<T> clazz) {
+    public <T> T fire(Class<T> clazz) throws EventExecutionException {
         return this.fire(clazz, true);
     }
 
     @Override
-    public <T> T fire(Class<T> clazz, boolean block) {
+    public <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException {
         T event;
         try {
             event = this.annotationManager.construct(clazz);
         } catch (Throwable throwable) {
-            this.exceptionManager.toss(throwable);
             throw new EventExecutionException(clazz, throwable);
         }
 
@@ -142,7 +141,6 @@ public class WinryEventBus implements IEventBus {
         } catch (EventExecutionException e) {
             throw e;
         } catch (Throwable throwable) {
-            this.exceptionManager.toss(throwable);
             throw new EventExecutionException(clazz, throwable);
         }
     }

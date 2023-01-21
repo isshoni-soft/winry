@@ -23,6 +23,7 @@ import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;
 import tv.isshoni.winry.api.event.WinryPreInitEvent;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.api.service.VersionService;
 
 import java.util.concurrent.ExecutionException;
@@ -65,7 +66,14 @@ public class TestBootstrappedClass {
         assertNotNull(event);
         this.injectedClass.asyncMethod();
 
-        TestEvent fired = context.getEventBus().fire(new TestEvent(5));
+        TestEvent fired;
+        try {
+            fired = context.getEventBus().fire(new TestEvent(5));
+        } catch (EventExecutionException e) {
+            fail();
+            return;
+        }
+
         assertEquals(10, fired.getData());
 
         assertEquals(0, this.injectedClass.getNumCalled());

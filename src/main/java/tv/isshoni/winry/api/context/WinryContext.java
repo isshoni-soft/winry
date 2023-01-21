@@ -7,6 +7,7 @@ import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
+import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
@@ -156,7 +157,11 @@ public class WinryContext implements IWinryContext {
 
     @Override
     public void shutdown() {
-        this.eventBus.fire(WinryShutdownEvent.class);
+        try {
+            this.eventBus.fire(WinryShutdownEvent.class);
+        } catch (EventExecutionException e) {
+            this.exceptionManager.toss(e);
+        }
     }
 
     @Override

@@ -13,6 +13,10 @@ import java.util.function.Supplier;
 
 public interface IExceptionManager {
 
+    void recover(Throwable throwable);
+
+    void recover(Throwable throwable, Method context);
+
     <T extends Throwable> void toss(T throwable);
 
     <T extends Throwable> void toss(T throwable, Method context);

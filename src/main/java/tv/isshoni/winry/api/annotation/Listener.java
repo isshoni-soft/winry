@@ -20,8 +20,4 @@ public @interface Listener {
     int weight() default 100;
 
     boolean ignoreCancelled() default false;
-
-    boolean forceMain() default false;
-
-    boolean forceAsync() default false;
 }

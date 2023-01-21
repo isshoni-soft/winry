@@ -57,9 +57,19 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         logger.debug("Transforming: " + this.toWrap.getDisplay());
 
         String packageName = this.toWrap.getElement().getCanonicalName();
-        packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+        int lastDotIndex = packageName.lastIndexOf('.');
+
+        if (lastDotIndex == -1) {
+            packageName = "";
+        } else {
+            packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+        }
 
         logger.debug("-> Found package: " + packageName);
+
+        if (!packageName.isEmpty()) {
+            packageName += '.';
+        }
 
         DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.toWrap.getElement(), ConstructorStrategy.Default.NO_CONSTRUCTORS)
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
@@ -91,7 +101,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         }
 
         return builder
-                .name(packageName + ".WinryWrapped" + this.toWrap.getElement().getSimpleName())
+                .name(packageName + "WinryWrapped" + this.toWrap.getElement().getSimpleName())
                 .make()
                 .load(ClassLoader.getSystemClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();

@@ -36,7 +36,13 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
 
     @Override
     public String getDisplay() {
-        return "Method: " + this.element.getName() + " (Parent " + this.parent.getElement().getSimpleName() + ") [" + this.annotations + "]";
+        String result = "Method: " + this.element.getName();
+
+        if (this.parent != null) {
+            result += " (Parent " + this.parent.getElement().getSimpleName() + ")";
+        }
+
+        return result + " [" + this.annotations + "]";
     }
 
     @Override

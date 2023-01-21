@@ -25,7 +25,13 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
 
     @Override
     public String getDisplay() {
-        return "Field: " + this.element.getType().getSimpleName() + " " + this.element.getName() + " (Parent " + this.parent.getElement().getSimpleName() + ") [" + this.annotations + "]";
+        String result = "Field: " + this.element.getType().getSimpleName() + " " + this.element.getName();
+
+        if (this.parent != null) {
+            result += " (Parent " + this.parent.getElement().getSimpleName() + ")";
+        }
+
+        return result + " [" + this.annotations + "]";
     }
 
     @Override
