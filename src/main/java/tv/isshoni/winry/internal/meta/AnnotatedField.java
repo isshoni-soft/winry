@@ -53,4 +53,18 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
     public IAnnotatedClass getDeclaringClass() {
         return this.parent;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IAnnotatedField other)) {
+            return false;
+        }
+
+        return other.getElement().equals(this.element) && other.getDeclaringClass().equals(this.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.element.hashCode() + this.parent.hashCode();
+    }
 }

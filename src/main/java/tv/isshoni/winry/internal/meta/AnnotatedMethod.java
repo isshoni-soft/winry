@@ -54,4 +54,23 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
     public IAnnotatedClass getDeclaringClass() {
         return this.parent;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IAnnotatedMethod other)) {
+            return false;
+        }
+
+        return other.getElement().equals(this.element) && other.getDeclaringClass().equals(this.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.element.hashCode() + this.parent.hashCode();
+    }
+
+    @Override
+    public Class<?> getReturnType() {
+        return this.element.getReturnType();
+    }
 }

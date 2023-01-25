@@ -180,4 +180,19 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     public String getDisplay() {
         return "Class: " + this.element.getSimpleName() + " [" + this.annotations + "]";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IAnnotatedClass other)) {
+            return false;
+        }
+
+        return other.getElement().equals(this.element) && other.isTransformed() == this.isTransformed()
+                && other.getTransform().equals(this.transformed);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.element.hashCode();
+    }
 }
