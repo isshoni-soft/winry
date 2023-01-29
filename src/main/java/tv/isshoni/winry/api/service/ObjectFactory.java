@@ -26,4 +26,9 @@ public class ObjectFactory {
 
         return (T) annotatedClass.getInstance();
     }
+
+    public <T> T construct(Class<T> clazz, Object... parameters) {
+        // TODO: Feed parameters into constructor, also probably will require a change to underlying annotation processor
+        // TODO: constructor processes
+    }
 }
