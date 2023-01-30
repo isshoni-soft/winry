@@ -8,6 +8,7 @@ import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
@@ -15,7 +16,7 @@ import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.Collections;
@@ -146,7 +147,7 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public void registerExecutable(Class<?> clazz) {
+    public void registerExecutable(IWinryContext context, Class<?> clazz) {
         Event event = findAnnotation(clazz);
 
         if (event == null) {
@@ -157,12 +158,12 @@ public class WinryEventBus implements IEventBus {
             return;
         }
 
-        registerExecutable(clazz, event.weight());
+        registerExecutable(context, clazz, event.weight());
     }
 
     @Override
-    public void registerExecutable(Class<?> clazz, int weight) {
-        getWinryContext().registerExecutable(new WinryEventExecutable(clazz, weight, this));
+    public void registerExecutable(IWinryContext context, Class<?> clazz, int weight) {
+        context.registerExecutable(new WinryEventExecutable(clazz, weight, this));
     }
 
     @Override

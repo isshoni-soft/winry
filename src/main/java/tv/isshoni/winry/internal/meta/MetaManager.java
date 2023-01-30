@@ -6,7 +6,7 @@ import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IMetaManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;

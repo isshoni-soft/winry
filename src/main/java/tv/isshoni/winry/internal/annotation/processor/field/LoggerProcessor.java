@@ -54,4 +54,9 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
         LOGGER.debug("Injecting logger: " + logger + " into " + target.getClass());
         this.context.getMetaManager().inject(meta, target, logger);
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

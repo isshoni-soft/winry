@@ -1,4 +1,4 @@
-package tv.isshoni.winry.internal.model.logging;
+package tv.isshoni.winry.api.context;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.ILevel;

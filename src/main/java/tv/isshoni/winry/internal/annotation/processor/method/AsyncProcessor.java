@@ -65,4 +65,9 @@ public class AsyncProcessor implements IWinryAnnotationProcessor<Async> {
             add(OnMain.class);
         }};
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

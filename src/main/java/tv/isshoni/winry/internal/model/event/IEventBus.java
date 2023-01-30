@@ -2,14 +2,14 @@ package tv.isshoni.winry.internal.model.event;
 
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.context.IContextual;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface IEventBus extends IContextual {
+public interface IEventBus {
 
     Event findAnnotation(Object o);
 
@@ -23,9 +23,9 @@ public interface IEventBus extends IContextual {
 
     <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException;
 
-    void registerExecutable(Class<?> clazz);
+    void registerExecutable(IWinryContext context, Class<?> clazz);
 
-    void registerExecutable(Class<?> clazz, int weight);
+    void registerExecutable(IWinryContext context, Class<?> clazz, int weight);
 
     <T> void registerListener(Consumer<T> handler, Class<T> type, int weight);
 

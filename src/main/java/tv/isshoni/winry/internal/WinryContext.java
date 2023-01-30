@@ -1,4 +1,4 @@
-package tv.isshoni.winry.api.context;
+package tv.isshoni.winry.internal;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
@@ -6,6 +6,8 @@ import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.context.ILoggerFactory;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.api.meta.IMetaManager;
@@ -14,7 +16,6 @@ import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.event.IEventBus;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.time.Instant;

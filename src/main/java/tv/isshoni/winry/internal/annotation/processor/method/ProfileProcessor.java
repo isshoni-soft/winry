@@ -14,7 +14,10 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
 
     private final AraragiLogger LOGGER;
 
+    private final IWinryContext context;
+
     public ProfileProcessor(@Context IWinryContext context) {
+        this.context = context;
         LOGGER = context.getLoggerFactory().createLogger("Profiling");
     }
 
@@ -28,5 +31,10 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
             LOGGER.debug("Method execution: " + m.getName() + " took " + (Instant.now().toEpochMilli() - prev.toEpochMilli()) + "ms!");
             return result;
         });
+    }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
     }
 }

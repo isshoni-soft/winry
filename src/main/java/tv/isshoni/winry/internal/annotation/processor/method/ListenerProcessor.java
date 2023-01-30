@@ -24,4 +24,9 @@ public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
         LOGGER.debug("Register listener for: " + annotation.value().getName() + " - " + method.getDisplay());
         this.context.getEventBus().registerListener(method, target, annotation);
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

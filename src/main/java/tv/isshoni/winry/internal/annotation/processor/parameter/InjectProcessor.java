@@ -2,6 +2,7 @@ package tv.isshoni.winry.internal.annotation.processor.parameter;
 
 import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
@@ -22,7 +23,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
     private final AraragiLogger LOGGER;
 
-    private final Map<Class<?>, Supplier<Object>> basicSuppliers;
+    private final TypeMap<Class<?>, Supplier<Object>> basicSuppliers;
 
     public InjectProcessor(@Context IWinryContext context) {
         this.context = context;
@@ -31,6 +32,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
 
         this.basicSuppliers.put(IWinryContext.class, () -> this.context);
+        this.basicSuppliers.put(ILoggerFactory.class, this.context::getLoggerFactory);
     }
 
     @Override
@@ -112,5 +114,10 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
     public Object getInjected(String key, Class<?> clazz) {
         return this.context.getInstanceManager().getKeyedInstance(key, clazz);
+    }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
     }
 }

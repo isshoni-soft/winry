@@ -34,4 +34,9 @@ public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<Exce
         LOGGER.debug("Registering pass-through exception handler to: " + method.getDisplay());
         generator.delegateMethod(method, 0, (c, m, args, next) -> next.get());
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

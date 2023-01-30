@@ -4,7 +4,7 @@ import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.data.collection.map.SubMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.meta.IMetaManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 

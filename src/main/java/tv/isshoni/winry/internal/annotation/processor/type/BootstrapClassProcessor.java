@@ -96,4 +96,9 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
             this.context.getInstanceManager().registerSingletonInstance(classMeta, instance);
         });
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

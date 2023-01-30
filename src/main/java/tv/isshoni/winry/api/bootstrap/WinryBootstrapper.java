@@ -6,7 +6,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.api.context.WinryContext;
+import tv.isshoni.winry.internal.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.event.WinryEventBus;
 import tv.isshoni.winry.internal.logging.LoggerFactory;

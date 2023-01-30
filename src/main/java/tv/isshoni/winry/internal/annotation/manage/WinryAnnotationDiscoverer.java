@@ -7,7 +7,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;

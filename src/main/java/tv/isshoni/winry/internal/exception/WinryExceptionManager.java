@@ -14,7 +14,7 @@ import tv.isshoni.winry.api.exception.UnhandledException;
 import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Collections;

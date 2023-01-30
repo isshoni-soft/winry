@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import tv.isshoni.winry.api.Winry;
-import tv.isshoni.winry.api.context.WinryContext;
+import tv.isshoni.winry.internal.WinryContext;
 
 import java.util.concurrent.ExecutionException;
 

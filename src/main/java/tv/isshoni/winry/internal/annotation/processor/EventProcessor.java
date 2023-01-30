@@ -24,7 +24,7 @@ public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, 
             return;
         }
 
-        this.context.getEventBus().registerExecutable(classMeta.getElement(), annotation.weight());
+        this.context.getEventBus().registerExecutable(this.context, classMeta.getElement(), annotation.weight());
     }
 
     @Override
@@ -40,5 +40,10 @@ public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, 
         }
 
         return null;
+    }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
     }
 }

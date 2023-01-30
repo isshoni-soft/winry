@@ -32,4 +32,9 @@ public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
         LOGGER.info("Discovered global exception handler: " + classMeta.getDisplay() + " -- " + annotation.value().getName());
         this.context.getExceptionManager().registerGlobal((Class<? extends IExceptionHandler<?>>) classMeta.getElement());
     }
+
+    @Override
+    public IWinryContext getContext() {
+        return this.context;
+    }
 }

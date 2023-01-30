@@ -19,7 +19,7 @@ import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAnnotatio
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.internal.model.exception.IExceptionManager;
-import tv.isshoni.winry.internal.model.logging.ILoggerFactory;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
