@@ -1,4 +1,8 @@
-package tv.isshoni.winry.internal.model.meta;
+package tv.isshoni.winry.api.meta;
+
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
+import tv.isshoni.winry.internal.model.meta.ITransformable;
+import tv.isshoni.winry.internal.model.meta.ITransformedClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -6,9 +10,9 @@ import java.util.List;
 
 public interface IAnnotatedClass extends IAnnotatedMeta<Class<?>>, ITransformable<Class<?>>, ITransformedClass {
 
-    Object getInstance();
+    void regenerate(Object target);
 
-    Object newInstance() throws Throwable;
+    Object newInstance(Object... parameters) throws Throwable;
 
     List<IAnnotatedMethod> getMethods();
 

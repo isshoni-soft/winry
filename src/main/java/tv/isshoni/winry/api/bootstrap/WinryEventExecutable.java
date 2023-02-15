@@ -1,7 +1,7 @@
 package tv.isshoni.winry.api.bootstrap;
 
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.EventExecutionException;
-import tv.isshoni.winry.internal.model.event.IEventBus;
 
 public class WinryEventExecutable implements IExecutable {
 
@@ -11,18 +11,18 @@ public class WinryEventExecutable implements IExecutable {
 
     private Object event;
 
-    private final IEventBus bus;
+    private final IWinryContext context;
 
-    public WinryEventExecutable(Class<?> eventClass, int weight, IEventBus bus) {
+    public WinryEventExecutable(Class<?> eventClass, int weight, IWinryContext context) {
         this.eventClass = eventClass;
         this.weight = weight;
-        this.bus = bus;
+        this.context = context;
     }
 
-    public WinryEventExecutable(Object event, int weight, IEventBus bus) {
+    public WinryEventExecutable(Object event, int weight, IWinryContext context) {
         this.event = event;
         this.weight = weight;
-        this.bus = bus;
+        this.context = context;
         this.eventClass = event.getClass();
     }
 
@@ -47,12 +47,12 @@ public class WinryEventExecutable implements IExecutable {
     public void execute() {
         try {
             if (this.hasEvent()) {
-                this.bus.fire(this.getEvent());
+                this.context.getEventBus().fire(this.getEvent());
             } else{
-                this.bus.fire(this.getEventClass());
+                this.context.getEventBus().fire(this.getEventClass());
             }
         } catch (EventExecutionException e) {
-            this.bus.getWinryContext().getExceptionManager().toss(e);
+            this.context.getExceptionManager().toss(e);
         }
     }
 
@@ -67,6 +67,6 @@ public class WinryEventExecutable implements IExecutable {
             return false;
         }
 
-        return other.bus.equals(this.bus) && other.eventClass.equals(this.eventClass) && other.weight == this.weight;
+        return other.context.equals(this.context) && other.eventClass.equals(this.eventClass) && other.weight == this.weight;
     }
 }

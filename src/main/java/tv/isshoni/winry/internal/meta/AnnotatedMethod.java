@@ -4,8 +4,8 @@ import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProce
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
@@ -18,15 +18,13 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
 
     protected final IAnnotatedClass parent;
 
-    public AnnotatedMethod(IWinryContext context, IAnnotatedClass parent, Method method) {
+    protected final Object parentInstance;
+
+    public AnnotatedMethod(IWinryContext context, IAnnotatedClass parent, Object parentInstance, Method method) {
         super(context, method);
         this.parent = parent;
+        this.parentInstance = parentInstance;
         this.modifiers = ReflectedModifier.getModifiers(method.getModifiers());
-    }
-
-    @Override
-    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
-        preparedAnnotationProcessor.executeMethod(this.parent.getInstance());
     }
 
     @Override
@@ -51,8 +49,18 @@ public class AnnotatedMethod extends AbstractAnnotatedMeta<Method> implements IT
     }
 
     @Override
+    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor, Object target) {
+        preparedAnnotationProcessor.executeMethod(target);
+    }
+
+    @Override
     public IAnnotatedClass getDeclaringClass() {
         return this.parent;
+    }
+
+    @Override
+    public Object getDeclaringClassInstance() {
+        return this.parentInstance;
     }
 
     @Override

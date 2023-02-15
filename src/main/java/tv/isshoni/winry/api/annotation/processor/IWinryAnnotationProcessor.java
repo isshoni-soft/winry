@@ -2,9 +2,9 @@ package tv.isshoni.winry.api.annotation.processor;
 
 import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.winry.api.context.IContextual;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.annotation.Annotation;
@@ -26,16 +26,16 @@ public interface IWinryAnnotationProcessor<A extends Annotation> extends IAnnota
     default void executeMethod(IAnnotatedMethod method, Object target, A annotation) { }
 
     default void executeClass(Class<?> clazz, Object target, A annotation) {
-        this.executeClass(this.getContext().getMetaManager().getMeta(clazz), target, annotation);
+        this.executeClass(this.getContext().getMetaManager().findMeta(target), target, annotation);
     }
 
     default void executeField(Field field, Object target, A annotation) {
-        this.executeField(this.getContext().getMetaManager().getMeta(field.getDeclaringClass())
+        this.executeField(this.getContext().getMetaManager().findMeta(target)
                 .getField(field), target, annotation);
     }
 
     default void executeMethod(Method method, Object target, A annotation) {
-        this.executeMethod(this.getContext().getMetaManager().getMeta(method.getDeclaringClass())
+        this.executeMethod(this.getContext().getMetaManager().findMeta(target)
                 .getMethod(method), target, annotation);
     }
 

@@ -31,7 +31,8 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
         refreshAnnotations();
     }
 
-    protected void refreshAnnotations() {
+    @Override
+    public void refreshAnnotations() {
         logger.debug(this.getElement() + " -- Refreshing annotations...");
         IWinryAnnotationManager annotationManager = this.context.getAnnotationManager();
 
@@ -45,11 +46,6 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
                     + annotationManager.getConflictingAnnotations(this.annotations));
         }
         logger.debug(this.getElement() + " -- Found " + this.annotations.size() + " annotations!");
-    }
-
-    @Override
-    public void regenerate() {
-        refreshAnnotations();
     }
 
     @Override

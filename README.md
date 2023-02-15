@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'tv.isshoni:winry:0.57.2'
+    implementation 'tv.isshoni:winry:0.58.0'
 }
 ```
 
@@ -39,6 +39,15 @@ dependencies {
 
 About
 -----
+Design inspired by SpringBoot and previous projects I have worked on. This is a library designed to make
+bootstrapping **any type** of Java application as painless and as easy as using SpringBoot. Some major
+features are:
+* Singleton dependency management, register & inject dependencies with ease.
+* Event based, winry is backed by an event bus that can be configured to fire specific events during the lifecycle.
+* Integer-based weighting system, to keep things running smoothly and in order, all "executables" in the winry bootstrapping lifecycle are integer weighted.
+* Built to be extended, register new annotations, add more functionality to pre-existing ones, or add new lifecycle events.
+    * Import libraries that add their own lifecycle events and gain specialized functionality, i.e. game engine, or, rest webserver.
+  
 TODO  
   
 [Return to Table of Contents](#table-of-contents)

@@ -7,7 +7,7 @@ import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProce
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
-import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.api.context.IExceptionManager;
 
 import java.lang.annotation.Annotation;
 

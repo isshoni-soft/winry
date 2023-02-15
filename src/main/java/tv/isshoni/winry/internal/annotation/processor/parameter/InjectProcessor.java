@@ -2,13 +2,15 @@ package tv.isshoni.winry.internal.annotation.processor.parameter;
 
 import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
+import tv.isshoni.winry.api.context.IEventBus;
+import tv.isshoni.winry.api.context.IExceptionManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
@@ -33,6 +35,8 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
         this.basicSuppliers.put(IWinryContext.class, () -> this.context);
         this.basicSuppliers.put(ILoggerFactory.class, this.context::getLoggerFactory);
+        this.basicSuppliers.put(IExceptionManager.class, this.context::getExceptionManager);
+        this.basicSuppliers.put(IEventBus.class, this.context::getEventBus);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
             return presupplied.get().get();
         }
 
-        IAnnotatedClass classMeta = this.context.getMetaManager().getMeta(type);
+        IAnnotatedClass classMeta = this.context.getMetaManager().getSingletonMeta(type);
 
         if (classMeta == null) {
             LOGGER.debug("Cannot find classMeta to inject for: " + type);

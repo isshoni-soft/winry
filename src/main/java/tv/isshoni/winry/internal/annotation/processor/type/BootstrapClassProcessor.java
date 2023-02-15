@@ -8,9 +8,8 @@ import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.meta.bytebuddy.WinryWrapperGenerator;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -80,15 +79,20 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                     .filter(ac -> ac.isAnnotationPresent(Transformer.class))
                     .collect(Collectors.toSet());
 
-            IAnnotatedClass classMeta = this.context.getMetaManager().generateMeta(c);
-
             for (Class<? extends Annotation> transformer : transformers) {
                 if (!annotationManager.isManagedAnnotation(transformer)) {
-                    throw new IllegalStateException("Unable to bootstrap class: " + c + " found transformer: " + transformer + " that is not managed (no processor? not found during scan?)");
+                    throw new IllegalStateException("Unable to bootstrap class: " + c + " found transformer: "
+                            + transformer + " that is not managed (no processor? not found during scan?)");
                 }
             }
 
-            classMeta.transform(new WinryWrapperGenerator(this.context, classMeta));
+            ISingletonAnnotatedClass classMeta;
+            try {
+                classMeta = this.context.getMetaManager().generateSingletonMeta(c);
+            } catch (Throwable e) {
+                this.context.getExceptionManager().toss(e);
+                return;
+            }
 
             Object instance = classMeta.getInstance();
 

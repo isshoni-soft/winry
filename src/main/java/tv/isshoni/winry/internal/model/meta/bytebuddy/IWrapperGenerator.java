@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.model.meta.bytebuddy;
 
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 
 public interface IWrapperGenerator {
 

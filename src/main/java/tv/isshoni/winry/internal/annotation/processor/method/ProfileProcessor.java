@@ -5,7 +5,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.transformer.Profile;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.time.Instant;

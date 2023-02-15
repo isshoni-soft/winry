@@ -6,9 +6,9 @@ import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
@@ -31,8 +31,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected final Map<Field, IAnnotatedField> fields;
 
-    protected Object instance;
-
     public AnnotatedClass(IWinryContext context, Class<?> element) {
         super(context, element);
         this.modifiers = ReflectedModifier.getModifiers(element);
@@ -40,17 +38,9 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
         this.fields = new HashMap<>();
     }
 
-    public void setInstance(Object instance) {
-        if (this.instance != null) {
-            return;
-        }
-
-        this.instance = instance;
-    }
-
     @Override
-    public void regenerate() {
-        super.regenerate(); // regenerate annotations
+    public void regenerate(Object object) {
+        super.refreshAnnotations();
 
         this.methods.clear();
         this.fields.clear();
@@ -59,17 +49,22 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
         Streams.to(getElement().getDeclaredMethods())
                 .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
-                .map(m -> this.context.getMetaManager().generateMeta(this, m))
+                .map(m -> new AnnotatedMethod(this.context, this, object, m))
                 .forEach(m -> this.methods.put(m.getElement(), m));
         logger.debug("Discovered " + getMethods().size() + " methods");
 
         Streams.to(getElement().getDeclaredFields())
                 .filter(this.context.getAnnotationManager()::hasManagedAnnotation)
-                .map(f -> this.context.getMetaManager().generateMeta(this, f))
+                .map(f -> new AnnotatedField(this.context, this, object, f))
                 .forEach(f -> this.fields.put(f.getElement(), f));
         logger.debug("Discovered " + getMethods().size() + " fields");
 
         logger.debug(getDisplay() + " -- Finished Building...");
+    }
+
+    @Override
+    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor, Object target) {
+        preparedAnnotationProcessor.executeClass(target);
     }
 
     @Override
@@ -109,25 +104,11 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public Object getInstance() {
-        if (this.instance == null) {
-            try {
-                this.instance = newInstance();
-            } catch (Throwable e) {
-                this.context.getExceptionManager().toss(e);
-                return null;
-            }
-        }
-
-        return this.instance;
-    }
-
-    @Override
-    public Object newInstance() throws Throwable {
+    public Object newInstance(Object... parameters) throws Throwable {
         if (this.transformed != null) {
-            return this.context.getAnnotationManager().construct(this.transformed);
+            return this.context.getAnnotationManager().construct(this.transformed, parameters);
         } else {
-            return this.context.getAnnotationManager().construct(this.element);
+            return this.context.getAnnotationManager().construct(this.element, parameters);
         }
     }
 
@@ -152,11 +133,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     }
 
     @Override
-    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
-        preparedAnnotationProcessor.executeClass(this.getInstance());
-    }
-
-    @Override
     public Class<?> getTransform() {
         return this.transformed;
     }
@@ -174,6 +150,11 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public void transform(IWinryPreparedAnnotationProcessor preparedAnnotationProcessor, IWrapperGenerator generator) {
         preparedAnnotationProcessor.transformClass(this, generator);
+    }
+
+    @Override
+    public void execute() {
+        throw new UnsupportedOperationException("Please use AnnotatedClass#execute(Object)");
     }
 
     @Override

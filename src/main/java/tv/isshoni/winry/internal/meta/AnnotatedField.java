@@ -4,8 +4,8 @@ import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProce
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.Field;
@@ -17,10 +17,13 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
 
     protected final IAnnotatedClass parent;
 
-    public AnnotatedField(IWinryContext context, IAnnotatedClass parent, Field field) {
+    protected final Object parentInstance;
+
+    public AnnotatedField(IWinryContext context, IAnnotatedClass parent, Object parentInstance, Field field) {
         super(context, field);
         this.modifiers = ReflectedModifier.getModifiers(field);
         this.parent = parent;
+        this.parentInstance = parentInstance;
     }
 
     @Override
@@ -35,11 +38,6 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
     }
 
     @Override
-    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor) {
-        preparedAnnotationProcessor.executeField(this.parent.getInstance());
-    }
-
-    @Override
     public Set<ReflectedModifier> getModifiers() {
         return this.modifiers;
     }
@@ -50,8 +48,18 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
     }
 
     @Override
+    public void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor, Object target) {
+        preparedAnnotationProcessor.executeField(target);
+    }
+
+    @Override
     public IAnnotatedClass getDeclaringClass() {
         return this.parent;
+    }
+
+    @Override
+    public Object getDeclaringClassInstance() {
+        return this.parentInstance;
     }
 
     @Override

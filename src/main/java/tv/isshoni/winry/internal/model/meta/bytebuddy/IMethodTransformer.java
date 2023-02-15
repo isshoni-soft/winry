@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.model.meta.bytebuddy;
 
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 
 import java.lang.reflect.Method;
 

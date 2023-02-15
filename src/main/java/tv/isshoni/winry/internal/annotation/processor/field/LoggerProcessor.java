@@ -6,7 +6,7 @@ import tv.isshoni.winry.api.annotation.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
 
 import java.lang.reflect.Field;
 

@@ -1,5 +1,7 @@
 package tv.isshoni.winry.internal.model.meta;
 
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+
 public interface IInstanceManager {
 
     void registerSingletonInstance(IAnnotatedClass classMeta, Object object);

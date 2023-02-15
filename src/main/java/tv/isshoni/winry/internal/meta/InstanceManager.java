@@ -5,7 +5,7 @@ import tv.isshoni.araragi.data.collection.map.SubMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.util.HashMap;
@@ -51,13 +51,13 @@ public class InstanceManager implements IInstanceManager {
 
     @Override
     public Object getSingletonInjection(Class<?> key) {
-        return this.singletons.get(this.metaManager.getMeta(key));
+        return this.singletons.get(this.metaManager.getSingletonMeta(key));
     }
 
     @Override
     public Object getKeyedInstance(String key, Class<?> type) {
         return Optional.ofNullable(this.keyedInstances.get(key))
-                .map(m -> m.get(this.metaManager.getMeta(type)))
+                .map(m -> m.get(this.metaManager.getSingletonMeta(type)))
                 .orElse(null);
     }
 }

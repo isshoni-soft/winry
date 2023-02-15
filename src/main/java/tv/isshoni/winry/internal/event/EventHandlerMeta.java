@@ -2,7 +2,7 @@ package tv.isshoni.winry.internal.event;
 
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 
 import java.util.HashMap;
 import java.util.UUID;

@@ -13,8 +13,9 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.meta.InstanceManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.exception.IExceptionManager;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -71,7 +72,13 @@ public class WinryBootstrapper implements IBootstrapper {
 
         LOGGER.debug("Registering provided instances...");
         provided.forEach((c, o) -> {
-            IAnnotatedClass classMeta = this.context.getMetaManager().generateMeta(c, o);
+            IAnnotatedClass classMeta;
+            try {
+                classMeta = this.context.getMetaManager().generateSingletonMeta(c, o);
+            } catch (Throwable e) {
+                this.context.getExceptionManager().toss(e);
+                return;
+            }
 
             this.context.registerToContext(o);
             this.context.getInstanceManager().registerSingletonInstance(classMeta, o);
@@ -82,7 +89,7 @@ public class WinryBootstrapper implements IBootstrapper {
         LOGGER.debug("Finished class discovery and instantiation...");
 
         LOGGER.debug("Recompiling annotations of provided bootstrapped classes...");
-        provided.forEach((c, o) -> this.context.getMetaManager().getMeta(c).regenerate());
+        provided.forEach((c, o) -> this.context.getMetaManager().getSingletonMeta(c).regenerate());
 
         List<IExecutable> run = compileRunList();
         Streams.to(this.context.getAnnotationManager().getAllProviders(bootstrap))
@@ -143,8 +150,8 @@ public class WinryBootstrapper implements IBootstrapper {
     @Override
     public List<IExecutable> compileRunList() {
         LOGGER.debug("Compiling run order...");
-        return Streams.to(this.context.getMetaManager().getAllClasses())
-                .peek(IAnnotatedClass::regenerate)
+        return Streams.to(this.context.getMetaManager().getAllSingletonClasses())
+                .peek(ISingletonAnnotatedClass::regenerate)
                 .expand(IExecutable.class, IAnnotatedClass::getMethods, IAnnotatedClass::getFields)
                 .collect(Collectors.toList());
     }

@@ -13,11 +13,11 @@ import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.internal.model.event.IEventBus;
+import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
-import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -163,7 +163,7 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public void registerExecutable(IWinryContext context, Class<?> clazz, int weight) {
-        context.registerExecutable(new WinryEventExecutable(clazz, weight, this));
+        context.registerExecutable(new WinryEventExecutable(clazz, weight, context));
     }
 
     @Override

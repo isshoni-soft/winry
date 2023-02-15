@@ -8,7 +8,7 @@ import tv.isshoni.winry.api.annotation.transformer.Async;
 import tv.isshoni.winry.api.annotation.transformer.OnMain;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.annotation.Annotation;

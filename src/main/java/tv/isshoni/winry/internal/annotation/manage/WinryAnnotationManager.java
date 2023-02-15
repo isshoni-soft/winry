@@ -18,7 +18,7 @@ import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAdvancedA
 import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
-import tv.isshoni.winry.internal.model.exception.IExceptionManager;
+import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.annotation.Annotation;

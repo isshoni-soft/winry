@@ -4,7 +4,7 @@ import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
 
 import java.lang.reflect.Parameter;
 import java.util.Map;

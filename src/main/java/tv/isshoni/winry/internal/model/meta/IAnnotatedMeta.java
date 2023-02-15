@@ -11,9 +11,9 @@ import java.util.Set;
 
 public interface IAnnotatedMeta<E extends AnnotatedElement> extends IExecutable {
 
-    void regenerate();
+    void refreshAnnotations();
 
-    void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor);
+    void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor, Object target);
 
     Set<Annotation> getAnnotations();
 
@@ -27,8 +27,8 @@ public interface IAnnotatedMeta<E extends AnnotatedElement> extends IExecutable 
         return getContext().getAnnotationManager().calculateWeight(this.getAnnotations());
     }
 
-    default void execute() {
+    default void execute(Object target) {
         getContext().getAnnotationManager().toExecutionList(this.getElement(), this.getAnnotations())
-                .forEach(this::execute);
+                .forEach(proc -> execute(proc, target));
     }
 }

@@ -4,12 +4,13 @@ import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IMetaManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedField;
-import tv.isshoni.winry.internal.model.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -22,13 +23,15 @@ public class MetaManager implements IMetaManager {
 
     private final AraragiLogger logger;
 
-    private final TypeMap<Class<?>, IAnnotatedClass> storedClassMetas;
+    private final TypeMap<Class<?>, IAnnotatedClass> classes;
+    private final TypeMap<Class<?>, ISingletonAnnotatedClass> singletons;
 
     private IWinryContext context;
 
     public MetaManager(ILoggerFactory loggerFactory) {
         this.logger = loggerFactory.createLogger("MetaManager");
-        this.storedClassMetas = new TypeMap<>();
+        this.classes = new TypeMap<>();
+        this.singletons = new TypeMap<>();
     }
 
     @Override
@@ -42,46 +45,61 @@ public class MetaManager implements IMetaManager {
     }
 
     @Override
-    public IAnnotatedClass generateMeta(Class<?> element) {
-        return generateMeta(element, null);
+    public ISingletonAnnotatedClass generateSingletonMeta(Class<?> element) throws Throwable {
+        return generateSingletonMeta(element, null);
     }
 
     @Override
-    public IAnnotatedClass generateMeta(Class<?> element, Object object) {
-        AnnotatedClass annotatedClass = new AnnotatedClass(this.context, element);
-        annotatedClass.setInstance(object);
+    public ISingletonAnnotatedClass generateSingletonMeta(Class<?> element, Object object) throws Throwable {
+        SingletonAnnotatedClass annotatedClass;
+        if (object == null) {
+            annotatedClass = new SingletonAnnotatedClass(this.context, element);
+        } else {
+            annotatedClass = new SingletonAnnotatedClass(this.context, element, object);
+        }
 
-        if (!this.storedClassMetas.containsKey(element)) {
-            this.storedClassMetas.put(element, annotatedClass);
+        if (!this.singletons.containsKey(element)) {
+            this.singletons.put(element, annotatedClass);
         }
 
         return annotatedClass;
     }
 
     @Override
-    public IAnnotatedMethod generateMeta(IAnnotatedClass parent, Method method) {
-        return new AnnotatedMethod(this.context, parent, method);
+    public IAnnotatedClass generateMeta(Class<?> element) {
+        AnnotatedClass annotatedClass = new AnnotatedClass(this.context, element);
+
+        if (!this.classes.containsKey(element)) {
+            this.classes.put(element, annotatedClass);
+        }
+
+        return annotatedClass;
     }
 
     @Override
-    public IAnnotatedField generateMeta(IAnnotatedClass parent, Field field) {
-        return new AnnotatedField(this.context, parent, field);
+    public ISingletonAnnotatedClass getSingletonMeta(Object element) {
+        return this.singletons.get(resolveClass(element));
     }
 
     @Override
     public IAnnotatedClass getMeta(Object element) {
-        Class<?> clazz = element.getClass();
-
-        if (Class.class.isAssignableFrom(element.getClass())) {
-            clazz = (Class<?>) element;
-        }
-
-        return this.storedClassMetas.get(clazz);
+        return this.classes.get(resolveClass(element));
     }
 
     @Override
-    public Set<IAnnotatedClass> getAllClasses() {
-        return new HashSet<>(this.storedClassMetas.values());
+    public IAnnotatedClass findMeta(Object element) {
+        IAnnotatedClass result = getSingletonMeta(element);
+
+        if (result == null) {
+            result = getMeta(element);
+        }
+
+        return result;
+    }
+
+    @Override
+    public Set<ISingletonAnnotatedClass> getAllSingletonClasses() {
+        return new HashSet<>(this.singletons.values());
     }
 
     @Override
@@ -91,6 +109,7 @@ public class MetaManager implements IMetaManager {
             Field field = meta.getElement();
 
             logger.debug("Injecting: " + field.toString());
+            logger.debug("-> Modifiers: " + meta.getModifiers().toString());
 
             if (!meta.getModifiers().contains(ReflectedModifier.STATIC)) {
                 target = instance;
@@ -100,6 +119,9 @@ public class MetaManager implements IMetaManager {
                 }
             }
 
+            logger.debug("-> Target: " + target);
+            logger.debug("-> Value: " + value.toString());
+            logger.debug("-> Field: " + field);
             ReflectionUtil.injectField(field, target, value);
         } catch (Throwable t) {
             this.context.getExceptionManager().toss(t);
@@ -126,5 +148,15 @@ public class MetaManager implements IMetaManager {
             this.context.getExceptionManager().toss(e, method);
             return null;
         }
+    }
+
+    private Class<?> resolveClass(Object element) {
+        Class<?> clazz = element.getClass();
+
+        if (Class.class.isAssignableFrom(element.getClass())) {
+            clazz = (Class<?>) element;
+        }
+
+        return clazz;
     }
 }
