@@ -101,7 +101,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         }
 
         return builder
-                .name(packageName + "WinryWrapped" + this.toWrap.getElement().getSimpleName())
+                .name(packageName + this.toWrap.getElement().getSimpleName() + "$$Winry$" + this.context.getContextId())
                 .make()
                 .load(ClassLoader.getSystemClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();
