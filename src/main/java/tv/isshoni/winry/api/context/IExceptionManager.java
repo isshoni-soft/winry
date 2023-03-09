@@ -1,5 +1,6 @@
 package tv.isshoni.winry.api.context;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
@@ -12,6 +13,8 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 public interface IExceptionManager {
+
+    Constant<IWinryContext> getContext();
 
     void recover(Throwable throwable);
 
