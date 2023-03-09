@@ -4,6 +4,7 @@ import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.manager.AnnotationManager;
 import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
@@ -11,15 +12,18 @@ import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
+import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.ILoggerFactory;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.exception.WinryExceptionManager;
+import tv.isshoni.winry.internal.meta.bytebuddy.WinryWrapperGenerator;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAdvancedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.annotation.prepare.WinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
-import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -48,6 +52,33 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         register(IWinryAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor, manager));
         register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor, manager));
+    }
+
+    @Override
+    public <T> T winryConstruct(IWinryContext context, Class<T> clazz, Object... parameters) {
+        IAnnotatedClass annotatedClass = context.getMetaManager().findMeta(clazz);
+
+        if (annotatedClass == null) {
+            annotatedClass = context.getMetaManager().generateMeta(clazz);
+        }
+
+        if (!annotatedClass.isTransformed()) {
+            annotatedClass.transform(new WinryWrapperGenerator(context, annotatedClass));
+        }
+
+        T result;
+        try {
+            result = (T) annotatedClass.newInstance(parameters);
+        } catch (Throwable e) {
+            throw Exceptions.rethrow(e);
+        }
+
+        annotatedClass.regenerate(result);
+        annotatedClass.execute(result);
+        annotatedClass.getMethods().forEach(meta -> meta.execute(result));
+        annotatedClass.getFields().forEach(meta -> meta.execute(result));
+
+        return result;
     }
 
     @Override

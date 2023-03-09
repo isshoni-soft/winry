@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.exception;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
 import tv.isshoni.araragi.data.collection.map.SubMap;
@@ -9,12 +10,13 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
+import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.ILoggerFactory;
+import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
 import tv.isshoni.winry.api.exception.UnhandledException;
 import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -38,12 +40,15 @@ public class WinryExceptionManager implements IExceptionManager {
 
     private final TypeMap<Class<? extends IExceptionHandler<?>>, IExceptionHandler<Throwable>> singletons;
 
+    private final Constant<IWinryContext> context;
+
     public WinryExceptionManager(IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         this.logger = loggerFactory.createLogger(getClass());
         this.annotationManager = annotationManager;
         this.globalHandlers = Maps.bucket(new TypeMap<>());
         this.singletons = new TypeMap<>();
         this.methodHandlers = new SubMap<>(() -> Maps.bucket(new TypeMap<>()));
+        this.context = new Constant<>();
     }
 
     @Override
@@ -210,7 +215,7 @@ public class WinryExceptionManager implements IExceptionManager {
         }
 
         try {
-            return Optional.of(this.annotationManager.construct(clazz));
+            return Optional.of(this.annotationManager.winryConstruct(this.context.get(), clazz));
         } catch (Throwable e) {
             return Optional.empty();
         }
@@ -223,7 +228,7 @@ public class WinryExceptionManager implements IExceptionManager {
 
         IExceptionHandler<Throwable> handler;
         try {
-            handler = (IExceptionHandler<Throwable>) this.annotationManager.construct(clazz);
+            handler = (IExceptionHandler<Throwable>) this.annotationManager.winryConstruct(this.context.get(), clazz);
         } catch (Throwable e) {
             return Optional.empty();
         }
@@ -238,5 +243,10 @@ public class WinryExceptionManager implements IExceptionManager {
                 .map(this::newOrSingleton)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
+    }
+
+    @Override
+    public Constant<IWinryContext> getContext() {
+        return this.context;
     }
 }
