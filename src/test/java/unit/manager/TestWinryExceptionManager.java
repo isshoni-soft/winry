@@ -15,6 +15,7 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +61,7 @@ public class TestWinryExceptionManager {
     public void testTossGloballyRegistered() throws Throwable {
         RuntimeExceptionHandler mockHandler = mock(RuntimeExceptionHandler.class);
 
-        when(this.annotationManager.construct(RuntimeExceptionHandler.class))
+        when(this.annotationManager.winryConstruct(any(), eq(RuntimeExceptionHandler.class)))
                 .thenReturn(mockHandler);
 
         this.exceptionManager.registerGlobal(RuntimeExceptionHandler.class);
@@ -76,7 +77,7 @@ public class TestWinryExceptionManager {
     public void testTossUnRegisteredMethod() throws Throwable {
         RuntimeExceptionHandler mockHandler = mock(RuntimeExceptionHandler.class);
 
-        when(this.annotationManager.construct(RuntimeExceptionHandler.class))
+        when(this.annotationManager.winryConstruct(any(), eq(RuntimeExceptionHandler.class)))
                 .thenReturn(mockHandler);
 
         this.exceptionManager.registerGlobal(RuntimeExceptionHandler.class);

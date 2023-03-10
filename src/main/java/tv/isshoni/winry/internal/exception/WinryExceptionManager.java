@@ -15,7 +15,6 @@ import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.IExceptionHandler;
 import tv.isshoni.winry.api.exception.UnhandledException;
-import tv.isshoni.winry.internal.AraragiUpstream;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 
 import java.lang.reflect.Method;
@@ -54,7 +53,7 @@ public class WinryExceptionManager implements IExceptionManager {
     @Override
     public void recover(Throwable throwable) {
         if (!this.globalHandlers.containsKey(throwable.getClass())) {
-            this.logger.error(AraragiUpstream.toString(throwable));
+            this.logger.error(Exceptions.toString(throwable));
             this.logger.error("Recovered from error successfully!");
             return;
         }
