@@ -6,16 +6,17 @@ import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.context.IEventBus;
+import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 import tv.isshoni.winry.api.meta.IMetaManager;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.api.context.IEventBus;
-import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.time.Instant;
@@ -133,6 +134,16 @@ public class WinryContext implements IWinryContext {
     @Override
     public void registerToContext(Object... objects) {
         Streams.to(objects).forEach(this::registerToContext);
+    }
+
+    @Override
+    public void addSingleton(Class<?> clazz) throws Throwable {
+        ISingletonAnnotatedClass singletonAnnotatedClass = this.metaManager.generateSingletonMeta(clazz);
+        singletonAnnotatedClass.regenerate();
+
+        registerExecutable(singletonAnnotatedClass);
+        registerExecutable(singletonAnnotatedClass.getMethods().toArray(new IExecutable[0]));
+        registerExecutable(singletonAnnotatedClass.getFields().toArray(new IExecutable[0]));
     }
 
     @Override

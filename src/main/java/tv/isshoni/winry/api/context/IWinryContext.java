@@ -24,6 +24,8 @@ public interface IWinryContext {
 
     void registerToContext(Object... objects);
 
+    void addSingleton(Class<?> clazz) throws Throwable;
+
     void registerExecutable(IExecutable executable);
 
     void registerExecutable(IExecutable... executable);
