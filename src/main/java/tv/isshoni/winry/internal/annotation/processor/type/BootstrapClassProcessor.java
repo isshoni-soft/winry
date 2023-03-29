@@ -9,7 +9,6 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -86,18 +85,11 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                 }
             }
 
-            ISingletonAnnotatedClass classMeta;
             try {
-                classMeta = this.context.getMetaManager().generateSingletonMeta(c);
+                this.context.addSingleton(c);
             } catch (Throwable e) {
                 this.context.getExceptionManager().toss(e);
-                return;
             }
-
-            Object instance = classMeta.getInstance();
-
-            this.context.registerToContext(instance);
-            this.context.getInstanceManager().registerSingletonInstance(classMeta, instance);
         });
     }
 

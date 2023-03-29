@@ -138,12 +138,17 @@ public class WinryContext implements IWinryContext {
 
     @Override
     public void addSingleton(Class<?> clazz) throws Throwable {
-        ISingletonAnnotatedClass singletonAnnotatedClass = this.metaManager.generateSingletonMeta(clazz);
-        singletonAnnotatedClass.regenerate();
+        ISingletonAnnotatedClass classMeta = this.metaManager.generateSingletonMeta(clazz);
+        classMeta.regenerate();
 
-        registerExecutable(singletonAnnotatedClass);
-        registerExecutable(singletonAnnotatedClass.getMethods().toArray(new IExecutable[0]));
-        registerExecutable(singletonAnnotatedClass.getFields().toArray(new IExecutable[0]));
+        Object instance = classMeta.getInstance();
+
+        registerToContext(instance);
+        getInstanceManager().registerSingletonInstance(classMeta, instance);
+
+        registerExecutable(classMeta);
+        registerExecutable(classMeta.getMethods().toArray(new IExecutable[0]));
+        registerExecutable(classMeta.getFields().toArray(new IExecutable[0]));
     }
 
     @Override
