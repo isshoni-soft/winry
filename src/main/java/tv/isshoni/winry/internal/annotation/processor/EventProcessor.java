@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
@@ -12,10 +13,10 @@ import java.util.Objects;
 
 public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, Object> {
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public EventProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, 
             return;
         }
 
-        this.context.getEventBus().registerExecutable(this.context, classMeta.getElement(), annotation.weight());
+        this.context.get().getEventBus().registerExecutable(this.context.get(), classMeta.getElement(), annotation.weight());
     }
 
     @Override
@@ -43,7 +44,7 @@ public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, 
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

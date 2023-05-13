@@ -1,16 +1,17 @@
 package tv.isshoni.winry.internal.annotation.processor.parameter;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
+import tv.isshoni.winry.api.context.IEventBus;
+import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
-import tv.isshoni.winry.api.context.IEventBus;
-import tv.isshoni.winry.api.context.IExceptionManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
@@ -21,22 +22,22 @@ import java.util.function.Supplier;
 
 public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject, Object> {
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     private final AraragiLogger LOGGER;
 
     private final TypeMap<Class<?>, Supplier<Object>> basicSuppliers;
 
     public InjectProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         this.basicSuppliers = new TypeMap<>();
 
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
 
-        this.basicSuppliers.put(IWinryContext.class, () -> this.context);
-        this.basicSuppliers.put(ILoggerFactory.class, this.context::getLoggerFactory);
-        this.basicSuppliers.put(IExceptionManager.class, this.context::getExceptionManager);
-        this.basicSuppliers.put(IEventBus.class, this.context::getEventBus);
+        this.basicSuppliers.put(IWinryContext.class, this.context::get);
+        this.basicSuppliers.put(ILoggerFactory.class, this.context.get()::getLoggerFactory);
+        this.basicSuppliers.put(IExceptionManager.class, this.context.get()::getExceptionManager);
+        this.basicSuppliers.put(IEventBus.class, this.context.get()::getEventBus);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         }
 
         LOGGER.debug("Injecting: " + injected);
-        this.context.getMetaManager().inject(meta, target, injected);
+        this.context.get().getMetaManager().inject(meta, target, injected);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
             return presupplied.get().get();
         }
 
-        IAnnotatedClass classMeta = this.context.getMetaManager().getSingletonMeta(type);
+        IAnnotatedClass classMeta = this.context.get().getMetaManager().getSingletonMeta(type);
 
         if (classMeta == null) {
             LOGGER.debug("Cannot find classMeta to inject for: " + type);
@@ -85,7 +86,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         LOGGER.debug("Getting injected for type: " + clazz);
         if (IWinryContext.class.isAssignableFrom(clazz) || clazz.equals(IWinryContext.class)) {
             LOGGER.debug("Injecting context...");
-            return this.context;
+            return this.context.get();
         }
         LOGGER.debug("Injecting other....");
 
@@ -100,12 +101,12 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
                 try {
                     injected = classMeta.newInstance();
                 } catch (Throwable e) {
-                    this.context.getExceptionManager().toss(e);
+                    this.context.get().getExceptionManager().toss(e);
                     return null;
                 }
 
-                this.context.registerToContext(injected);
-                this.context.getInstanceManager().registerKeyedInstance(classMeta, annotation.value(), injected);
+                this.context.get().registerToContext(injected);
+                this.context.get().getInstanceManager().registerKeyedInstance(classMeta, annotation.value(), injected);
             }
         }
 
@@ -113,15 +114,15 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
     }
 
     public Object getInjected(Class<?> clazz) {
-        return this.context.getInstanceManager().getSingletonInjection(clazz);
+        return this.context.get().getInstanceManager().getSingletonInjection(clazz);
     }
 
     public Object getInjected(String key, Class<?> clazz) {
-        return this.context.getInstanceManager().getKeyedInstance(key, clazz);
+        return this.context.get().getInstanceManager().getKeyedInstance(key, clazz);
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

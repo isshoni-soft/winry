@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.field;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.annotation.Logger;
@@ -14,10 +15,10 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public LoggerProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         LOGGER = context.getLoggerFactory().createLogger("LoggerProcessor");
     }
 
@@ -44,19 +45,19 @@ public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
         AraragiLogger logger;
 
         if (annotation.level() != Logger.DEFAULT_LEVEL || !annotation.useDefault()) {
-            logger = this.context.getLoggerFactory().createLogger(name, annotation.level());
+            logger = this.context.get().getLoggerFactory().createLogger(name, annotation.level());
         } else {
-            logger = this.context.getLoggerFactory().createLogger(name);
+            logger = this.context.get().getLoggerFactory().createLogger(name);
         }
 
-        this.context.registerToContext(logger);
+        this.context.get().registerToContext(logger);
 
         LOGGER.debug("Injecting logger: " + logger + " into " + target.getClass());
-        this.context.getMetaManager().inject(meta, target, logger);
+        this.context.get().getMetaManager().inject(meta, target, logger);
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

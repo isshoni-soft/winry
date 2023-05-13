@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
@@ -21,17 +22,17 @@ public class OnMainProcessor implements IWinryAnnotationProcessor<OnMain> {
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public OnMainProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
 
         LOGGER = context.getLoggerFactory().createLogger("OnMainProcessor");
     }
 
     @Override
     public void transformMethod(IAnnotatedMethod method, IWrapperGenerator generator, OnMain annotation) {
-        IWinryAsyncManager asyncManager = this.context.getAsyncManager();
+        IWinryAsyncManager asyncManager = this.context.get().getAsyncManager();
 
         LOGGER.debug("Applying transformation to: " + method.getDisplay());
 
@@ -67,7 +68,7 @@ public class OnMainProcessor implements IWinryAnnotationProcessor<OnMain> {
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

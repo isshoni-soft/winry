@@ -1,7 +1,8 @@
 package tv.isshoni.winry.api.context;
 
-// TODO: IWinryContext getContext() -> Constant<IWinryContext> getContext()
+import tv.isshoni.araragi.data.Constant;
+
 public interface IContextual {
 
-    IWinryContext getContext();
+    Constant<IWinryContext> getContext();
 }

@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.annotation.processor.type;
 
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
@@ -20,17 +21,17 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
 
     private static AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public BootstrapClassProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         LOGGER = context.getLoggerFactory().createLogger(this.getClass());
     }
 
     @Override
     public void onDiscovery(Class<Annotation> clazz) {
         LOGGER.info("Performing bootstrap discovery for: " + clazz);
-        IWinryAnnotationManager annotationManager = this.context.getAnnotationManager();
+        IWinryAnnotationManager annotationManager = this.context.get().getAnnotationManager();
         IAnnotationDiscoverer discoverer = annotationManager.getAnnotationDiscoverer();
 
         List<Class<?>> found = Streams.to(discoverer.findWithAnnotations(clazz))
@@ -86,15 +87,15 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
             }
 
             try {
-                this.context.addSingleton(c);
+                this.context.get().addSingleton(c);
             } catch (Throwable e) {
-                this.context.getExceptionManager().toss(e);
+                this.context.get().getExceptionManager().toss(e);
             }
         });
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

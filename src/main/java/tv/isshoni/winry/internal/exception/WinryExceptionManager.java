@@ -7,6 +7,7 @@ import tv.isshoni.araragi.data.collection.map.SubMap;
 import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.reflect.JStack;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
@@ -60,17 +61,17 @@ public class WinryExceptionManager implements IExceptionManager {
 
         this.logger.debug("Tossing exception: " + throwable);
 
-        getGlobalHandlersFor((Class<Throwable>) throwable.getClass()).stream()
-                .map(this::newOrSingleton)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(h -> h.handle(throwable));
+        try {
+            recover(throwable, JStack.getParentMethod());
+        } catch (NoSuchMethodException e) {
+            runGlobals(throwable);
+        }
     }
 
     @Override
     public void recover(Throwable throwable, Method context) {
         if (context == null || !this.methodHandlers.containsKey(context)) {
-            recover(throwable);
+            runGlobals(throwable);
             return;
         }
 
@@ -100,13 +101,17 @@ public class WinryExceptionManager implements IExceptionManager {
             }
         }
 
-        recover(throwable);
+        try {
+            recover(throwable, JStack.getParentMethod());
+        } catch (NoSuchMethodException e) {
+            runGlobals(throwable);
+        }
     }
 
     @Override
     public <T extends Throwable> void toss(T throwable, Method context) {
         if (context == null || !this.methodHandlers.containsKey(context)) {
-            toss(throwable);
+            runGlobals(throwable);
             return;
         }
 
@@ -247,5 +252,13 @@ public class WinryExceptionManager implements IExceptionManager {
     @Override
     public Constant<IWinryContext> getContext() {
         return this.context;
+    }
+
+    private void runGlobals(Throwable throwable) {
+        getGlobalHandlersFor((Class<Throwable>) throwable.getClass()).stream()
+                .map(this::newOrSingleton)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(h -> h.handle(throwable));
     }
 }

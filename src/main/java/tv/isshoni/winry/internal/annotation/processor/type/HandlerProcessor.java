@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.type;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
@@ -12,10 +13,10 @@ public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public HandlerProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         this.LOGGER = context.getLoggerFactory().createLogger(this.getClass());
     }
 
@@ -30,11 +31,11 @@ public class HandlerProcessor implements IWinryAnnotationProcessor<Handler> {
         }
 
         LOGGER.info("Discovered global exception handler: " + classMeta.getDisplay() + " -- " + annotation.value().getName());
-        this.context.getExceptionManager().registerGlobal((Class<? extends IExceptionHandler<?>>) classMeta.getElement());
+        this.context.get().getExceptionManager().registerGlobal((Class<? extends IExceptionHandler<?>>) classMeta.getElement());
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
@@ -14,10 +15,10 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public ProfileProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         LOGGER = context.getLoggerFactory().createLogger("Profiling");
     }
 
@@ -34,7 +35,7 @@ public class ProfileProcessor implements IWinryAnnotationProcessor<Profile> {
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

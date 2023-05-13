@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.parameter.Context;
@@ -11,22 +12,22 @@ public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public ListenerProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
 
-        LOGGER = this.context.getLoggerFactory().createLogger("ListenerProcessor");
+        LOGGER = this.context.get().getLoggerFactory().createLogger("ListenerProcessor");
     }
 
     @Override
     public void executeMethod(IAnnotatedMethod method, Object target, Listener annotation) {
         LOGGER.debug("Register listener for: " + annotation.value().getName() + " - " + method.getDisplay());
-        this.context.getEventBus().registerListener(method, target, annotation);
+        this.context.get().getEventBus().registerListener(method, target, annotation);
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }

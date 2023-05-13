@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
@@ -12,17 +13,17 @@ public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<Exce
 
     private final AraragiLogger LOGGER;
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     public ExceptionHandlerProcessor(@Context IWinryContext context) {
-        this.context = context;
+        this.context = new Constant<>(context);
         this.LOGGER = context.getLoggerFactory().createLogger(this.getClass());
     }
 
     @Override
     public void executeMethod(IAnnotatedMethod method, Object target, ExceptionHandler annotation) {
         LOGGER.debug("Register ExceptionHandler for: " + annotation.value().getName() + " - " + method.getDisplay());
-        this.context.getExceptionManager().registerMethod(method.getElement(), annotation);
+        this.context.get().getExceptionManager().registerMethod(method.getElement(), annotation);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ExceptionHandlerProcessor implements IWinryAnnotationProcessor<Exce
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }
