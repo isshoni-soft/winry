@@ -30,5 +30,5 @@ public @interface Bootstrap {
 
     boolean disableDefaultPackage() default false;
 
-    boolean disableForkMain() default false;
+    boolean noFork() default false;
 }

@@ -30,11 +30,15 @@ public interface IWinryContext {
 
     void registerExecutable(IExecutable... executable);
 
+    void backload();
+
     void suppressShutdown();
 
     void shutdown();
 
     Instant getCreated();
+
+    IBootstrapContext getBootstrapContext();
 
     IBootstrapper getBootstrapper();
 

@@ -1,11 +1,13 @@
 package tv.isshoni.winry.internal;
 
+import tv.isshoni.araragi.functional.ObjHelpers;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.IExecutable;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
@@ -25,7 +27,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -61,6 +62,8 @@ public class WinryContext implements IWinryContext {
 
     private final IBootstrapper bootstrapper;
 
+    private final IBootstrapContext bootstrapContext;
+
     private final IWinryAnnotationManager annotationManager;
 
     private final ILoggerFactory loggerFactory;
@@ -84,6 +87,7 @@ public class WinryContext implements IWinryContext {
         this.created = Instant.now();
         this.bootstrap = builder.bootstrap;
         this.bootstrapper = builder.bootstrapper;
+        this.bootstrapContext = builder.bootstrapContext;
         this.annotationManager = builder.annotationManager;
         this.loggerFactory = builder.loggerFactory;
         this.asyncManager = builder.asyncManager;
@@ -95,6 +99,7 @@ public class WinryContext implements IWinryContext {
         this.logger = this.loggerFactory.createLogger("WinryContext [" + this.id + "]");
 
         registerToContext(this.bootstrapper);
+        registerToContext(this.bootstrapContext);
         registerToContext(this.annotationManager);
         registerToContext(this.loggerFactory);
         registerToContext(this.bootstrap);
@@ -155,12 +160,18 @@ public class WinryContext implements IWinryContext {
     public void registerExecutable(IExecutable executable) {
         this.executables.add(executable);
 
-        this.logger.debug("Executable: Registering: " + executable.getDisplay());
+        this.logger.debug("Registering Executable: " + executable.getDisplay());
     }
 
     @Override
     public void registerExecutable(IExecutable... executable) {
         Streams.to(executable).forEach(this::registerExecutable);
+    }
+
+    @Override
+    public void backload() {
+        logger.info("Backloading ...");
+        // TODO: Implement me
     }
 
     @Override
@@ -184,6 +195,11 @@ public class WinryContext implements IWinryContext {
     @Override
     public Instant getCreated() {
         return this.created;
+    }
+
+    @Override
+    public IBootstrapContext getBootstrapContext() {
+        return this.bootstrapContext;
     }
 
     @Override
@@ -266,6 +282,7 @@ public class WinryContext implements IWinryContext {
     public static class Builder {
         private Bootstrap bootstrap;
         private IBootstrapper bootstrapper;
+        private IBootstrapContext bootstrapContext;
         private IWinryAnnotationManager annotationManager;
         private ILoggerFactory loggerFactory;
         private IMetaManager metaManager;
@@ -275,6 +292,11 @@ public class WinryContext implements IWinryContext {
         private IInstanceManager instanceManager;
 
         private Builder() { }
+
+        public Builder bootstrapContext(IBootstrapContext bootstrapContext) {
+            this.bootstrapContext = bootstrapContext;
+            return this;
+        }
 
         public Builder instanceManager(IInstanceManager instanceManager) {
             this.instanceManager = instanceManager;
@@ -312,10 +334,9 @@ public class WinryContext implements IWinryContext {
         }
 
         public IWinryContext build() {
-            if (Objects.isNull(this.bootstrap) || Objects.isNull(this.bootstrapper) || Objects.isNull(this.eventBus) ||
-                Objects.isNull(this.asyncManager) || Objects.isNull(this.annotationManager) ||
-                Objects.isNull(this.loggerFactory) || Objects.isNull(this.instanceManager) ||
-                Objects.isNull(this.exceptionManager) || Objects.isNull(this.metaManager)) {
+            if (ObjHelpers.isOneNull(this.bootstrap, this.bootstrapper, this.eventBus, this.asyncManager,
+                    this.annotationManager, this.loggerFactory, this.instanceManager, this.exceptionManager,
+                    this.metaManager, this.bootstrapContext)) {
                 throw new IllegalStateException("Cannot build without all managers present!");
             }
 

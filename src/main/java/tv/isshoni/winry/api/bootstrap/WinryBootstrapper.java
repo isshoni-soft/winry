@@ -5,7 +5,11 @@ import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.context.IBootstrapContext;
+import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.event.WinryEventBus;
@@ -13,12 +17,8 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.meta.InstanceManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.meta.IAnnotatedClass;
-import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,8 @@ public class WinryBootstrapper implements IBootstrapper {
 
     private Class<?> bootstrapped;
 
-    public WinryBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
+    public WinryBootstrapper(Bootstrap bootstrap, IBootstrapContext bootstrapContext) {
+        IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
@@ -107,7 +108,7 @@ public class WinryBootstrapper implements IBootstrapper {
 
         LOGGER.debug("${dashes%50} Initial Run Order ${dashes%50}");
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
-        LOGGER.debug("${dashes%50}${dashes%19}${dashes%50}");
+        LOGGER.debug("${dashes%50}-${dashes%17}-${dashes%50}");
 
         execute(run, new LinkedList<>());
     }
@@ -130,9 +131,8 @@ public class WinryBootstrapper implements IBootstrapper {
             executable.execute();
             executed.add(executable);
 
-            // TODO: Check for change in executable in list.
             if (prevExecs.size() != this.context.getExecutables().size() ||
-                    !new HashSet<>(this.context.getExecutables()).containsAll(prevExecs)) {
+                    !Streams.to(this.context.getExecutables()).matches(prevExecs, Object::equals)) {
                 LOGGER.info("----------> Detected new executable registration, preforming hotswap...");
                 broken = true;
                 break;

@@ -14,7 +14,7 @@ public class TestExceptionHandler implements IExceptionHandler<TestException> {
     private boolean hasRun = false;
 
     public TestExceptionHandler(@Context IWinryContext context) {
-        this.logger = context.getLoggerFactory().createLogger(this.getClass());
+        this.logger = context.getLoggerFactory().createLogger("TestExceptionHandler");
     }
 
     @Override

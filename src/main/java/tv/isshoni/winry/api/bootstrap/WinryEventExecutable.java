@@ -69,4 +69,9 @@ public class WinryEventExecutable implements IExecutable {
 
         return other.context.equals(this.context) && other.eventClass.equals(this.eventClass) && other.weight == this.weight;
     }
+
+    @Override
+    public int hashCode() {
+        return this.context.hashCode() + this.eventClass.hashCode() + this.weight;
+    }
 }

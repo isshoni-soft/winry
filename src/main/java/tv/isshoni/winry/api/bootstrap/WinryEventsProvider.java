@@ -13,10 +13,10 @@ public class WinryEventsProvider implements IExecutableProvider {
 
     @Override
     public List<IExecutable> provideExecutables(IWinryContext context) {
-        context.getEventBus().registerExecutable(context, WinryPreInitEvent.class, 500000);
-        context.getEventBus().registerExecutable(context, WinryInitEvent.class, 90000);
-        context.getEventBus().registerExecutable(context, WinryPostInitEvent.class, 50000);
-        context.getEventBus().registerExecutable(context, WinryShutdownEvent.class, Integer.MIN_VALUE);
+        context.getEventBus().provideExecutable(context, WinryPreInitEvent.class);
+        context.getEventBus().provideExecutable(context, WinryInitEvent.class);
+        context.getEventBus().provideExecutable(context, WinryPostInitEvent.class);
+        context.getEventBus().provideExecutable(context, WinryShutdownEvent.class);
 
         return null;
     }

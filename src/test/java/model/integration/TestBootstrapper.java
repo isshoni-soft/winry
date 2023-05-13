@@ -2,7 +2,7 @@ package model.integration;
 
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.context.IBootstrapContext;
 
 import java.util.Map;
 
@@ -10,10 +10,17 @@ public class TestBootstrapper extends WinryBootstrapper {
 
     private boolean run;
 
-    public TestBootstrapper(Bootstrap bootstrap, IWinryAsyncManager asyncManager) {
-        super(bootstrap, asyncManager);
+    private final IBootstrapContext bootstrapContext;
 
+    public TestBootstrapper(Bootstrap bootstrap, IBootstrapContext bootstrapContext) {
+        super(bootstrap, bootstrapContext);
+
+        this.bootstrapContext = bootstrapContext;
         this.run = false;
+    }
+
+    public IBootstrapContext getBootstrapContext() {
+        return this.bootstrapContext;
     }
 
     public boolean hasRun() {

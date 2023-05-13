@@ -19,7 +19,8 @@ public class TestIntegration {
     public static Object[][] testClasses() {
         return new Object[][] {
                 { TestBootstrappedClass.class },
-                { TestInjectedObject.class }
+                { TestObjectFactory.class },
+                { TestBackload.class }
         };
     }
 

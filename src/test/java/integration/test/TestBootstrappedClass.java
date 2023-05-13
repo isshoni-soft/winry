@@ -121,10 +121,12 @@ public class TestBootstrappedClass {
 
     @Listener(WinryShutdownEvent.class)
     public void lastRun(@Inject("Second") TestInjectedClass secondInjectedClass) {
+        LOGGER.info("Starting lastRun...");
         assertEquals(3, this.injectedClass.getNumCalled());
         assertEquals(1, secondInjectedClass.getNumCalled());
 
         try {
+            LOGGER.info("Starting async future methods...");
             Future<Integer> future = this.injectedClass.asyncFutureMethod();
 
             Thread.sleep(10);

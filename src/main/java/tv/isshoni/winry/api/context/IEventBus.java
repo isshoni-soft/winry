@@ -23,9 +23,9 @@ public interface IEventBus {
 
     <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException;
 
-    void registerExecutable(IWinryContext context, Class<?> clazz);
+    void provideExecutable(IWinryContext context, Class<?> clazz);
 
-    void registerExecutable(IWinryContext context, Class<?> clazz, int weight);
+    void provideExecutable(IWinryContext context, Class<?> clazz, int weight);
 
     <T> void registerListener(Consumer<T> handler, Class<T> type, int weight);
 

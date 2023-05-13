@@ -4,7 +4,9 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.BootstrapContext;
 import tv.isshoni.winry.internal.async.WinryAsyncManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 
@@ -30,14 +32,14 @@ public class Winry {
 
         IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap.name());
 
-        if (bootstrap.disableForkMain()) {
-            return bootstrapInThread(clazz, asyncManager, start, bootstrap, provided);
+        if (bootstrap.noFork()) {
+            return bootstrapInThread(clazz, asyncManager, start, bootstrap, false, provided);
         }
 
-        return asyncManager.forkMain(() -> bootstrapInThread(clazz, asyncManager, start, bootstrap, provided));
+        return asyncManager.forkMain(() -> bootstrapInThread(clazz, asyncManager, start, bootstrap, true, provided));
     }
 
-    public static IWinryContext bootstrapInThread(Class<?> clazz, IWinryAsyncManager asyncManager, Instant start, Bootstrap bootstrap, Object... provided) {
+    public static IWinryContext bootstrapInThread(Class<?> clazz, IWinryAsyncManager asyncManager, Instant start, Bootstrap bootstrap, boolean forked, Object... provided) {
         AraragiLogger LOGGER = AraragiLogger.create("Winry", bootstrap.defaultLevel());
 
         LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
@@ -47,10 +49,12 @@ public class Winry {
             LOGGER.debug("${dashes%50} Instantiating Bootstrapper ${dashes%50}");
             Class<?> bootstrapperClass = bootstrap.bootstrapper();
 
-            if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class, IWinryAsyncManager.class)) {
-                bootstrapper = bootstrap.bootstrapper().getConstructor(Bootstrap.class, IWinryAsyncManager.class)
-                        .newInstance(bootstrap, asyncManager);
-                LOGGER.debug("Using @Bootstrap, IWinryAsyncManager constructor...");
+            if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class, IBootstrapContext.class)) {
+                bootstrapper = bootstrap.bootstrapper().getConstructor(Bootstrap.class, IBootstrapContext.class)
+                        .newInstance(bootstrap, BootstrapContext.builder()
+                                .asyncManager(asyncManager)
+                                .forked(forked).build());
+                LOGGER.debug("Using @Bootstrap, IBootstrapContext constructor...");
             } else if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class)) {
                 bootstrapper = bootstrap.bootstrapper().getConstructor(Bootstrap.class)
                         .newInstance(bootstrap);

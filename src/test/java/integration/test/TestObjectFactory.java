@@ -12,10 +12,10 @@ import tv.isshoni.winry.api.service.ObjectFactory;
 
 import static org.junit.Assert.assertNotNull;
 
-@Bootstrap(name = "Test Injected Objects",
+@Bootstrap(name = "Test ObjectFactory",
            bootstrapper = TestBootstrapper.class,
            defaultLevel = Level.DEBUG)
-public class TestInjectedObject {
+public class TestObjectFactory {
 
     @Inject private TestCaseService testService;
 

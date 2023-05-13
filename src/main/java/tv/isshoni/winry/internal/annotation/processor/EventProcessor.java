@@ -25,7 +25,7 @@ public class EventProcessor implements IWinryAdvancedAnnotationProcessor<Event, 
             return;
         }
 
-        this.context.get().getEventBus().registerExecutable(this.context.get(), classMeta.getElement(), annotation.weight());
+        this.context.get().getEventBus().provideExecutable(this.context.get(), classMeta.getElement(), annotation.weight());
     }
 
     @Override

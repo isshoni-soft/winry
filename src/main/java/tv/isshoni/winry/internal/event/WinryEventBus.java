@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.event;
 
+import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
 import tv.isshoni.araragi.logging.AraragiLogger;
@@ -8,26 +9,28 @@ import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.context.IEventBus;
+import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
-import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
-import tv.isshoni.winry.api.context.IEventBus;
-import tv.isshoni.winry.internal.model.event.IEventHandler;
-import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
+import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
+import tv.isshoni.winry.internal.model.event.IEventHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class WinryEventBus implements IEventBus {
 
@@ -35,12 +38,12 @@ public class WinryEventBus implements IEventBus {
 
     private final IWinryAnnotationManager annotationManager;
 
-    private final AraragiLogger LOGGER;
+    private final AraragiLogger logger;
 
     public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
                          IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
         this.annotationManager = annotationManager;
-        this.LOGGER = loggerFactory.createLogger("EventBus");
+        this.logger = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
 
         registerListener(event -> asyncManager.shutdown(), WinryShutdownEvent.class, Integer.MIN_VALUE);
@@ -80,7 +83,7 @@ public class WinryEventBus implements IEventBus {
             throw new IllegalArgumentException("Event must have a name!");
         }
 
-        this.LOGGER.debug("Firing event: " + eventMeta.value());
+        this.logger.debug("Firing event: " + eventMeta.value());
         List<IEventHandler<Object>> handlers = getHandlersFor(event);
         Set<IEventHandler<Object>> await = new HashSet<>();
 
@@ -147,22 +150,26 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
-    public void registerExecutable(IWinryContext context, Class<?> clazz) {
+    public void provideExecutable(IWinryContext context, Class<?> clazz) {
         Event event = findAnnotation(clazz);
+        Map<String, Supplier<String>> logParams = Maps.ofPairs(Pair.of("name", clazz::getSimpleName));
 
         if (event == null) {
+            this.logger.error("Cannot find @Event for: ${name}", logParams);
             return;
         }
 
         if (!event.executable()) {
+            this.logger.error("@Event: ${name} is not executable!", logParams);
             return;
         }
 
-        registerExecutable(context, clazz, event.weight());
+        this.logger.debug("Providing executable event: ${name}", logParams);
+        provideExecutable(context, clazz, event.weight());
     }
 
     @Override
-    public void registerExecutable(IWinryContext context, Class<?> clazz, int weight) {
+    public void provideExecutable(IWinryContext context, Class<?> clazz, int weight) {
         context.registerExecutable(new WinryEventExecutable(clazz, weight, context));
     }
 

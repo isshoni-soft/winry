@@ -169,7 +169,7 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
         }
 
         return other.getElement().equals(this.element) && other.isTransformed() == this.isTransformed()
-                && other.getTransform().equals(this.transformed);
+                && (this.getTransform() == null ? this.getTransform() == other.getTransform() : this.getTransform().equals(other.getTransform()));
     }
 
     @Override

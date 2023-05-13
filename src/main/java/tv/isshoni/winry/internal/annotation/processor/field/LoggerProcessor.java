@@ -11,6 +11,8 @@ import tv.isshoni.winry.api.meta.IAnnotatedField;
 
 import java.lang.reflect.Field;
 
+// Cool idea, use stackwalker to auto-build loggers for parameter injected loggers.
+// Also allow empty string field-level annotations to detect from class & use class name (original class name)
 public class LoggerProcessor implements IWinryAnnotationProcessor<Logger> {
 
     private final AraragiLogger LOGGER;
