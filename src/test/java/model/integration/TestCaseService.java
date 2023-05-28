@@ -2,10 +2,10 @@ package model.integration;
 
 import tv.isshoni.winry.api.annotation.Injected;
 
-import junit.framework.TestCase;
-
 @Injected
 public class TestCaseService {
+
+    private String failureMessage;
 
     private boolean hasRun;
 
@@ -13,11 +13,15 @@ public class TestCaseService {
         this.hasRun = true;
     }
 
+    public void fail(String message) {
+        this.failureMessage = message;
+    }
+
     public boolean hasRun() {
         return this.hasRun;
     }
 
-    public void fail(String message) {
-        TestCase.fail(message);
+    public String getFailureMessage() {
+        return this.failureMessage;
     }
 }

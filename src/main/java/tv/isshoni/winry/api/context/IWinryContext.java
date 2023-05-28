@@ -3,7 +3,7 @@ package tv.isshoni.winry.api.context;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.api.bootstrap.IExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
@@ -30,7 +30,7 @@ public interface IWinryContext {
 
     void registerExecutable(IExecutable... executable);
 
-    void backload();
+    void backload() throws InterruptedException;
 
     void suppressShutdown();
 

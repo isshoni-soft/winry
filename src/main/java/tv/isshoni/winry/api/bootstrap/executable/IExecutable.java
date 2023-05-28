@@ -1,4 +1,4 @@
-package tv.isshoni.winry.api.bootstrap;
+package tv.isshoni.winry.api.bootstrap.executable;
 
 import tv.isshoni.winry.internal.model.meta.IWeighted;
 

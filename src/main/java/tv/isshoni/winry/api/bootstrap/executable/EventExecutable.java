@@ -1,9 +1,9 @@
-package tv.isshoni.winry.api.bootstrap;
+package tv.isshoni.winry.api.bootstrap.executable;
 
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.exception.EventExecutionException;
 
-public class WinryEventExecutable implements IExecutable {
+public class EventExecutable implements IExecutable {
 
     private final int weight;
 
@@ -13,13 +13,13 @@ public class WinryEventExecutable implements IExecutable {
 
     private final IWinryContext context;
 
-    public WinryEventExecutable(Class<?> eventClass, int weight, IWinryContext context) {
+    public EventExecutable(Class<?> eventClass, int weight, IWinryContext context) {
         this.eventClass = eventClass;
         this.weight = weight;
         this.context = context;
     }
 
-    public WinryEventExecutable(Object event, int weight, IWinryContext context) {
+    public EventExecutable(Object event, int weight, IWinryContext context) {
         this.event = event;
         this.weight = weight;
         this.context = context;
@@ -63,7 +63,7 @@ public class WinryEventExecutable implements IExecutable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof WinryEventExecutable other)) {
+        if (!(obj instanceof EventExecutable other)) {
             return false;
         }
 

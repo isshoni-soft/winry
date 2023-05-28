@@ -18,7 +18,7 @@ public class TestIntegration {
     @Parameterized.Parameters
     public static Object[][] testClasses() {
         return new Object[][] {
-                { TestBootstrappedClass.class },
+                { TestMonolith.class },
                 { TestObjectFactory.class },
                 { TestBackload.class }
         };
@@ -43,6 +43,10 @@ public class TestIntegration {
 
         if (!service.hasRun()) {
             fail("No bootstrapped methods were executed!");
+        }
+
+        if (service.getFailureMessage() != null) {
+            fail(service.getFailureMessage());
         }
 
         WinryContext.getContextFor(service).ifPresentOrElse(context -> {

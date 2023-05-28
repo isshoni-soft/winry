@@ -1,5 +1,6 @@
 package tv.isshoni.winry.api.bootstrap;
 
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.event.WinryPostInitEvent;

@@ -34,6 +34,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+// TODO: Replace test monolith with specific targeted tests for more precise failure reporting.
+@Deprecated
 @Bootstrap(
         name = "Winry Testing",
         bootstrapper = TestBootstrapper.class,
@@ -42,7 +44,7 @@ import static org.junit.Assert.fail;
                 manualLoad = { TestInjectedClass.class }
         ),
         defaultLevel = Level.DEBUG)
-public class TestBootstrappedClass {
+public class TestMonolith {
 
     @Logger("TestBootstrappedClass") private static AraragiLogger LOGGER;
 

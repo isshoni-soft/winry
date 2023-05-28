@@ -8,7 +8,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.EventExecutable;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
@@ -170,7 +170,7 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public void provideExecutable(IWinryContext context, Class<?> clazz, int weight) {
-        context.registerExecutable(new WinryEventExecutable(clazz, weight, context));
+        context.registerExecutable(new EventExecutable(clazz, weight, context));
     }
 
     @Override

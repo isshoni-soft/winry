@@ -5,8 +5,8 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.api.bootstrap.IExecutable;
-import tv.isshoni.winry.api.bootstrap.WinryEventExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.EventExecutable;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
@@ -169,16 +169,16 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
-    public void backload() {
-        logger.info("Backloading ...");
-        // TODO: Implement me
+    public void backload() throws InterruptedException {
+        this.logger.info("Backloading ...");
+        this.bootstrapper.backload();
     }
 
     @Override
     public void suppressShutdown() {
         this.executables.removeAll(Streams.to(this.executables)
-                .filter(e -> e instanceof WinryEventExecutable)
-                .cast(WinryEventExecutable.class)
+                .filter(e -> e instanceof EventExecutable)
+                .cast(EventExecutable.class)
                 .filter(e -> e.getEventClass().equals(WinryShutdownEvent.class))
                 .toList());
     }

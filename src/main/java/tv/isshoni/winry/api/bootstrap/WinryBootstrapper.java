@@ -1,10 +1,13 @@
 package tv.isshoni.winry.api.bootstrap;
 
+import tv.isshoni.araragi.concurrent.collection.ConcurrentLinkedList;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.bootstrap.executable.BackloadExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -31,11 +34,17 @@ public class WinryBootstrapper implements IBootstrapper {
 
     private final IWinryContext context;
 
+    private final List<IExecutable> executed;
+
     private Map<Class<?>, Object> provided;
 
     private Class<?> bootstrapped;
 
+    private IExecutable currentExecutable;
+
     public WinryBootstrapper(Bootstrap bootstrap, IBootstrapContext bootstrapContext) {
+        this.executed = new ConcurrentLinkedList<>();
+
         IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
         LoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
@@ -44,6 +53,7 @@ public class WinryBootstrapper implements IBootstrapper {
         MetaManager metaManager = new MetaManager(loggerFactory);
 
         this.context = WinryContext.builder(bootstrap, this)
+                .bootstrapContext(bootstrapContext)
                 .exceptionManager(exceptionManager)
                 .metaManager(metaManager)
                 .instanceManager(new InstanceManager(loggerFactory, metaManager))
@@ -110,7 +120,16 @@ public class WinryBootstrapper implements IBootstrapper {
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
         LOGGER.debug("${dashes%50}-${dashes%17}-${dashes%50}");
 
-        execute(run, new LinkedList<>());
+        execute(run, this.executed);
+    }
+
+    @Override
+    public void backload() throws InterruptedException {
+        LOGGER.debug("Triggering backload ...");
+
+        this.context.registerExecutable(new BackloadExecutable(this.currentExecutable));
+
+        // TODO: do a forked execution until backload executable is found.
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {
@@ -126,6 +145,7 @@ public class WinryBootstrapper implements IBootstrapper {
 
         boolean broken = false;
         for (IExecutable executable : executables) {
+            this.currentExecutable = executable;
             List<IExecutable> prevExecs = new LinkedList<>(this.context.getExecutables());
             LOGGER.info("Executing: " + executable.getDisplay());
             executable.execute();
@@ -140,13 +160,17 @@ public class WinryBootstrapper implements IBootstrapper {
         }
 
         if (broken) {
-            executables = fuseExecutables(compileRunList());
-            List<IExecutable> newList = Streams.to(executables)
-                    .filterInverted(executed::contains)
-                    .toList();
-            LOGGER.info("----------> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
-            execute(newList, executed);
+            forkExecution(executed);
         }
+    }
+
+    private void forkExecution(List<IExecutable> executed) {
+        List<IExecutable> executables = fuseExecutables(compileRunList());
+        List<IExecutable> newList = Streams.to(executables)
+                .filterInverted(executed::contains)
+                .toList();
+        LOGGER.info("----------> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
+        execute(newList, executed);
     }
 
     @Override

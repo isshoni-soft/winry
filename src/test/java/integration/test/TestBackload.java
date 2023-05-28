@@ -23,8 +23,10 @@ public class TestBackload {
     @Inject
     private TestCaseService testService;
 
+    private volatile boolean backlogged = false;
+
     @Listener(WinryInitEvent.class)
-    public void onInit(@Inject IEventBus eventBus, @Inject IWinryContext context) {
+    public void onInit(@Inject IEventBus eventBus, @Inject IWinryContext context, @Inject TestCaseService testService) throws InterruptedException {
         this.testService.run();
 
         this.logger.info("Registering executable...");
@@ -32,5 +34,17 @@ public class TestBackload {
 
         this.logger.info("Triggering backload...");
         context.backload();
+        Thread.sleep(1000);
+        this.logger.info("Checking backlogged...");
+        if (!this.backlogged) {
+            this.logger.error("Backlogged is false!");
+            testService.fail("Backlog has not happened!");
+        }
+    }
+
+    @Listener(TestExecutableEvent.class)
+    public void onTestEvent() {
+        this.logger.info("This must happen first now.");
+        this.backlogged = true;
     }
 }

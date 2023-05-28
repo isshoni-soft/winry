@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.async;
 
-import tv.isshoni.araragi.async.AsyncManager;
+import tv.isshoni.araragi.concurrent.async.AsyncManager;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
@@ -24,11 +24,13 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private final AtomicBoolean running;
 
+    private CompletableFuture<?> mainFuture;
+
     public WinryAsyncManager(String contextName) {
         super();
 
-        this.running = new AtomicBoolean(false);
         this.contextName = contextName;
+        this.running = new AtomicBoolean(false);
         this.calls = new ConcurrentLinkedQueue<>();
     }
 
@@ -85,18 +87,18 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
     @Override
     public <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException {
         this.running.set(true);
-        CompletableFuture<T> future = new CompletableFuture<>();
+        this.mainFuture = new CompletableFuture<T>();
         AtomicReference<Throwable> error = new AtomicReference<>(null);
         this.newMain = new Thread(() -> {
             try {
-                future.complete(cont.call());
-            } catch (Exception e) {
+                ((CompletableFuture<T>) mainFuture).complete(cont.call());
+            } catch (Throwable e) {
                 error.set(e);
-                future.completeExceptionally(e);
+                mainFuture.completeExceptionally(e);
             }
 
             synchronized (this.calls) {
-                this.calls.notify();
+                this.calls.notifyAll();
             }
         }, "WinryManagerThread-" + this.contextName);
         this.newMain.start();
@@ -112,12 +114,12 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                 }
             }
 
-            if (future.isDone() && future.isCompletedExceptionally() && error.get() != null) {
+            if (mainFuture.isDone() && mainFuture.isCompletedExceptionally() && error.get() != null) {
                 throw Exceptions.rethrow(error.get());
             }
         }
 
-        return future.get();
+        return ((CompletableFuture<T>) mainFuture).get();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.method;
 
-import tv.isshoni.araragi.async.IAsyncManager;
+import tv.isshoni.araragi.concurrent.async.IAsyncManager;
 import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;

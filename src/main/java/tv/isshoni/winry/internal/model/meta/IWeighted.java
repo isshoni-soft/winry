@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.model.meta;
 
-import tv.isshoni.winry.api.bootstrap.IExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 
 public interface IWeighted extends Comparable<IExecutable> {
 
