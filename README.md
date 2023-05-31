@@ -3,7 +3,8 @@ Isshoni Winry Bootstrapper
 The bootstrapper designed and developed for Isshoni, with the intention to support a wide-range
 of Java applications to facilitate innovation while not wasting time on boilerplate design requirements.
 
-**This tool is currently in beta until the version number says 1.0.0, please expect bugs/instability when using it.**
+**This tool was written with and requires Java 17**  
+**This tool is currently in beta until the version number says 1.0.0, please expect bugs/instability when using it.**  
 
 Table of Contents
 -----------------
@@ -15,7 +16,6 @@ Table of Contents
 
 Basic Usage
 -----------
-Requires JDK 17  
 Usage varies slightly depending on if you intend to create a library that utilizes Winry, or an application
 using Winry. A library will need to use an `@Loader` annotation, while an application must use an `@Bootstrap`
 annotation on the "main class" of the program.  
