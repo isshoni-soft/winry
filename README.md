@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'tv.isshoni:winry:0.60.0'
+    implementation 'tv.isshoni:winry:0.60.1'
 }
 ```
 
