@@ -16,6 +16,14 @@ Table of Contents
 Basic Usage
 -----------
 Requires JDK 17  
+Usage varies slightly depending on if you intend to create a library that utilizes Winry, or an application
+using Winry. A library will need to use an `@Loader` annotation, while an application must use an `@Bootstrap`
+annotation on the "main class" of the program.  
+
+A `@Bootstrap` annotation contains various program metadata and needs a nested `@Loader` annotation to determine load
+targets, while a library only needs to declare its load targets, because it's not an application and therefore doesn't
+need further configuration. When using a library, make sure that you just load the class with the `@Loader` annotation
+on it, the library should take care of the rest of the discovery and registration necessary.  
 TODO
 
 [Return to Table of Contents](#table-of-contents)
