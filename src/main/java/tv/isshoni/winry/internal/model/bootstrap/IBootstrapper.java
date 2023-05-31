@@ -15,7 +15,7 @@ public interface IBootstrapper {
 
     void bootstrap(Bootstrap bootstrap, Class<?> clazz, Map<Class<?>, Object> provided);
 
-    void backload() throws InterruptedException;
+    void backload();
 
     List<IExecutable> compileRunList();
 

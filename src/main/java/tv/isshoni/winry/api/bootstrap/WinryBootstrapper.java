@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -97,7 +98,7 @@ public class WinryBootstrapper implements IBootstrapper {
             this.context.getInstanceManager().registerSingletonInstance(classMeta, o);
         });
 
-        LOGGER.debug("${dashes%50} Bootstrapping ${dashes%50}");
+        LOGGER.debug("${a:dashes%50} Bootstrapping ${a:dashes%50}");
         this.context.getAnnotationManager().initialize();
         LOGGER.debug("Finished class discovery and instantiation...");
 
@@ -116,20 +117,24 @@ public class WinryBootstrapper implements IBootstrapper {
 
         run = fuseExecutables(run);
 
-        LOGGER.debug("${dashes%50} Initial Run Order ${dashes%50}");
+        LOGGER.debug("${a:dashes%50} Initial Run Order ${a:dashes%50}");
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
-        LOGGER.debug("${dashes%50}-${dashes%17}-${dashes%50}");
+        LOGGER.debug("${a:dashes%50}-${a:dashes%17}-${a:dashes%50}");
 
+        LOGGER.info("${a:dashes%50} Execution ${a:dashes%50}");
         execute(run, this.executed);
     }
 
     @Override
-    public void backload() throws InterruptedException {
+    public void backload() {
         LOGGER.debug("Triggering backload ...");
 
-        this.context.registerExecutable(new BackloadExecutable(this.currentExecutable));
+        BackloadExecutable executable = new BackloadExecutable(this.currentExecutable);
 
-        // TODO: do a forked execution until backload executable is found.
+        this.context.registerExecutable(executable);
+
+        this.executed.add(this.currentExecutable);
+        forkExecution(this.executed, executable);
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {
@@ -141,36 +146,47 @@ public class WinryBootstrapper implements IBootstrapper {
     }
 
     public void execute(List<IExecutable> executables, List<IExecutable> executed) {
-        LOGGER.info("${dashes%50} Execution ${dashes%50}");
+        execute(executables, executed, null);
+    }
 
+    public void execute(List<IExecutable> executables, List<IExecutable> executed, BackloadExecutable backloaded) {
         boolean broken = false;
         for (IExecutable executable : executables) {
             this.currentExecutable = executable;
             List<IExecutable> prevExecs = new LinkedList<>(this.context.getExecutables());
+            List<IExecutable> prevExeced = new ConcurrentLinkedList<>(this.executed);
             LOGGER.info("Executing: " + executable.getDisplay());
-            executable.execute();
-            executed.add(executable);
+
+            if (executable instanceof BackloadExecutable && Objects.nonNull(backloaded)) {
+                executed.add(executable);
+                LOGGER.info("-> Terminating backload fork.");
+                return;
+            } else {
+                executable.execute();
+                executed.add(executable);
+            }
 
             if (prevExecs.size() != this.context.getExecutables().size() ||
+                    !Streams.to(this.executed).matches(prevExeced, Object::equals) ||
                     !Streams.to(this.context.getExecutables()).matches(prevExecs, Object::equals)) {
-                LOGGER.info("----------> Detected new executable registration, preforming hotswap...");
+                LOGGER.info("-> Detected registered executable changed, forking executable.");
                 broken = true;
                 break;
             }
         }
 
         if (broken) {
-            forkExecution(executed);
+            forkExecution(executed, backloaded);
         }
     }
 
-    private void forkExecution(List<IExecutable> executed) {
+    private void forkExecution(List<IExecutable> executed, BackloadExecutable backloaded) {
         List<IExecutable> executables = fuseExecutables(compileRunList());
         List<IExecutable> newList = Streams.to(executables)
                 .filterInverted(executed::contains)
                 .toList();
-        LOGGER.info("----------> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
-        execute(newList, executed);
+        LOGGER.info("-> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
+        execute(newList, executed, backloaded);
     }
 
     @Override

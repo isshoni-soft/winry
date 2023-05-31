@@ -46,7 +46,7 @@ public class Winry {
 
         IBootstrapper bootstrapper;
         try {
-            LOGGER.debug("${dashes%50} Instantiating Bootstrapper ${dashes%50}");
+            LOGGER.debug("${a:dashes%50} Instantiating Bootstrapper ${a:dashes%50}");
             Class<?> bootstrapperClass = bootstrap.bootstrapper();
 
             if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class, IBootstrapContext.class)) {
@@ -72,7 +72,7 @@ public class Winry {
         LOGGER.debug("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
-        LOGGER.info("${dashes%50} Execution Complete (" + Duration.between(start, Instant.now()).toMillis() + " ms) ${dashes%50}");
+        LOGGER.info("${a:dashes%50} Execution Complete (" + Duration.between(start, Instant.now()).toMillis() + " ms) ${a:dashes%50}");
 
         return bootstrapper.getContext();
     }

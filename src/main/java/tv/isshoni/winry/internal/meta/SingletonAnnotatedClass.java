@@ -4,6 +4,8 @@ import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.meta.bytebuddy.WinryWrapperGenerator;
 import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 
+import java.util.Objects;
+
 public class SingletonAnnotatedClass extends AnnotatedClass implements ISingletonAnnotatedClass {
 
     protected final Object instance;
@@ -36,5 +38,19 @@ public class SingletonAnnotatedClass extends AnnotatedClass implements ISingleto
     public void execute() {
         getContext().getAnnotationManager().toExecutionList(this.getElement(), this.getAnnotations())
                 .forEach(this::execute);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SingletonAnnotatedClass other)) {
+            return false;
+        }
+
+        return Objects.equals(this.instance, other.instance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.instance);
     }
 }
