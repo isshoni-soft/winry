@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.parameter;
 
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.parameter.New;
@@ -11,12 +12,12 @@ import java.lang.reflect.Parameter;
 
 public class NewProcessor implements IWinryAdvancedAnnotationProcessor<New, Object> {
 
-    private final IWinryContext context;
+    private final Constant<IWinryContext> context;
 
     private final ObjectFactory objectFactory;
 
     public NewProcessor(@Context IWinryContext context, @Inject ObjectFactory objectFactory) {
-        this.context = context;
+        this.context = new Constant<>(context);
         this.objectFactory = objectFactory;
     }
 
@@ -26,7 +27,7 @@ public class NewProcessor implements IWinryAdvancedAnnotationProcessor<New, Obje
     }
 
     @Override
-    public IWinryContext getContext() {
+    public Constant<IWinryContext> getContext() {
         return this.context;
     }
 }
