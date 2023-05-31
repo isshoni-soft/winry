@@ -97,6 +97,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         }
 
         for (Map.Entry<IAnnotatedMethod, IMethodTransformer> entry : this.methodTransformers.entrySet()) {
+            logger.debug("Executing method transformer: ${0}", entry.getKey().getElement().getName());
             builder = executeTransformation(builder, entry.getKey(), entry.getValue());
         }
 
@@ -133,6 +134,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
 
     @Override
     public void delegateMethod(IAnnotatedMethod method, int weight, IMethodDelegator delegator) {
+        logger.debug("Registered delegation for method: " + method.getElement().getName());
         WinryMethodDelegator methodDelegator = new WinryMethodDelegator(this.context);
 
         if (this.methodTransformers.containsKey(method)) {

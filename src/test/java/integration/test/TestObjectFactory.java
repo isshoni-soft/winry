@@ -2,7 +2,7 @@ package integration.test;
 
 import model.InjectedObject;
 import model.integration.TestBootstrapper;
-import model.integration.TestCaseService;
+import model.integration.TestService;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Inject;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
            defaultLevel = Level.DEBUG)
 public class TestObjectFactory {
 
-    @Inject private TestCaseService testService;
+    @Inject private TestService testService;
 
     @Listener(WinryInitEvent.class)
     public void onInit(@Inject ObjectFactory factory) {

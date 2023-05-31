@@ -32,8 +32,4 @@ public class AsyncService {
     public boolean isRunning() {
         return this.context.getAsyncManager().isRunning();
     }
-
-    public Runnable nextMainCall() {
-        return this.context.getAsyncManager().nextMainCall();
-    }
 }

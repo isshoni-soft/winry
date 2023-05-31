@@ -3,7 +3,7 @@ package model.integration;
 import tv.isshoni.winry.api.annotation.Injected;
 
 @Injected
-public class TestCaseService {
+public class TestService {
 
     private String failureMessage;
 

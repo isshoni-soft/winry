@@ -1,7 +1,7 @@
 package integration.test;
 
 import model.integration.TestBootstrapper;
-import model.integration.TestCaseService;
+import model.integration.TestService;
 import model.integration.event.TestExecutableEvent;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.level.Level;
@@ -20,13 +20,12 @@ public class TestBackload {
 
     @Logger("TestBackload") private AraragiLogger logger;
 
-    @Inject
-    private TestCaseService testService;
+    @Inject private TestService testService;
 
     private volatile boolean backlogged = false;
 
     @Listener(WinryInitEvent.class)
-    public void onInit(@Inject IEventBus eventBus, @Inject IWinryContext context, @Inject TestCaseService testService) throws InterruptedException {
+    public void onInit(@Inject IEventBus eventBus, @Inject IWinryContext context, @Inject TestService testService) throws InterruptedException {
         this.testService.run();
 
         this.logger.info("Registering executable...");

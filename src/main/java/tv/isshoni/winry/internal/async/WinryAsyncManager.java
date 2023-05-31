@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.async;
 import tv.isshoni.araragi.concurrent.async.AsyncManager;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
 import java.util.Queue;
@@ -26,12 +27,27 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private CompletableFuture<?> mainFuture;
 
-    public WinryAsyncManager(String contextName) {
+    private final AraragiLogger logger;
+
+    public WinryAsyncManager(Bootstrap bootstrap) {
         super();
 
-        this.contextName = contextName;
+        this.contextName = bootstrap.name();
+        this.logger = AraragiLogger.create("AsyncManager-" + this.contextName, bootstrap.defaultLevel());
         this.running = new AtomicBoolean(false);
         this.calls = new ConcurrentLinkedQueue<>();
+    }
+
+    @Override
+    public <T> Future<T> submit(Callable<T> callable) {
+        this.logger.debug("Submitting call to executor...");
+        return super.submit(callable);
+    }
+
+    @Override
+    public Future<?> submit(Runnable runnable) {
+        this.logger.debug("Submitting call to executor...");
+        return super.submit(runnable);
     }
 
     @Override
@@ -41,6 +57,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public <T> Future<T> submitToMain(Callable<T> callable) {
+        this.logger.debug("Submitting call to main thread...");
         if (isMainThread()) {
             try {
                 return CompletableFuture.completedFuture(callable.call());
@@ -67,6 +84,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public Future<?> submitToMain(Runnable runnable) {
+        this.logger.debug("Submitting call to main thread...");
         if (isMainThread()) {
             runnable.run();
             return CompletableFuture.completedFuture("");
@@ -86,6 +104,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     @Override
     public <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException {
+        this.logger.info("Forking thread with id: ${0}", Thread.currentThread().getId());
         this.running.set(true);
         this.mainFuture = new CompletableFuture<T>();
         AtomicReference<Throwable> error = new AtomicReference<>(null);

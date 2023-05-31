@@ -1,6 +1,7 @@
 package tv.isshoni.winry.api;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
@@ -23,14 +24,15 @@ public class Winry {
         Instant start = Instant.now();
 
         Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
+        Level logLevel = bootstrap.defaultLevel();
 
         if (bootstrap == null) {
-            AraragiLogger LOGGER = AraragiLogger.create("Winry");
+            AraragiLogger LOGGER = AraragiLogger.create("Winry", logLevel);
             LOGGER.error(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return null;
         }
 
-        IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap.name());
+        IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap);
 
         if (bootstrap.noFork()) {
             return bootstrapInThread(clazz, asyncManager, start, bootstrap, false, provided);

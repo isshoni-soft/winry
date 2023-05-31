@@ -115,13 +115,16 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
     @Override
     public void transform(IWrapperGenerator generator) {
         logger.debug(this.getDisplay() + " -- Transforming...");
+        this.regenerate(null);
         IAnnotatedClass.super.transform(generator);
 
+        logger.debug("-> Transforming: ${0} methods...", getMethods().size());
         Streams.to(getMethods())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)
                 .forEach(t -> t.transform(generator));
 
+        logger.debug("-> Transforming: ${0} fields...", getFields().size());
         Streams.to(getFields())
                 .filter(m -> ITransformable.class.isAssignableFrom(m.getClass()))
                 .cast(ITransformable.class)

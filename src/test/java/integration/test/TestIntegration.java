@@ -1,7 +1,7 @@
 package integration.test;
 
 import model.integration.TestBootstrapper;
-import model.integration.TestCaseService;
+import model.integration.TestService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -18,9 +18,10 @@ public class TestIntegration {
     @Parameterized.Parameters
     public static Object[][] testClasses() {
         return new Object[][] {
-                { TestMonolith.class },
                 { TestObjectFactory.class },
-                { TestBackload.class }
+                { TestBackload.class },
+                { TestOnMain.class },
+                { TestAsync.class }
         };
     }
 
@@ -32,7 +33,7 @@ public class TestIntegration {
 
     @Test
     public void testBootstrapper() {
-        TestCaseService service = new TestCaseService();
+        TestService service = new TestService();
 
         try {
             Winry.bootstrap(this.bootstrapped, service);
