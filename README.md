@@ -21,8 +21,8 @@ using Winry. A library will need to use an `@Loader` annotation, while an applic
 annotation on the "main class" of the program.  
 
 A `@Bootstrap` annotation contains various program metadata and needs a nested `@Loader` annotation to determine load
-targets, while a library only needs to declare its load targets, because it's not an application and therefore doesn't
-need further configuration. When using a library, make sure that you just load the class with the `@Loader` annotation
+targets. A library only needs to declare its load targets, because it's not an application and therefore doesn't
+need the `@Bootstrap`. When using a library, make sure that you just load the class with the `@Loader` annotation
 on it, the library should take care of the rest of the discovery and registration necessary.  
 TODO
 
