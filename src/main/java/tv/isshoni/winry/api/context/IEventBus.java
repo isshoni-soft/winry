@@ -17,11 +17,15 @@ public interface IEventBus {
 
     <T> T fire(T event) throws EventExecutionException;
 
-    <T> T fire(T event, boolean block) throws EventExecutionException;
-
     <T> T fire(Class<T> clazz) throws EventExecutionException;
 
-    <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException;
+    void fireAsync(Object event) throws EventExecutionException;
+
+    void fireAsync(Object event, boolean block) throws EventExecutionException;
+
+    void fireAsync(Class<?> event) throws EventExecutionException;
+
+    void fireAsync(Class<?> event, boolean block) throws EventExecutionException;
 
     void provideExecutable(IWinryContext context, Class<?> clazz);
 

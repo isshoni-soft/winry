@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.event;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
+import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Event;
@@ -38,11 +39,14 @@ public class WinryEventBus implements IEventBus {
 
     private final IWinryAnnotationManager annotationManager;
 
+    private final IWinryAsyncManager asyncManager;
+
     private final AraragiLogger logger;
 
     public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
                          IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
         this.annotationManager = annotationManager;
+        this.asyncManager = asyncManager;
         this.logger = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
 
@@ -68,11 +72,6 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public <T> T fire(T event) throws EventExecutionException {
-        return this.fire(event, true);
-    }
-
-    @Override
-    public <T> T fire(T event, boolean block) throws EventExecutionException {
         Event eventMeta = findAnnotation(event);
 
         if (eventMeta == null) {
@@ -85,7 +84,6 @@ public class WinryEventBus implements IEventBus {
 
         this.logger.debug("Firing event: " + eventMeta.value());
         List<IEventHandler<Object>> handlers = getHandlersFor(event);
-        Set<IEventHandler<Object>> await = new HashSet<>();
 
         for (IEventHandler<Object> h : handlers) {
             if (event instanceof ICancellable) {
@@ -95,22 +93,80 @@ public class WinryEventBus implements IEventBus {
             }
 
             try {
-                synchronized (await) {
-                    await.add(h);
-                }
-
                 h.execute(event);
             } catch (Throwable throwable) {
                 throw new EventExecutionException(event.getClass(), throwable);
-            } finally {
-                synchronized (await) {
-                    await.remove(h);
+            }
+        }
 
-                    if (await.isEmpty()) {
-                        await.notify();
-                    }
+        return event;
+    }
+
+    @Override
+    public <T> T fire(Class<T> clazz) throws EventExecutionException {
+        T event;
+        try {
+            event = this.annotationManager.construct(clazz);
+        } catch (Throwable throwable) {
+            throw new EventExecutionException(clazz, throwable);
+        }
+
+        try {
+            return fire(event);
+        } catch (EventExecutionException e) {
+            throw e;
+        } catch (Throwable throwable) {
+            throw new EventExecutionException(clazz, throwable);
+        }
+    }
+
+    @Override
+    public void fireAsync(Object event) throws EventExecutionException {
+        fireAsync(event, false);
+    }
+
+    @Override
+    public void fireAsync(Object event, boolean block) throws EventExecutionException {
+        Event eventMeta = findAnnotation(event);
+
+        if (eventMeta == null) {
+            throw new IllegalArgumentException("Event type missing Event annotation!");
+        }
+
+        if (eventMeta.value().isBlank()) {
+            throw new IllegalArgumentException("Event must have a name!");
+        }
+
+        this.logger.debug("Firing async event: " + eventMeta.value());
+        List<IEventHandler<Object>> handlers = getHandlersFor(event);
+        Set<IEventHandler<Object>> await = new HashSet<>();
+
+        for (IEventHandler<Object> h : handlers) {
+            if (event instanceof ICancellable) {
+                if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
+                    continue;
                 }
             }
+
+            this.asyncManager.submit(() -> {
+                try {
+                    synchronized (await) {
+                        await.add(h);
+                    }
+
+                    h.execute(event);
+                } catch (Throwable throwable) {
+                    throw Exceptions.rethrow(throwable);
+                } finally {
+                    synchronized (await) {
+                        await.remove(h);
+
+                        if (await.isEmpty()) {
+                            await.notify();
+                        }
+                    }
+                }
+            });
         }
 
         if (block && !await.isEmpty()) {
@@ -122,18 +178,16 @@ public class WinryEventBus implements IEventBus {
                 }
             }
         }
-
-        return event;
     }
 
     @Override
-    public <T> T fire(Class<T> clazz) throws EventExecutionException {
-        return this.fire(clazz, true);
+    public void fireAsync(Class<?> event) throws EventExecutionException {
+        fireAsync(event, false);
     }
 
     @Override
-    public <T> T fire(Class<T> clazz, boolean block) throws EventExecutionException {
-        T event;
+    public void fireAsync(Class<?> clazz, boolean block) throws EventExecutionException {
+        Object event;
         try {
             event = this.annotationManager.construct(clazz);
         } catch (Throwable throwable) {
@@ -141,7 +195,7 @@ public class WinryEventBus implements IEventBus {
         }
 
         try {
-            return fire(event, block);
+            fireAsync(event);
         } catch (EventExecutionException e) {
             throw e;
         } catch (Throwable throwable) {
