@@ -35,7 +35,6 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
 
-        this.basicSuppliers.put(IWinryContext.class, this.context::get);
         this.basicSuppliers.put(ILoggerFactory.class, this.context.get()::getLoggerFactory);
         this.basicSuppliers.put(IExceptionManager.class, this.context.get()::getExceptionManager);
         this.basicSuppliers.put(IEventBus.class, this.context.get()::getEventBus);

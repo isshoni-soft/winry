@@ -64,6 +64,8 @@ public class WinryBootstrapper implements IBootstrapper {
                 .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, annotationManager.getExceptionManager()))
                 .build();
 
+        annotationManager.setAnnotationDiscovererContext(this.context);
+
         exceptionManager.getContext().set(this.context);
 
         LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");

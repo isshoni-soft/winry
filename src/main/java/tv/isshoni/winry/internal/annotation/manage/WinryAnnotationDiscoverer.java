@@ -2,12 +2,15 @@ package tv.isshoni.winry.internal.annotation.manage;
 
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
+import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
-import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
+import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.annotation.processor.parameter.WinryContextProcessor;
+import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -20,10 +23,17 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
 
     private final AraragiLogger LOGGER;
 
+    private final Constant<IWinryContext> context;
+
     public WinryAnnotationDiscoverer(IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         super(annotationManager);
 
+        this.context = new Constant<>();
         this.LOGGER = loggerFactory.createLogger(this.getClass());
+    }
+
+    public void setContext(IWinryContext context) {
+        this.context.set(context);
     }
 
     @Override
@@ -33,6 +43,8 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
 
     @Override
     public IAnnotationDiscoverer discoverAnnotations() {
+        annotationManager.discoverProcessor(new WinryContextProcessor(this.context.get()));
+
         Set<Class<? extends Annotation>> all = findProcessorAnnotations();
         List<Class<? extends Annotation>> ordered = new LinkedList<>(all);
         ordered.sort((first, second) -> {
@@ -65,11 +77,5 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
         }
 
         return result;
-    }
-
-    @Override
-    public void safelyRecursiveDiscover(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> all, Stack<Class<? extends Annotation>> levels) {
-        LOGGER.debug("Safely recursively discovering: " + clazz);
-        super.safelyRecursiveDiscover(clazz, all, levels);
     }
 }

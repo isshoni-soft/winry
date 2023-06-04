@@ -9,6 +9,7 @@ import tv.isshoni.winry.api.meta.IAnnotatedField;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnnotatedField {
@@ -55,6 +56,16 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
     @Override
     public IAnnotatedClass getDeclaringClass() {
         return this.parent;
+    }
+
+    @Override
+    public Class<?> getType() {
+        return this.element.getType();
+    }
+
+    @Override
+    public Type getGenericType() {
+        return this.element.getGenericType();
     }
 
     @Override

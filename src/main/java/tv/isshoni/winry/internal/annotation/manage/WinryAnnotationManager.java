@@ -36,7 +36,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
     private final IBootstrapper bootstrapper;
 
-    private final IAnnotationDiscoverer annotationDiscoverer;
+    private final WinryAnnotationDiscoverer annotationDiscoverer;
 
     private final IExceptionManager exceptionManager;
 
@@ -52,6 +52,10 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
 
         register(IWinryAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAnnotationProcessor(annotation, element, (IWinryAnnotationProcessor<Annotation>) processor, manager));
         register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor, manager));
+    }
+
+    public void setAnnotationDiscovererContext(IWinryContext context) {
+        this.annotationDiscoverer.setContext(context);
     }
 
     @Override
