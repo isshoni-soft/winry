@@ -50,24 +50,24 @@ public class InstanceManager implements IInstanceManager {
     }
 
     @Override
-    public <T> T getSingletonInjection(Class<T> key) {
+    public <T> T getSingletonInjection(Class<? extends T> key) {
         return (T) this.singletons.get(this.metaManager.getSingletonMeta(key));
     }
 
     @Override
-    public <T> T getKeyedInstance(String key, Class<T> type) {
+    public <T> T getKeyedInstance(String key, Class<? extends T> type) {
         return (T) Optional.ofNullable(this.keyedInstances.get(key))
                 .map(m -> m.get(this.metaManager.getSingletonMeta(type)))
                 .orElse(null);
     }
 
     @Override
-    public <T> Optional<T> hasSingletonFor(Class<T> key) {
+    public <T> Optional<T> hasSingletonFor(Class<? extends T> key) {
         return Optional.ofNullable(this.getSingletonInjection(key));
     }
 
     @Override
-    public <T> Optional<T> hasKeyedInstanceFor(String key, Class<T> type) {
+    public <T> Optional<T> hasKeyedInstanceFor(String key, Class<? extends T> type) {
         return Optional.ofNullable(this.getKeyedInstance(key, type));
     }
 }

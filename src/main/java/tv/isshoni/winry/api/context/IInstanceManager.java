@@ -10,11 +10,11 @@ public interface IInstanceManager {
 
     void registerKeyedInstance(IAnnotatedClass classMeta, String key, Object object);
 
-    <T> T getSingletonInjection(Class<T> key);
+    <T> T getSingletonInjection(Class<? extends T> key);
 
-    <T> T getKeyedInstance(String key, Class<T> type);
+    <T> T getKeyedInstance(String key, Class<? extends T> type);
 
-    <T> Optional<T> hasSingletonFor(Class<T> key);
+    <T> Optional<T> hasSingletonFor(Class<? extends T> key);
 
-    <T> Optional<T> hasKeyedInstanceFor(String key, Class<T> type);
+    <T> Optional<T> hasKeyedInstanceFor(String key, Class<? extends T> type);
 }
