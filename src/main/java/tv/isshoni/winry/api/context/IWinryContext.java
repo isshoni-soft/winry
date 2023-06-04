@@ -7,7 +7,6 @@ import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.meta.IInstanceManager;
 
 import java.time.Instant;
 import java.util.List;

@@ -8,6 +8,7 @@ import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.IInstanceManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
@@ -38,6 +39,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         this.basicSuppliers.put(ILoggerFactory.class, this.context.get()::getLoggerFactory);
         this.basicSuppliers.put(IExceptionManager.class, this.context.get()::getExceptionManager);
         this.basicSuppliers.put(IEventBus.class, this.context.get()::getEventBus);
+        this.basicSuppliers.put(IInstanceManager.class, this.context.get()::getInstanceManager);
     }
 
     @Override

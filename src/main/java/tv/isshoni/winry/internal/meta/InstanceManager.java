@@ -6,7 +6,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
-import tv.isshoni.winry.internal.model.meta.IInstanceManager;
+import tv.isshoni.winry.api.context.IInstanceManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,14 +50,24 @@ public class InstanceManager implements IInstanceManager {
     }
 
     @Override
-    public Object getSingletonInjection(Class<?> key) {
-        return this.singletons.get(this.metaManager.getSingletonMeta(key));
+    public <T> T getSingletonInjection(Class<T> key) {
+        return (T) this.singletons.get(this.metaManager.getSingletonMeta(key));
     }
 
     @Override
-    public Object getKeyedInstance(String key, Class<?> type) {
-        return Optional.ofNullable(this.keyedInstances.get(key))
+    public <T> T getKeyedInstance(String key, Class<T> type) {
+        return (T) Optional.ofNullable(this.keyedInstances.get(key))
                 .map(m -> m.get(this.metaManager.getSingletonMeta(type)))
                 .orElse(null);
+    }
+
+    @Override
+    public <T> Optional<T> hasSingletonFor(Class<T> key) {
+        return Optional.ofNullable(this.getSingletonInjection(key));
+    }
+
+    @Override
+    public <T> Optional<T> hasKeyedInstanceFor(String key, Class<T> type) {
+        return Optional.ofNullable(this.getKeyedInstance(key, type));
     }
 }

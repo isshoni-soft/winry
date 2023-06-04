@@ -19,7 +19,7 @@ import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.internal.model.meta.IInstanceManager;
+import tv.isshoni.winry.api.context.IInstanceManager;
 
 import java.time.Instant;
 import java.util.Collection;
