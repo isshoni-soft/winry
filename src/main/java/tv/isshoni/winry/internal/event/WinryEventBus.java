@@ -3,7 +3,6 @@ package tv.isshoni.winry.internal.event;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
-import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Event;
@@ -41,12 +40,15 @@ public class WinryEventBus implements IEventBus {
 
     private final IWinryAsyncManager asyncManager;
 
+    private final IExceptionManager exceptionManager;
+
     private final AraragiLogger logger;
 
     public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
                          IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
         this.annotationManager = annotationManager;
         this.asyncManager = asyncManager;
+        this.exceptionManager = exceptionManager;
         this.logger = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
 
@@ -94,8 +96,9 @@ public class WinryEventBus implements IEventBus {
 
             try {
                 h.execute(event);
-            } catch (Throwable throwable) {
-                throw new EventExecutionException(event.getClass(), throwable);
+            }  catch (Throwable throwable) {
+                this.exceptionManager.toss(throwable);
+                return null;
             }
         }
 
@@ -116,7 +119,8 @@ public class WinryEventBus implements IEventBus {
         } catch (EventExecutionException e) {
             throw e;
         } catch (Throwable throwable) {
-            throw new EventExecutionException(clazz, throwable);
+            this.exceptionManager.toss(throwable);
+            return null;
         }
     }
 
@@ -156,7 +160,7 @@ public class WinryEventBus implements IEventBus {
 
                     h.execute(event);
                 } catch (Throwable throwable) {
-                    throw Exceptions.rethrow(throwable);
+                    this.exceptionManager.toss(throwable);
                 } finally {
                     synchronized (await) {
                         await.remove(h);
@@ -191,7 +195,8 @@ public class WinryEventBus implements IEventBus {
         try {
             event = this.annotationManager.construct(clazz);
         } catch (Throwable throwable) {
-            throw new EventExecutionException(clazz, throwable);
+            this.exceptionManager.toss(throwable);
+            return;
         }
 
         try {
@@ -199,7 +204,7 @@ public class WinryEventBus implements IEventBus {
         } catch (EventExecutionException e) {
             throw e;
         } catch (Throwable throwable) {
-            throw new EventExecutionException(clazz, throwable);
+            this.exceptionManager.toss(throwable);
         }
     }
 

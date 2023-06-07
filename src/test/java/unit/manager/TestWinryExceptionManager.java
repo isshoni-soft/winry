@@ -88,4 +88,9 @@ public class TestWinryExceptionManager {
 
         verify(mockHandler).handle(any(RuntimeException.class));
     }
+
+    @Test(expected = RuntimeException.class)
+    public void testTossThrowExcept() {
+        this.exceptionManager.toss(new RuntimeException());
+    }
 }
