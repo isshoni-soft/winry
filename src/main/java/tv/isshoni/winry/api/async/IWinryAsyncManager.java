@@ -5,6 +5,7 @@ import tv.isshoni.araragi.concurrent.async.IAsyncManager;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public interface IWinryAsyncManager extends IAsyncManager {
 
@@ -16,7 +17,9 @@ public interface IWinryAsyncManager extends IAsyncManager {
 
     <T> T forkMain(Callable<T> cont) throws ExecutionException, InterruptedException;
 
-    Runnable nextMainCall();
+    Runnable nextMainCall() throws InterruptedException;
+
+    Runnable nextMainCall(long timeout, TimeUnit unit) throws InterruptedException;
 
     void shutdown();
 }

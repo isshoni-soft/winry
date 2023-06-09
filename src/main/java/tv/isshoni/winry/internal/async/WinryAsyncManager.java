@@ -6,12 +6,13 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -21,7 +22,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private Thread newMain;
 
-    private final Queue<Runnable> calls;
+    private final BlockingQueue<Runnable> calls;
 
     private final AtomicBoolean running;
 
@@ -35,7 +36,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
         this.contextName = bootstrap.name();
         this.logger = AraragiLogger.create("AsyncManager-" + this.contextName, bootstrap.defaultLevel());
         this.running = new AtomicBoolean(false);
-        this.calls = new ConcurrentLinkedQueue<>();
+        this.calls = new LinkedBlockingQueue<>();
     }
 
     @Override
@@ -76,7 +77,6 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                     throw Exceptions.rethrow(e);
                 }
             });
-            this.calls.notify();
         }
 
         return future;
@@ -96,7 +96,6 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                 runnable.run();
                 future.complete("");
             });
-            this.calls.notify();
         }
 
         return future;
@@ -115,22 +114,12 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
                 error.set(e);
                 mainFuture.completeExceptionally(e);
             }
-
-            synchronized (this.calls) {
-                this.calls.notifyAll();
-            }
         }, "WinryManagerThread-" + this.contextName);
         this.newMain.start();
 
         while (isRunning()) {
             if (!this.calls.isEmpty()) {
                 nextMainCall().run();
-            } else {
-                synchronized (this.calls) {
-                    try {
-                        this.calls.wait();
-                    } catch (InterruptedException ignored) { }
-                }
             }
 
             if (mainFuture.isDone() && mainFuture.isCompletedExceptionally() && error.get() != null) {
@@ -142,8 +131,13 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
     }
 
     @Override
-    public Runnable nextMainCall() {
-        return this.calls.poll();
+    public Runnable nextMainCall() throws InterruptedException {
+        return this.calls.take();
+    }
+
+    @Override
+    public Runnable nextMainCall(long timeout, TimeUnit unit) throws InterruptedException {
+        return this.calls.poll(timeout, unit);
     }
 
     @Override
