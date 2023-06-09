@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Processor(OnMainProcessor.class)
 @Weight(100000000)
 public @interface OnMain {
-    boolean block() default false;
+    boolean block() default true;
 }

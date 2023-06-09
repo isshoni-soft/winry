@@ -156,7 +156,6 @@ public class WinryBootstrapper implements IBootstrapper {
         for (IExecutable executable : executables) {
             this.currentExecutable = executable;
             List<IExecutable> prevExecs = new LinkedList<>(this.context.getExecutables());
-            List<IExecutable> prevExeced = new ConcurrentLinkedList<>(this.executed);
             LOGGER.info("Executing: " + executable.getDisplay());
 
             if (executable instanceof BackloadExecutable && Objects.nonNull(backloaded)) {
@@ -169,7 +168,6 @@ public class WinryBootstrapper implements IBootstrapper {
             }
 
             if (prevExecs.size() != this.context.getExecutables().size() ||
-                    !Streams.to(this.executed).matches(prevExeced, Object::equals) ||
                     !Streams.to(this.context.getExecutables()).matches(prevExecs, Object::equals)) {
                 LOGGER.info("-> Detected registered executable changed, forking executable.");
                 broken = true;
@@ -186,6 +184,7 @@ public class WinryBootstrapper implements IBootstrapper {
         List<IExecutable> executables = fuseExecutables(compileRunList());
         List<IExecutable> newList = Streams.to(executables)
                 .filterInverted(executed::contains)
+                .sorted()
                 .toList();
         LOGGER.info("-> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
         execute(newList, executed, backloaded);
