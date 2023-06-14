@@ -14,6 +14,7 @@ import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -89,8 +90,16 @@ public class TestWinryExceptionManager {
         verify(mockHandler).handle(any(RuntimeException.class));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testTossThrowExcept() {
-        this.exceptionManager.toss(new RuntimeException());
+        boolean success = false;
+
+        try {
+            this.exceptionManager.toss(new RuntimeException());
+        } catch (RuntimeException e) {
+            success = true;
+        }
+
+        assertTrue(success);
     }
 }

@@ -1,6 +1,5 @@
-package model.service;
+package model.integration.service;
 
-import model.integration.TestService;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.transformer.Async;
 

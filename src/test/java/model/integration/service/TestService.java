@@ -1,4 +1,4 @@
-package model.integration;
+package model.integration.service;
 
 import tv.isshoni.winry.api.annotation.Injected;
 

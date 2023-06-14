@@ -1,7 +1,7 @@
 package integration.test;
 
 import model.integration.TestBootstrapper;
-import model.integration.TestService;
+import model.integration.service.TestService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -21,7 +21,8 @@ public class TestIntegration {
                 { TestObjectFactory.class },
                 { TestBackload.class },
                 { TestOnMain.class },
-                { TestAsync.class }
+                { TestAsync.class },
+                { TestMultipleLoads.class }
         };
     }
 

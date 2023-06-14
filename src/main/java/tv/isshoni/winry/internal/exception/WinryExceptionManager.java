@@ -70,7 +70,7 @@ public class WinryExceptionManager implements IExceptionManager {
 
     @Override
     public void recover(Throwable throwable, Method context) {
-        if (context == null || !this.methodHandlers.containsKey(context)) {
+        if (context == null) {
             runGlobals(throwable);
             return;
         }
@@ -93,16 +93,8 @@ public class WinryExceptionManager implements IExceptionManager {
 
     @Override
     public <T extends Throwable> void toss(T throwable) {
-        if (!this.globalHandlers.containsKey(throwable.getClass())) {
-            if (throwable instanceof RuntimeException) {
-                throw (RuntimeException) throwable;
-            } else {
-                throw new UnhandledException(throwable);
-            }
-        }
-
         try {
-            recover(throwable, JStack.getParentMethod());
+            toss(throwable, JStack.getParentMethod());
         } catch (NoSuchMethodException e) {
             runGlobals(throwable);
         }
@@ -110,12 +102,13 @@ public class WinryExceptionManager implements IExceptionManager {
 
     @Override
     public <T extends Throwable> void toss(T throwable, Method context) {
-        if (context == null || !this.methodHandlers.containsKey(context)) {
+        if (context == null) {
             runGlobals(throwable);
             return;
         }
 
-        if (!this.methodHandlers.getOrDefault(context).containsKey(throwable.getClass()) && !this.globalHandlers.containsKey(throwable.getClass())) {
+        if (!this.methodHandlers.getOrDefault(context).containsKey(throwable.getClass())
+                && !this.globalHandlers.containsKey(throwable.getClass())) {
             if (throwable instanceof RuntimeException) {
                 throw (RuntimeException) throwable;
             } else {
