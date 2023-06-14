@@ -6,6 +6,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
+import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.IInstanceManager;
@@ -39,6 +40,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         this.basicSuppliers.put(IExceptionManager.class, this.context.get()::getExceptionManager);
         this.basicSuppliers.put(IEventBus.class, this.context.get()::getEventBus);
         this.basicSuppliers.put(IInstanceManager.class, this.context.get()::getInstanceManager);
+        this.basicSuppliers.put(IWinryAsyncManager.class, this.context.get()::getAsyncManager);
     }
 
     @Override
