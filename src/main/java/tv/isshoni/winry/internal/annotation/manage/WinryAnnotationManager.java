@@ -16,6 +16,7 @@ import tv.isshoni.winry.api.context.IExceptionManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
+import tv.isshoni.winry.internal.annotation.processor.parameter.WinryContextProcessor;
 import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.meta.bytebuddy.WinryWrapperGenerator;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
@@ -92,6 +93,7 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         this.annotationDiscoverer.withPackages(getAllLoadedPackages(this.bootstrap));
 
         LOGGER.debug("Performing annotation discovery...");
+        this.discoverProcessor(new WinryContextProcessor(this.annotationDiscoverer.getContext().get())); // TODO: remove techdebt, just move context up to annotation manager.
         this.annotationDiscoverer.discoverAnnotations();
 
         LOGGER.debug("Attaching requested processors...");

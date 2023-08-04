@@ -21,6 +21,7 @@ import tv.isshoni.winry.internal.meta.InstanceManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class WinryBootstrapper implements IBootstrapper {
         this.executed = new ConcurrentLinkedList<>();
 
         IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
-        LoggerFactory loggerFactory = new LoggerFactory();
+        LoggerFactory loggerFactory = new LoggerFactory(); // TODO: Logger overhaul focuses on making me highly modular.
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
         IExceptionManager exceptionManager = annotationManager.getExceptionManager();
@@ -121,7 +122,7 @@ public class WinryBootstrapper implements IBootstrapper {
 
         LOGGER.debug("${a:dashes%50} Initial Run Order ${a:dashes%50}");
         run.forEach(r -> LOGGER.debug(r.getDisplay()));
-        LOGGER.debug("${a:dashes%50}-${a:dashes%17}-${a:dashes%50}");
+        LOGGER.debug("${a:dashes%130}");
 
         LOGGER.info("${a:dashes%50} Execution ${a:dashes%50}");
         execute(run, this.executed);
@@ -137,6 +138,12 @@ public class WinryBootstrapper implements IBootstrapper {
 
         this.executed.add(this.currentExecutable);
         forkExecution(this.executed, executable);
+    }
+
+    @SafeVarargs
+    @Override
+    public final void reprocess(Class<? extends Annotation>... annotations) {
+        // TODO: Allow for precision reprocessing of the specific annotations listed.
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {

@@ -5,11 +5,12 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
-import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.bootstrap.executable.EventExecutable;
+import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.IInstanceManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
@@ -19,8 +20,8 @@ import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
-import tv.isshoni.winry.api.context.IInstanceManager;
 
+import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -172,6 +173,13 @@ public class WinryContext implements IWinryContext {
     public void backload() throws InterruptedException {
         this.logger.info("Backloading ...");
         this.bootstrapper.backload();
+    }
+
+    @SafeVarargs
+    @Override
+    public final void reprocess(Class<? extends Annotation>... annotations) {
+        this.logger.info("Reprocessing ${0} ...", Streams.to(annotations).map(Class::getName).toList().toString());
+        this.bootstrapper.reprocess(annotations);
     }
 
     @Override

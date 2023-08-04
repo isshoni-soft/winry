@@ -8,6 +8,7 @@ import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 
+import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public interface IWinryContext {
     void registerExecutable(IExecutable... executable);
 
     void backload() throws InterruptedException;
+
+    void reprocess(Class<? extends Annotation>... annotation);
 
     void suppressShutdown();
 

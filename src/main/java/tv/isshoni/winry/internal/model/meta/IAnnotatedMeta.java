@@ -15,6 +15,8 @@ public interface IAnnotatedMeta<E extends AnnotatedElement> extends IExecutable 
 
     void execute(IPreparedAnnotationProcessor preparedAnnotationProcessor, Object target);
 
+    boolean hasAnnotation(Class<? extends Annotation> annotation);
+
     Set<Annotation> getAnnotations();
 
     E getElement();

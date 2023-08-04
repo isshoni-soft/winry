@@ -1,6 +1,7 @@
 package tv.isshoni.winry.internal.meta;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
@@ -46,6 +47,11 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
                     + annotationManager.getConflictingAnnotations(this.annotations));
         }
         logger.debug(this.getElement() + " -- Found " + this.annotations.size() + " annotations!");
+    }
+
+    @Override
+    public boolean hasAnnotation(Class<? extends Annotation> annotation) {
+        return Streams.to(this.annotations).map(Annotation::annotationType).anyMatch(a -> a.equals(annotation));
     }
 
     @Override
