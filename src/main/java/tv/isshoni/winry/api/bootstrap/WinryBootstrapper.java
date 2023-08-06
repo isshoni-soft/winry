@@ -143,6 +143,8 @@ public class WinryBootstrapper implements IBootstrapper {
     @SafeVarargs
     @Override
     public final void reprocess(Class<? extends Annotation>... annotations) {
+        Streams.to(compileRunList())
+                .filter()
         // TODO: Allow for precision reprocessing of the specific annotations listed.
     }
 
