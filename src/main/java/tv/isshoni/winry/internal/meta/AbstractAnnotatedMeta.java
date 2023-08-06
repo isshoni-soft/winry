@@ -8,6 +8,7 @@ import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -50,8 +51,12 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
     }
 
     @Override
-    public boolean hasAnnotation(Class<? extends Annotation> annotation) {
-        return Streams.to(this.annotations).map(Annotation::annotationType).anyMatch(a -> a.equals(annotation));
+    public boolean hasAnnotations(Class<? extends Annotation>... annotation) {
+        List<Class<? extends Annotation>> annotations = Arrays.asList(annotation);
+
+        return Streams.to(this.annotations)
+                .map(Annotation::annotationType)
+                .anyMatch(annotations::contains);
     }
 
     @Override

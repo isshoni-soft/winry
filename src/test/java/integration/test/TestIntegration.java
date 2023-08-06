@@ -15,20 +15,21 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class TestIntegration {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{index} : {1}")
     public static Object[][] testClasses() {
         return new Object[][] {
-                { TestObjectFactory.class },
-                { TestBackload.class },
-                { TestOnMain.class },
-                { TestAsync.class },
-                { TestMultipleLoads.class }
+                { TestObjectFactory.class, "ObjectFactory" },
+                { TestBackload.class, "Backload" },
+                { TestOnMain.class, "OnMain" },
+                { TestAsync.class, "Async" },
+                { TestMultipleLoads.class, "MultipleLoads" },
+                { TestReprocess.class, "Reprocess" }
         };
     }
 
     private final Class<?> bootstrapped;
 
-    public TestIntegration(Class<?> bootstrapped) {
+    public TestIntegration(Class<?> bootstrapped, String testName) {
         this.bootstrapped = bootstrapped;
     }
 

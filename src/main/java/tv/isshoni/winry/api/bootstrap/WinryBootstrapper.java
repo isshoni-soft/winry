@@ -20,6 +20,7 @@ import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.meta.InstanceManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -143,8 +144,11 @@ public class WinryBootstrapper implements IBootstrapper {
     @SafeVarargs
     @Override
     public final void reprocess(Class<? extends Annotation>... annotations) {
-//        Streams.to(compileRunList())
-//                .filter()
+        Streams.to(this.executed)
+                .filter(c -> IAnnotatedMeta.class.isAssignableFrom(c.getClass()))
+                .map(c -> (IAnnotatedMeta) c)
+                .filter(m -> m.hasAnnotations(annotations))
+                .forEach(IExecutable::execute);
         // TODO: Allow for precision reprocessing of the specific annotations listed.
     }
 
