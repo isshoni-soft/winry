@@ -32,10 +32,6 @@ public class TestReprocess {
         context.reprocess(Reinject.class);
         assertEquals(1, num.intValue());
 
-        if (num != 1) {
-            service.fail("num is not equal to 1!");
-        }
-
         service.run();
     }
 }
