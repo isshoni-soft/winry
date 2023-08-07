@@ -5,6 +5,7 @@ import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -30,11 +31,11 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
 
     private final AraragiLogger logger;
 
-    public WinryAsyncManager(Bootstrap bootstrap) {
+    public WinryAsyncManager(Bootstrap bootstrap, ILoggerFactory loggerFactory) {
         super();
 
         this.contextName = bootstrap.name();
-        this.logger = AraragiLogger.create("AsyncManager-" + this.contextName, bootstrap.defaultLevel());
+        this.logger = loggerFactory.createLogger("AsyncManager-" + this.contextName);
         this.running = new AtomicBoolean(false);
         this.calls = new LinkedBlockingQueue<>();
     }

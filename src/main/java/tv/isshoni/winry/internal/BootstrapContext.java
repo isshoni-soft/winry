@@ -3,21 +3,29 @@ package tv.isshoni.winry.internal;
 import tv.isshoni.araragi.functional.ObjHelpers;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 
 public class BootstrapContext implements IBootstrapContext {
 
     private final IWinryAsyncManager asyncManager;
+    private final ILoggerFactory loggerFactory;
 
     private final boolean forked;
 
     private BootstrapContext(Builder builder) {
         this.asyncManager = builder.asyncManager;
+        this.loggerFactory = builder.loggerFactory;
         this.forked = builder.forked;
     }
 
     @Override
     public IWinryAsyncManager getAsyncManager() {
         return this.asyncManager;
+    }
+
+    @Override
+    public ILoggerFactory getLoggerFactory() {
+        return this.loggerFactory;
     }
 
     @Override
@@ -31,6 +39,7 @@ public class BootstrapContext implements IBootstrapContext {
 
     public static class Builder {
         private IWinryAsyncManager asyncManager;
+        private ILoggerFactory loggerFactory;
         private boolean forked;
 
         public Builder forked(boolean forked) {
@@ -43,8 +52,13 @@ public class BootstrapContext implements IBootstrapContext {
             return this;
         }
 
+        public Builder loggerFactory(ILoggerFactory loggerFactory) {
+            this.loggerFactory = loggerFactory;
+            return this;
+        }
+
         public BootstrapContext build() {
-            if (ObjHelpers.isOneNull(this.asyncManager, this.forked)) {
+            if (ObjHelpers.isOneNull(this.asyncManager, this.forked, this.loggerFactory)) {
                 throw new IllegalStateException("Cannot build without all properties present!");
             }
 

@@ -1,11 +1,11 @@
 package tv.isshoni.winry.api;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.BootstrapContext;
 import tv.isshoni.winry.internal.async.WinryAsyncManager;
@@ -24,27 +24,33 @@ public class Winry {
         Instant start = Instant.now();
 
         Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
-        Level logLevel = bootstrap.defaultLevel();
 
         if (bootstrap == null) {
-            AraragiLogger LOGGER = AraragiLogger.create("Winry", logLevel);
+            AraragiLogger LOGGER = AraragiLogger.create("Winry");
             LOGGER.error(clazz.getName() + " does not have a @Bootstrap annotation, unable to properly bootstrap class!");
             return null;
         }
 
-        IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap);
+        ILoggerFactory loggerFactory = ReflectionUtil.construct(bootstrap.loggerFactory());
+        loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap, loggerFactory);
+        IBootstrapContext bootstrapContext = BootstrapContext.builder()
+                .asyncManager(asyncManager)
+                .loggerFactory(loggerFactory)
+                .forked(!bootstrap.noFork()).build();
 
         if (bootstrap.noFork()) {
-            return bootstrapInThread(clazz, asyncManager, start, bootstrap, false, provided);
+            return bootstrapInThread(clazz, bootstrapContext, start, bootstrap, provided);
         }
 
-        return asyncManager.forkMain(() -> bootstrapInThread(clazz, asyncManager, start, bootstrap, true, provided));
+        return asyncManager.forkMain(() -> bootstrapInThread(clazz, bootstrapContext, start, bootstrap, provided));
     }
 
-    public static IWinryContext bootstrapInThread(Class<?> clazz, IWinryAsyncManager asyncManager, Instant start, Bootstrap bootstrap, boolean forked, Object... provided) {
-        AraragiLogger LOGGER = AraragiLogger.create("Winry", bootstrap.defaultLevel());
+    public static IWinryContext bootstrapInThread(Class<?> clazz, IBootstrapContext bootstrapContext, Instant start,
+                                                  Bootstrap bootstrap, Object... provided) {
+        AraragiLogger LOGGER = bootstrapContext.getLoggerFactory().createLogger("Winry");
 
-        LOGGER.info("Bootstrapping class " + clazz.getSimpleName() + " using bootstrapper " + bootstrap.bootstrapper().getSimpleName());
+        LOGGER.info("Bootstrapping class ${0} using bootstrapper ${1}", clazz.getSimpleName(), bootstrap.bootstrapper().getSimpleName());
 
         IBootstrapper bootstrapper;
         try {
@@ -52,21 +58,14 @@ public class Winry {
             Class<?> bootstrapperClass = bootstrap.bootstrapper();
 
             if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class, IBootstrapContext.class)) {
+                LOGGER.debug("Constructing new bootstrapper instance ...");
                 bootstrapper = bootstrap.bootstrapper().getConstructor(Bootstrap.class, IBootstrapContext.class)
-                        .newInstance(bootstrap, BootstrapContext.builder()
-                                .asyncManager(asyncManager)
-                                .forked(forked).build());
-                LOGGER.debug("Using @Bootstrap, IBootstrapContext constructor...");
-            } else if (ReflectionUtil.hasConstructor(bootstrapperClass, Bootstrap.class)) {
-                bootstrapper = bootstrap.bootstrapper().getConstructor(Bootstrap.class)
-                        .newInstance(bootstrap);
-                LOGGER.debug("Using @Bootstrap constructor...");
+                        .newInstance(bootstrap, bootstrapContext);
             } else {
-                bootstrapper = bootstrap.bootstrapper().getConstructor().newInstance();
-                LOGGER.debug("Using default constructor...");
+                throw new IllegalStateException("Bootstrapper constructors must accept IBootstrapContext!");
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOGGER.error("Unable to instantiate new instance of bootstrapper class: " + bootstrap.bootstrapper().getName());
+            LOGGER.error("Unable to instantiate new instance of bootstrapper class: ${0}", bootstrap.bootstrapper().getName());
             e.printStackTrace();
             return null;
         }
@@ -74,7 +73,7 @@ public class Winry {
         LOGGER.debug("Handing off to bootstrapper...");
         bootstrapper.bootstrap(bootstrap, clazz, Stream.of(provided).collect(Collectors.toMap(Object::getClass, o -> o)));
 
-        LOGGER.info("${a:dashes%50} Execution Complete (" + Duration.between(start, Instant.now()).toMillis() + " ms) ${a:dashes%50}");
+        LOGGER.info("${a:dashes%50} Execution Complete (${0} ms) ${a:dashes%50}", Duration.between(start, Instant.now()).toMillis());
 
         return bootstrapper.getContext();
     }

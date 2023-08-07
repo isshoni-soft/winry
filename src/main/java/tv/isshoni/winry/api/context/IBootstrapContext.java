@@ -6,5 +6,7 @@ public interface IBootstrapContext {
 
     IWinryAsyncManager getAsyncManager();
 
+    ILoggerFactory getLoggerFactory();
+
     boolean isForked();
 }

@@ -49,7 +49,7 @@ public class WinryBootstrapper implements IBootstrapper {
         this.executed = new ConcurrentLinkedList<>();
 
         IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
-        ILoggerFactory loggerFactory = ReflectionUtil.construct(bootstrap.loggerFactory());
+        ILoggerFactory loggerFactory = bootstrapContext.getLoggerFactory();
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
         IExceptionManager exceptionManager = annotationManager.getExceptionManager();
