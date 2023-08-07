@@ -10,13 +10,13 @@ import tv.isshoni.winry.api.bootstrap.executable.BackloadExecutable;
 import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.WinryContext;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.event.WinryEventBus;
-import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.meta.InstanceManager;
 import tv.isshoni.winry.internal.meta.MetaManager;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
@@ -49,7 +49,7 @@ public class WinryBootstrapper implements IBootstrapper {
         this.executed = new ConcurrentLinkedList<>();
 
         IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
-        LoggerFactory loggerFactory = new LoggerFactory(); // TODO: Logger overhaul focuses on making me highly modular.
+        ILoggerFactory loggerFactory = ReflectionUtil.construct(bootstrap.loggerFactory());
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
         IExceptionManager exceptionManager = annotationManager.getExceptionManager();
@@ -67,10 +67,9 @@ public class WinryBootstrapper implements IBootstrapper {
                 .build();
 
         annotationManager.setAnnotationDiscovererContext(this.context);
-
         exceptionManager.getContext().set(this.context);
 
-        LOGGER = this.context.getLoggerFactory().createLogger("SimpleBootstrapper");
+        LOGGER = this.context.getLoggerFactory().createLogger("WinryBootstrapper");
     }
 
     @Override
@@ -149,7 +148,6 @@ public class WinryBootstrapper implements IBootstrapper {
                 .map(c -> (IAnnotatedMeta) c)
                 .filter(m -> m.hasAnnotations(annotations))
                 .forEach(IExecutable::execute);
-        // TODO: Allow for precision reprocessing of the specific annotations listed.
     }
 
     public List<IExecutable> fuseExecutables(List<IExecutable> run) {

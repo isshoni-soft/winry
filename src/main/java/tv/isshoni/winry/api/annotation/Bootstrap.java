@@ -4,8 +4,10 @@ import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
+import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
+import tv.isshoni.winry.internal.logging.LoggerFactory;
+import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,6 +27,8 @@ public @interface Bootstrap {
     Class<? extends IBootstrapper> bootstrapper() default WinryBootstrapper.class;
 
     Level defaultLevel() default Level.ERROR;
+
+    Class<? extends ILoggerFactory> loggerFactory() default LoggerFactory.class;
 
     boolean disableDefaultProvider() default false;
 
