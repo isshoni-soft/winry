@@ -35,7 +35,16 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         IAnnotationDiscoverer discoverer = annotationManager.getAnnotationDiscoverer();
 
         List<Class<?>> found = Streams.to(discoverer.findWithAnnotations(clazz))
-                .filter(c -> Objects.nonNull(annotationManager.discoverConstructor(c)))
+                .peek(c -> LOGGER.debug("Found potential match: ${0}", c.getName()))
+                .filter(c -> {
+                    boolean result = Objects.nonNull(annotationManager.discoverConstructor(c, false));
+
+                    if (!result) {
+                        LOGGER.debug("Pruning match: ${0} -- cannot discover usable constructor!", c.getName());
+                    }
+
+                    return result;
+                })
                 .sorted((first, second) -> {
                     Set<Class<? extends Annotation>> firstAnno = annotationManager.getAllAnnotationsForConstruction(first);
                     Set<Class<? extends Annotation>> secondAnno = annotationManager.getAllAnnotationsForConstruction(second);
@@ -54,6 +63,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
                     }
 
                     if (secondDeps.contains(first) && firstDeps.contains(second)) {
+                        LOGGER.error("Circular dependency found; ${0} (${1}) - ${2} (${3})", first, firstDeps, second, secondDeps);
                         throw new IllegalStateException("Circular dependency found; " + first + " (" + firstDeps + ") - " + second + "(" + secondDeps + ")");
                     }
 

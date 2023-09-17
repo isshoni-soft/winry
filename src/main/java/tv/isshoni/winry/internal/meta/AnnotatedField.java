@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.meta;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
 import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
@@ -70,6 +71,10 @@ public class AnnotatedField extends AbstractAnnotatedMeta<Field> implements IAnn
 
     @Override
     public Object getDeclaringClassInstance() {
+        if (this.parentInstance == null && this.parent instanceof ISingletonAnnotatedClass singleton) {
+            return singleton.getInstance();
+        }
+
         return this.parentInstance;
     }
 
