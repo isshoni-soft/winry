@@ -54,11 +54,7 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implem
             return -1;
         });
 
-        ordered.forEach(ac -> {
-            LOGGER.debug("Recursively discovering: ${0}", ac.getName());
-
-            safelyRecursiveDiscover(ac, all, new Stack<>());
-        });
+        ordered.forEach(ac -> safelyRecursiveDiscover(ac, all, new Stack<>()));
 
         return this;
     }

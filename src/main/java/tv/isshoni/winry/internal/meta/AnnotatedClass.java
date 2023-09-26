@@ -5,19 +5,17 @@ import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
-import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +27,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
 
     protected Class<?> transformed;
 
-    protected final Set<IAnnotatedClass> dependencies;
-
     protected final Map<Method, IAnnotatedMethod> methods;
 
     protected final Map<Field, IAnnotatedField> fields;
@@ -40,7 +36,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
         this.modifiers = ReflectedModifier.getModifiers(element);
         this.methods = new HashMap<>();
         this.fields = new HashMap<>();
-        this.dependencies = new HashSet<>();
     }
 
     @Override
@@ -63,19 +58,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
                 .map(f -> new AnnotatedField(this.context, this, object, f))
                 .forEach(f -> this.fields.put(f.getElement(), f));
         logger.debug("Discovered " + getMethods().size() + " fields");
-
-        Constructor<?> constructor;
-        if (this.transformed != null) {
-            constructor = this.context.getAnnotationManager().discoverConstructor(this.transformed);
-        } else {
-            constructor = this.context.getAnnotationManager().discoverConstructor(this.element);
-        }
-
-//        if (constructor.getParameters().length > 0) {
-//            for (Parameter parameter : constructor.getParameters()) {
-//                if (this.context.getMetaManager().getSingletonMeta())
-//            }
-//        }
 
         logger.debug(getDisplay() + " -- Finished Building...");
     }
@@ -128,11 +110,6 @@ public class AnnotatedClass extends AbstractAnnotatedMeta<Class<?>> implements I
         } else {
             return this.context.getAnnotationManager().construct(this.element, parameters);
         }
-    }
-
-    @Override
-    public Set<IAnnotatedClass> getDepends() {
-        return new HashSet<>(this.dependencies);
     }
 
     @Override

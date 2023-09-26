@@ -8,13 +8,15 @@ import java.util.Objects;
 
 public class SingletonAnnotatedClass extends AnnotatedClass implements ISingletonAnnotatedClass {
 
-    protected Object instance;
+    protected final Object instance;
 
     public SingletonAnnotatedClass(IWinryContext context, Class<?> element) throws Throwable {
         super(context, element);
 
         refreshAnnotations();
         transform(new WinryWrapperGenerator(context, this));
+
+        this.instance = newInstance();
     }
 
     public SingletonAnnotatedClass(IWinryContext context, Class<?> element, Object object) {
@@ -34,12 +36,6 @@ public class SingletonAnnotatedClass extends AnnotatedClass implements ISingleto
 
     @Override
     public void execute() {
-        try {
-            this.instance = newInstance();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-
         getContext().getAnnotationManager().toExecutionList(this.getElement(), this.getAnnotations())
                 .forEach(this::execute);
     }

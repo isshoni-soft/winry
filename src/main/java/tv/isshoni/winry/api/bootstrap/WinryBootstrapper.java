@@ -197,8 +197,7 @@ public class WinryBootstrapper implements IBootstrapper {
                 .filterInverted(executed::contains)
                 .sorted()
                 .toList();
-        LOGGER.info("-> New executable list size: ${0}; pruned: ${1} (total: ${2})...", newList.size(),
-                executed.size(), executables.size());
+        LOGGER.info("-> New executable list size: " + newList.size() + "; pruned: " + executed.size() + " (total: " + executables.size() + ")...");
         execute(newList, executed, backloaded);
     }
 
@@ -208,7 +207,7 @@ public class WinryBootstrapper implements IBootstrapper {
         return Streams.to(this.context.getMetaManager().getAllSingletonClasses())
                 .peek(ISingletonAnnotatedClass::regenerate)
                 .expand(IExecutable.class, IAnnotatedClass::getMethods, IAnnotatedClass::getFields)
-                .collect(Collectors.toList()); // TODO : Determine a construction / initialization order among the IAnnotatedClasses.
+                .collect(Collectors.toList());
     }
 
     @Override
