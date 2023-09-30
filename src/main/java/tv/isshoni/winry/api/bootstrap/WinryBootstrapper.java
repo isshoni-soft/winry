@@ -115,7 +115,7 @@ public class WinryBootstrapper implements IBootstrapper {
                 .flatMap(p -> Optional.ofNullable(p.provideExecutables(this.context))
                         .orElse(new LinkedList<>()).stream())
                 .peek(this.context::registerToContext)
-                .peek(p -> LOGGER.debug("Injecting Executable: " + p.getDisplay()))
+                .peek(p -> LOGGER.debug("Injecting Executable: ${0}", p.getDisplay()))
                 .addTo(run);
 
         run = fuseExecutables(run);

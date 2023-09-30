@@ -1,5 +1,6 @@
 package tv.isshoni.winry.api.annotation;
 
+import tv.isshoni.araragi.annotation.Depends;
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
@@ -12,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Weight(value = Injected.DEFAULT_WEIGHT, dynamic = "value")
+@Depends(Inject.class)
 @Processor(BootstrapClassProcessor.class)
 public @interface Injected {
 

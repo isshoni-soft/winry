@@ -1,10 +1,15 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
+import tv.isshoni.araragi.annotation.Depends;
+import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
 import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
+import tv.isshoni.winry.api.annotation.Inject;
+import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.context.IContextual;
 import tv.isshoni.winry.api.context.ILoggerFactory;
@@ -17,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implements IContextual {
 
@@ -78,6 +84,50 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implem
         }
 
         return result;
+    }
+
+    @Override
+    public void safelyRecursiveDiscover(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> all, Stack<Class<? extends Annotation>> levels) {
+        if (getAnnotationManager().isManagedAnnotation(clazz)) {
+            return;
+        }
+
+        Set<Class<? extends Annotation>> annotations = Streams.to(clazz.getAnnotation(Processor.class).value())
+                .map(getAnnotationManager()::getAllAnnotationsIn)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+
+        if (clazz.isAnnotationPresent(Depends.class)) {
+            annotations.addAll(getAnnotationManager().getAllAnnotationsIn(clazz));
+        }
+
+        if (annotations.contains(Inject.class) && !clazz.equals(Injected.class)) {
+            annotations.add(Injected.class);
+        }
+
+        if (annotations.isEmpty() || annotations.stream()
+                .allMatch(getAnnotationManager()::isManagedAnnotation)) {
+            getAnnotationManager().discoverAnnotation(clazz);
+            return;
+        }
+
+        List<Class<? extends Annotation>> unregistered = Streams.to(annotations)
+                .filterInverted(getAnnotationManager()::isManagedAnnotation)
+                .toList();
+
+        for (Class<? extends Annotation> uclazz : unregistered) {
+            if (clazz.equals(uclazz) || levels.contains(uclazz)) {
+                throw new IllegalStateException("Found circular dependency; Levels: " + levels + " Current: " + clazz + " UClass: " + uclazz);
+            }
+
+            if (all.contains(uclazz)) {
+                levels.add(clazz);
+                safelyRecursiveDiscover(uclazz, all, levels);
+                levels.pop();
+            }
+        }
+
+        getAnnotationManager().discoverAnnotation(clazz);
     }
 
     @Override
