@@ -35,7 +35,8 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         IAnnotationDiscoverer discoverer = annotationManager.getAnnotationDiscoverer();
 
         List<Class<?>> found = Streams.to(discoverer.findWithAnnotations(clazz))
-                .filter(c -> Objects.nonNull(annotationManager.discoverConstructor(c)))
+                .peek(c -> LOGGER.debug("-----> untrimmed: " + c.getName()))
+                .filter(c -> Objects.nonNull(annotationManager.discoverConstructor(c, false)))
                 .sorted((first, second) -> {
                     Set<Class<? extends Annotation>> firstAnno = annotationManager.getAllAnnotationsForConstruction(first);
                     Set<Class<? extends Annotation>> secondAnno = annotationManager.getAllAnnotationsForConstruction(second);

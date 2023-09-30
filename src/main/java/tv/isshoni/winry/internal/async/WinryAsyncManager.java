@@ -41,6 +41,40 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
     }
 
     @Override
+    public Thread newManagedThread(Runnable runnable, String name) {
+        if (this.managedThreads.containsKey(name)) {
+            throw new IllegalStateException("Cannot overwrite pre-existing managed thread!");
+        }
+
+        Thread thread = new Thread(runnable, name);
+        thread.setUncaughtExceptionHandler((th, t) -> submitToMain((Callable<?>) () -> {
+            if (t instanceof Exception e) {
+                throw e;
+            } else {
+                throw new Exception(t);
+            }
+        }));
+
+        this.managedThreads.put(name, thread);
+        return thread;
+    }
+
+    public void joinManagedThread(String name) throws InterruptedException {
+        if (!this.managedThreads.containsKey(name)) {
+            throw new IllegalArgumentException(name + " is not a managed thread!");
+        }
+
+        Thread found = getManagedThread(name);
+
+        if (this.newMain.equals(found)) {
+            throw new IllegalStateException("cannot join winry manager thread!");
+        }
+
+        found.join();
+        this.managedThreads.remove(name);
+    }
+
+    @Override
     public <T> Future<T> submit(Callable<T> callable) {
         this.logger.debug("Submitting call to executor...");
         return super.submit(callable);
@@ -108,7 +142,7 @@ public class WinryAsyncManager extends AsyncManager implements IWinryAsyncManage
         this.running.set(true);
         this.mainFuture = new CompletableFuture<T>();
         AtomicReference<Throwable> error = new AtomicReference<>(null);
-        this.newMain = new Thread(() -> {
+        this.newMain = newManagedThread(() -> {
             try {
                 ((CompletableFuture<T>) mainFuture).complete(cont.call());
             } catch (Throwable e) {

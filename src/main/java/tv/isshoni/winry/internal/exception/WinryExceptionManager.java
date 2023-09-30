@@ -109,8 +109,8 @@ public class WinryExceptionManager implements IExceptionManager {
 
         if (!this.methodHandlers.getOrDefault(context).containsKey(throwable.getClass())
                 && !this.globalHandlers.containsKey(throwable.getClass())) {
-            if (throwable instanceof RuntimeException) {
-                throw (RuntimeException) throwable;
+            if (throwable instanceof RuntimeException e) {
+                throw e;
             } else {
                 throw new UnhandledException(throwable);
             }
@@ -248,10 +248,16 @@ public class WinryExceptionManager implements IExceptionManager {
     }
 
     private void runGlobals(Throwable throwable) {
-        getGlobalHandlersFor((Class<Throwable>) throwable.getClass()).stream()
-                .map(this::newOrSingleton)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(h -> h.handle(throwable));
+        List<Class<? extends IExceptionHandler<Throwable>>> globals = getGlobalHandlersFor((Class<Throwable>) throwable.getClass());
+
+        if (globals.isEmpty()) {
+            throw Exceptions.rethrow(throwable);
+        } else {
+            globals.stream()
+                    .map(this::newOrSingleton)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(h -> h.handle(throwable));
+        }
     }
 }
