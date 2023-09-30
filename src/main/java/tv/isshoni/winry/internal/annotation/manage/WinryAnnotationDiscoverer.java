@@ -14,9 +14,11 @@ import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.context.IContextual;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +94,9 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implem
             return;
         }
 
-        Set<Class<? extends Annotation>> annotations = Streams.to(clazz.getAnnotation(Processor.class).value())
+        Processor processor = clazz.getAnnotation(Processor.class);
+
+        Set<Class<? extends Annotation>> annotations = Streams.to(processor.value())
                 .map(getAnnotationManager()::getAllAnnotationsIn)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
@@ -101,8 +105,20 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implem
             annotations.addAll(getAnnotationManager().getAllAnnotationsIn(clazz));
         }
 
-        if (annotations.contains(Inject.class) && !clazz.equals(Injected.class)) {
-            annotations.add(Injected.class);
+        if (!clazz.equals(Injected.class)) {
+            if (Arrays.asList(processor.value()).contains(BootstrapClassProcessor.class)) {
+                for (Class<?> c : findWithAnnotations(clazz)) {
+                    Set<Class<? extends Annotation>> construct = annotationManager.getAllAnnotationsForConstruction(c);
+
+                    if (construct.contains(Inject.class)) {
+                        annotations.add(Injected.class);
+                    }
+                }
+            }
+
+            if (annotations.contains(Inject.class)) {
+                annotations.add(Injected.class);
+            }
         }
 
         if (annotations.isEmpty() || annotations.stream()

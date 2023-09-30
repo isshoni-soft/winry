@@ -120,7 +120,7 @@ public class MetaManager implements IMetaManager {
             }
 
             logger.debug("-> Target: " + target);
-            logger.debug("-> Value: " + value.toString());
+            logger.debug("-> Value: " + (value == null ? "null" : value.toString()));
             logger.debug("-> Field: " + field);
             ReflectionUtil.injectField(field, target, value);
         } catch (Throwable t) {
