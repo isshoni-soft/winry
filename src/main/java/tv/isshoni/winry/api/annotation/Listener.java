@@ -24,4 +24,6 @@ public @interface Listener {
     int weight() default 100;
 
     boolean ignoreCancelled() default false;
+
+    boolean requireExact() default false;
 }

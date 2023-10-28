@@ -88,10 +88,8 @@ public class WinryEventBus implements IEventBus {
         List<IEventHandler<Object>> handlers = getHandlersFor(event);
 
         for (IEventHandler<Object> h : handlers) {
-            if (event instanceof ICancellable) {
-                if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
-                    continue;
-                }
+            if (this.cancelEvent(event, h)) {
+                continue;
             }
 
             try {
@@ -146,10 +144,8 @@ public class WinryEventBus implements IEventBus {
         Set<IEventHandler<Object>> await = new HashSet<>();
 
         for (IEventHandler<Object> h : handlers) {
-            if (event instanceof ICancellable) {
-                if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
-                    continue;
-                }
+            if (this.cancelEvent(event, h)) {
+                continue;
             }
 
             this.asyncManager.submit(() -> {
@@ -271,5 +267,19 @@ public class WinryEventBus implements IEventBus {
         Collections.sort(result);
 
         return result;
+    }
+
+    private boolean cancelEvent(Object event, IEventHandler<?> h) {
+        if (event instanceof ICancellable) {
+            if (((ICancellable) event).isCancelled() && !h.shouldIgnoreCancelled()) {
+                return true;
+            }
+        }
+
+        if (h.requiresExact() && !event.getClass().equals(h.getTargetEvent())) {
+            return true;
+        }
+
+        return false;
     }
 }

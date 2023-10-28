@@ -54,4 +54,9 @@ public class EventHandlerMeta implements IEventHandler<Object> {
     public boolean shouldIgnoreCancelled() {
         return this.listener.ignoreCancelled();
     }
+
+    @Override
+    public boolean requiresExact() {
+        return this.listener.requireExact();
+    }
 }

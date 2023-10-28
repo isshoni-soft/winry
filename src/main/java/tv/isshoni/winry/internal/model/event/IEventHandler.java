@@ -14,6 +14,8 @@ public interface IEventHandler<T> extends Comparable<IEventHandler<T>> {
 
     boolean shouldIgnoreCancelled();
 
+    boolean requiresExact();
+
     default int compareTo(IEventHandler o) {
         int weight = Integer.compare(this.getWeight(), o.getWeight());
 
