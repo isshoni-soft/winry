@@ -4,7 +4,6 @@ import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
@@ -35,68 +34,66 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         IAnnotationDiscoverer discoverer = annotationManager.getAnnotationDiscoverer();
 
         List<Class<?>> found = Streams.to(discoverer.findWithAnnotations(clazz))
-                .peek(c -> LOGGER.debug("-----> untrimmed: " + c.getName()))
                 .filter(c -> Objects.nonNull(annotationManager.discoverConstructor(c, false)))
-                .sorted((first, second) -> {
-                    Set<Class<? extends Annotation>> firstAnno = annotationManager.getAllAnnotationsForConstruction(first);
-                    Set<Class<? extends Annotation>> secondAnno = annotationManager.getAllAnnotationsForConstruction(second);
-
-                    int simpleCompare = ComparatorUtil.simpleCompare(firstAnno, secondAnno, Set::isEmpty);
-
-                    if (simpleCompare != 2) {
-                        return simpleCompare;
-                    }
-
-                    Set<Class<?>> firstDeps = annotationManager.getAllTypesForConstruction(first);
-                    Set<Class<?>> secondDeps = annotationManager.getAllTypesForConstruction(second);
-
-                    if (firstDeps.isEmpty() && secondDeps.isEmpty()) {
-                        return 0;
-                    }
-
-                    if (secondDeps.contains(first) && firstDeps.contains(second)) {
-                        throw new IllegalStateException("Circular dependency found; " + first + " (" + firstDeps + ") - " + second + "(" + secondDeps + ")");
-                    }
-
-                    if (secondDeps.contains(first)) {
-                        return 1;
-                    } else if (firstDeps.contains(second)) {
-                        return -1;
-                    }
-
-                    return 1;
-                })
                 .toList();
 
         if (found.isEmpty()) {
             return;
         }
 
-        LOGGER.debug("Bootstrap order:");
-        found.forEach(c -> LOGGER.debug("-> " + c.getName()));
-
-        found.forEach(c -> {
-            Set<Class<? extends Annotation>> transformers = Streams.to(annotationManager.getAllAnnotationsIn(c))
-                    .filter(ac -> ac.isAnnotationPresent(Transformer.class))
-                    .collect(Collectors.toSet());
-
-            for (Class<? extends Annotation> transformer : transformers) {
-                if (!annotationManager.isManagedAnnotation(transformer)) {
-                    throw new IllegalStateException("Unable to bootstrap class: " + c + " found transformer: "
-                            + transformer + " that is not managed (no processor? not found during scan?)");
-                }
-            }
-
-            try {
-                this.context.get().addSingleton(c);
-            } catch (Throwable e) {
-                this.context.get().getExceptionManager().toss(e);
-            }
-        });
+        LOGGER.debug("Loading singletons ...");
+        for (Class<?> c : found) {
+            loadSingleton(c);
+        }
     }
 
     @Override
     public Constant<IWinryContext> getContext() {
         return this.context;
+    }
+
+    private void loadSingleton(Class<?> clazz) {
+        IWinryAnnotationManager annotationManager = this.context.get().getAnnotationManager();
+
+        if (this.context.get().hasSingleton(clazz)
+                || !annotationManager.hasManagedAnnotation(clazz)) {
+            return;
+        }
+
+        LOGGER.debug("Loading singleton: ${0}", clazz.getName());
+
+        Set<Class<?>> deps = annotationManager.getAllTypesForConstruction(clazz);
+
+        if (deps.isEmpty()) {
+            initializeSingleton(clazz);
+            return;
+        }
+
+        for (Class<?> dep : deps) {
+            loadSingleton(dep);
+        }
+
+        initializeSingleton(clazz);
+    }
+
+    private void initializeSingleton(Class<?> clazz) {
+        IWinryAnnotationManager annotationManager = this.context.get().getAnnotationManager();
+
+        Set<Class<? extends Annotation>> transformers = Streams.to(annotationManager.getAllAnnotationsIn(clazz))
+                .filter(ac -> ac.isAnnotationPresent(Transformer.class))
+                .collect(Collectors.toSet());
+
+        for (Class<? extends Annotation> transformer : transformers) {
+            if (!annotationManager.isManagedAnnotation(transformer)) {
+                throw new IllegalStateException("Unable to bootstrap class: " + clazz + " found transformer: "
+                        + transformer + " that is not managed (no processor? not found during scan?)");
+            }
+        }
+
+        try {
+            this.context.get().addSingleton(clazz);
+        } catch (Throwable e) {
+            this.context.get().getExceptionManager().toss(e);
+        }
     }
 }

@@ -62,6 +62,8 @@ public interface IWinryContext {
 
     Bootstrap getBootstrapAnnotation();
 
+    boolean hasSingleton(Class<?> clazz);
+
     default String getContextName() {
         return this.getBootstrapAnnotation().name();
     }

@@ -261,6 +261,11 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
+    public boolean hasSingleton(Class<?> clazz) {
+        return this.instanceManager.hasSingletonFor(clazz).isPresent();
+    }
+
+    @Override
     public String toString() {
         return "WinryContext[bootstrapper=" + this.bootstrapper.getClass().getName() + ",created=" + this.created.toString() + "]";
     }
