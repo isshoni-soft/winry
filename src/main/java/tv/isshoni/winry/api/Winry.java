@@ -21,6 +21,10 @@ import java.util.stream.Stream;
 public class Winry {
 
     public static IWinryContext bootstrap(Class<?> clazz, Object... provided) throws ExecutionException, InterruptedException {
+        return bootstrap(clazz, new String[0], provided);
+    }
+
+    public static IWinryContext bootstrap(Class<?> clazz, String[] arguments, Object... provided) throws ExecutionException, InterruptedException {
         Instant start = Instant.now();
 
         Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
@@ -35,6 +39,7 @@ public class Winry {
         loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
         IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap, loggerFactory);
         IBootstrapContext bootstrapContext = BootstrapContext.builder()
+                .arguments(arguments)
                 .asyncManager(asyncManager)
                 .loggerFactory(loggerFactory)
                 .forked(!bootstrap.noFork()).build();

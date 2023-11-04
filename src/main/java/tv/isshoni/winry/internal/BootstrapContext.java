@@ -7,15 +7,23 @@ import tv.isshoni.winry.api.context.ILoggerFactory;
 
 public class BootstrapContext implements IBootstrapContext {
 
+    private final String[] arguments;
+
     private final IWinryAsyncManager asyncManager;
     private final ILoggerFactory loggerFactory;
 
     private final boolean forked;
 
     private BootstrapContext(Builder builder) {
+        this.arguments = builder.arguments;
         this.asyncManager = builder.asyncManager;
         this.loggerFactory = builder.loggerFactory;
         this.forked = builder.forked;
+    }
+
+    @Override
+    public String[] getArguments() {
+        return this.arguments;
     }
 
     @Override
@@ -38,9 +46,15 @@ public class BootstrapContext implements IBootstrapContext {
     }
 
     public static class Builder {
+        private String[] arguments;
         private IWinryAsyncManager asyncManager;
         private ILoggerFactory loggerFactory;
         private boolean forked;
+
+        public Builder arguments(String[] arguments) {
+            this.arguments = arguments;
+            return this;
+        }
 
         public Builder forked(boolean forked) {
             this.forked = forked;
@@ -58,7 +72,7 @@ public class BootstrapContext implements IBootstrapContext {
         }
 
         public BootstrapContext build() {
-            if (ObjHelpers.isOneNull(this.asyncManager, this.forked, this.loggerFactory)) {
+            if (ObjHelpers.isOneNull(this.asyncManager, this.forked, this.loggerFactory, this.arguments)) {
                 throw new IllegalStateException("Cannot build without all properties present!");
             }
 
