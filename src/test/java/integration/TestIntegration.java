@@ -1,13 +1,20 @@
-package integration.test;
+package integration;
 
 import model.integration.TestBootstrapper;
 import model.integration.service.TestService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.reflections8.Reflections;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.scanners.TypeAnnotationsScanner;
+import org.reflections8.util.ConfigurationBuilder;
+import org.reflections8.util.FilterBuilder;
 import tv.isshoni.winry.api.Winry;
+import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.internal.WinryContext;
 
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.fail;
@@ -17,14 +24,25 @@ public class TestIntegration {
 
     @Parameterized.Parameters(name = "{index} : {1}")
     public static Object[][] testClasses() {
-        return new Object[][] {
-                { TestObjectFactory.class, "ObjectFactory" },
-                { TestBackload.class, "Backload" },
-                { TestOnMain.class, "OnMain" },
-                { TestAsync.class, "Async" },
-                { TestMultipleLoads.class, "MultipleLoads" },
-                { TestReprocess.class, "Reprocess" }
-        };
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .addScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false))
+                .forPackages("integration.test")
+                .filterInputsBy(new FilterBuilder().includePackage("integration.test")));
+
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Bootstrap.class);
+
+        Object[][] objects = new Object[classes.size()][2];
+
+        int x = 0;
+        for (Class<?> clazz : classes) {
+            Bootstrap bootstrap = clazz.getAnnotation(Bootstrap.class);
+
+            objects[x][0] = clazz;
+            objects[x][1] = bootstrap.name();
+            x++;
+        }
+
+        return objects;
     }
 
     private final Class<?> bootstrapped;
