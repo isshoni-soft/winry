@@ -21,7 +21,11 @@ public @interface Loader {
      */
     String[] loadPackage() default { };
 
+    String[] excludePackage() default { };
+
     Class<?>[] manualLoad() default { };
+
+    Class<?>[] manualExclude() default { };
 
     Class<? extends IExecutableProvider>[] providers() default { };
 }

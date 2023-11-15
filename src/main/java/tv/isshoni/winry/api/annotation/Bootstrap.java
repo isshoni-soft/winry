@@ -26,6 +26,8 @@ public @interface Bootstrap {
 
     Class<? extends IBootstrapper> bootstrapper() default WinryBootstrapper.class;
 
+    // todo: come up with a good quickhand way to configure this; it shouldn't require a specific logger factory everytime.
+    @Deprecated // move this into the logger factory?
     Level defaultLevel() default Level.ERROR;
 
     Class<? extends ILoggerFactory> loggerFactory() default LoggerFactory.class;
