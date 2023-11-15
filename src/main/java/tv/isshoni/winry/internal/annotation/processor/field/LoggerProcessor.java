@@ -26,7 +26,7 @@ public class LoggerProcessor implements IWinryAdvancedAnnotationProcessor<Logger
 
     @Override
     public AraragiLogger supply(Logger annotation, AraragiLogger previous, Parameter parameter) {
-        if (!parameter.getType().isAssignableFrom(IAraragiLogger.class)) {
+        if (!IAraragiLogger.class.isAssignableFrom(parameter.getType())) {
             LOGGER.error(parameter.getType().getName() + " is not assignable to AraragiLogger.");
             return null;
         }
@@ -38,7 +38,7 @@ public class LoggerProcessor implements IWinryAdvancedAnnotationProcessor<Logger
     public void executeField(IAnnotatedField meta, Object target, Logger annotation) {
         Field field = meta.getElement();
 
-        if (!field.getType().isAssignableFrom(IAraragiLogger.class)) {
+        if (!IAraragiLogger.class.isAssignableFrom(field.getType())) {
             LOGGER.error(meta.getDisplay() + " is not assignable to AraragiLogger, skipping...");
             return;
         }
