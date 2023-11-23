@@ -40,6 +40,10 @@ public class EventHandlerMeta implements IEventHandler<Object> {
         return this.method;
     }
 
+    public Object getTarget() {
+        return this.target;
+    }
+
     @Override
     public Class<?> getTargetEvent() {
         return this.listener.value();

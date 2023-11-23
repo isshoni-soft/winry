@@ -6,6 +6,7 @@ import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.event.IListener;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 
 public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
@@ -22,6 +23,13 @@ public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
 
     @Override
     public void executeMethod(IAnnotatedMethod method, Object target, Listener annotation) {
+        if (!this.context.get().getAnnotationManager().hasAnnotationWithMarker(target)
+                && !(target instanceof IListener)) {
+            LOGGER.error("Cannot register listener for ${0}!", method.getDisplay());
+            throw new IllegalStateException(method.getDeclaringClass().getElement().getName() +
+                    " must have an annotation marked with @SingletonHolder or implement IListenerObject");
+        }
+
         LOGGER.debug("Register listener for: " + annotation.value().getName() + " - " + method.getDisplay());
         this.context.get().getEventBus().registerListener(method, target, annotation);
     }

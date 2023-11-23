@@ -3,6 +3,7 @@ package tv.isshoni.winry.api.annotation;
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
 import tv.isshoni.araragi.logging.model.level.Level;
+import tv.isshoni.winry.api.annotation.meta.SingletonHolder;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
@@ -16,6 +17,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@SingletonHolder
 @Weight(Integer.MAX_VALUE)
 @Processor(BootstrapClassProcessor.class)
 public @interface Bootstrap {

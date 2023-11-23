@@ -239,6 +239,23 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
+    public void unregisterListeners(Object target) {
+        this.handlers.forEach((k, v) -> {
+            Set<EventHandlerMeta> removeHandlers = new HashSet<>();
+
+            v.forEach(handler -> {
+                if (handler instanceof EventHandlerMeta eventMeta) {
+                    if (eventMeta.getTarget().equals(target)) {
+                        removeHandlers.add(eventMeta);
+                    }
+                }
+            });
+
+            v.removeAll(removeHandlers);
+        });
+    }
+
+    @Override
     public List<IEventHandler<Object>> getHandlersFor(Object event) {
         Class<?> current = event.getClass();
         List<IEventHandler<Object>> result = new LinkedList<>();

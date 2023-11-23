@@ -72,6 +72,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
         }
 
         DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.toWrap.getElement(), ConstructorStrategy.Default.NO_CONSTRUCTORS)
+                .annotateType(this.toWrap.getElement().getAnnotations())
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
 

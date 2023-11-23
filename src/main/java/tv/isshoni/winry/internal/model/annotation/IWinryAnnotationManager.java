@@ -41,4 +41,6 @@ public interface IWinryAnnotationManager extends IAnnotationManager {
     boolean isWinry(IPreparedAnnotationProcessor processor);
 
     <T> T winryConstruct(IWinryContext context, Class<T> clazz, Object... parameters);
+
+    boolean hasAnnotationWithMarker(Object target);
 }

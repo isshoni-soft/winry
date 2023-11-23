@@ -9,6 +9,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
+import tv.isshoni.winry.api.annotation.meta.SingletonHolder;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
@@ -84,6 +85,14 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         annotatedClass.getFields().forEach(meta -> meta.execute(result));
 
         return result;
+    }
+
+    @Override
+    public boolean hasAnnotationWithMarker(Object target) {
+        return Streams.to(target.getClass().getDeclaredAnnotations())
+                .flatMap(anno -> Streams.to(anno.annotationType().getDeclaredAnnotations())
+                        .map(Annotation::annotationType))
+                .anyMatch(a -> a.equals(SingletonHolder.class));
     }
 
     @Override
