@@ -48,7 +48,7 @@ public class LoggerProcessor implements IWinryAdvancedAnnotationProcessor<Logger
             return;
         }
 
-        AraragiLogger logger = makeLogger(annotation, meta.getDeclaringClass().getDisplay());
+        AraragiLogger logger = makeLogger(annotation, meta.getDeclaringClass().getElement().getSimpleName());
 
         LOGGER.debug("Injecting logger: " + logger + " into " + target.getClass());
         this.context.get().getMetaManager().inject(meta, target, logger);

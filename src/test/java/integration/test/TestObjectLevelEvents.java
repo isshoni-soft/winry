@@ -31,11 +31,17 @@ public class TestObjectLevelEvents {
             testService.fail("Event object has not run!");
         }
 
-        eventObject.close();
         eventBus.fire(new TestEvent(1));
 
-        if (eventObject.hasReceivedEvent() == 2) {
-            testService.fail("Event object has run more than once!");
+        if (eventObject.hasReceivedEvent() != 2) {
+            testService.fail("Event object has only run once!");
+        }
+
+        eventObject.close();
+
+        eventBus.fire(new TestEvent(1));
+        if (eventObject.hasReceivedEvent() != 2) {
+            testService.fail("Event object has run more than twice!");
         }
     }
 }
