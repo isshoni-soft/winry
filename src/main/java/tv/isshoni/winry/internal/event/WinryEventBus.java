@@ -11,12 +11,15 @@ import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.executable.EventExecutable;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.context.IExceptionManager;
+import tv.isshoni.winry.api.context.IInstanceManager;
 import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.event.ICancellable;
 import tv.isshoni.winry.api.event.WinryShutdownEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
+import tv.isshoni.winry.api.meta.IMetaManager;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
 
@@ -27,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -42,13 +46,20 @@ public class WinryEventBus implements IEventBus {
 
     private final IExceptionManager exceptionManager;
 
+    private final IInstanceManager instanceManager;
+
+    private final IMetaManager metaManager;
+
     private final AraragiLogger logger;
 
-    public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory,
-                         IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager) {
+    public WinryEventBus(IWinryAsyncManager asyncManager, ILoggerFactory loggerFactory, IMetaManager metaManager,
+                         IWinryAnnotationManager annotationManager, IExceptionManager exceptionManager,
+                         IInstanceManager instanceManager) {
         this.annotationManager = annotationManager;
         this.asyncManager = asyncManager;
+        this.metaManager = metaManager;
         this.exceptionManager = exceptionManager;
+        this.instanceManager = instanceManager;
         this.logger = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new HashMap<>());
 
@@ -239,13 +250,36 @@ public class WinryEventBus implements IEventBus {
     }
 
     @Override
+    public void registerListeners(Object target) {
+        Optional<Object> singleton = this.instanceManager.hasSingletonFor(target.getClass());
+
+        IAnnotatedClass annotatedClass;
+        if (singleton.isPresent()) {
+            annotatedClass = this.metaManager.getMeta(singleton.get());
+        } else {
+            annotatedClass = this.metaManager.getMeta(target);
+        }
+
+        annotatedClass.getMethods().forEach(method -> {
+            if (method.hasAnnotations(Listener.class)) {
+                this.registerListener(method, target, method.getAnnotationByType(Listener.class));
+            }
+        });
+    }
+
+    @Override
     public void unregisterListeners(Object target) {
+        this.unregisterListeners(target, Object.class);
+    }
+
+    @Override
+    public void unregisterListeners(Object target, Class<?> event) {
         this.handlers.forEach((k, v) -> {
             Set<EventHandlerMeta> removeHandlers = new HashSet<>();
 
             v.forEach(handler -> {
                 if (handler instanceof EventHandlerMeta eventMeta) {
-                    if (eventMeta.getTarget().equals(target)) {
+                    if (eventMeta.getTarget().equals(target) && event.isAssignableFrom(handler.getTargetEvent())) {
                         removeHandlers.add(eventMeta);
                     }
                 }

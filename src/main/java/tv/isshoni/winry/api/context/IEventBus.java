@@ -35,7 +35,11 @@ public interface IEventBus {
 
     void registerListener(IAnnotatedMethod method, Object target, Listener listener);
 
+    void registerListeners(Object target);
+
     void unregisterListeners(Object target);
+
+    void unregisterListeners(Object target, Class<?> event);
 
     List<IEventHandler<Object>> getHandlersFor(Object event);
 }

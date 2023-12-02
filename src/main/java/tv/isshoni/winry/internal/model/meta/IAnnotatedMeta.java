@@ -17,6 +17,8 @@ public interface IAnnotatedMeta<E extends AnnotatedElement> extends IExecutable 
 
     boolean hasAnnotations(Class<? extends Annotation>... annotation);
 
+    <A extends Annotation> A getAnnotationByType(Class<A> clazz);
+
     Set<Annotation> getAnnotations();
 
     E getElement();

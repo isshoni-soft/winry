@@ -54,16 +54,19 @@ public class WinryBootstrapper implements IBootstrapper {
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
         IExceptionManager exceptionManager = annotationManager.getExceptionManager();
         MetaManager metaManager = new MetaManager(loggerFactory);
+        InstanceManager instanceManager = new InstanceManager(loggerFactory, metaManager);
+        WinryEventBus eventBus = new WinryEventBus(asyncManager, loggerFactory, metaManager, annotationManager,
+                exceptionManager, instanceManager);
 
         this.context = WinryContext.builder(bootstrap, this)
                 .bootstrapContext(bootstrapContext)
                 .exceptionManager(exceptionManager)
                 .metaManager(metaManager)
-                .instanceManager(new InstanceManager(loggerFactory, metaManager))
+                .instanceManager(instanceManager)
                 .annotationManager(annotationManager)
                 .loggerFactory(loggerFactory)
                 .asyncManager(asyncManager)
-                .eventBus(new WinryEventBus(asyncManager, loggerFactory, annotationManager, annotationManager.getExceptionManager()))
+                .eventBus(eventBus)
                 .build();
 
         annotationManager.setAnnotationDiscovererContext(this.context);

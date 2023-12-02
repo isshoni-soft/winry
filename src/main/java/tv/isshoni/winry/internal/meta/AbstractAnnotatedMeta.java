@@ -60,6 +60,17 @@ public abstract class AbstractAnnotatedMeta<E extends AnnotatedElement> implemen
     }
 
     @Override
+    public <A extends Annotation> A getAnnotationByType(Class<A> clazz) {
+        for (Annotation annotation : this.annotations) {
+            if (annotation.annotationType().equals(clazz)) {
+                return (A) annotation;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public IWinryContext getContext() {
         return this.context;
     }

@@ -43,5 +43,12 @@ public class TestObjectLevelEvents {
         if (eventObject.hasReceivedEvent() != 2) {
             testService.fail("Event object has run more than twice!");
         }
+
+        eventObject.reregister();
+        eventBus.fire(new TestEvent(1));
+
+        if (eventObject.hasReceivedEvent() != 3) {
+            testService.fail("Event object has not run thrice!");
+        }
     }
 }
