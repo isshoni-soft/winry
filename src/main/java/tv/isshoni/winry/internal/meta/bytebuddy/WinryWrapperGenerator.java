@@ -10,6 +10,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
+import tv.isshoni.winry.api.meta.IWinryTransformed;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IClassTransformer;
@@ -73,6 +74,7 @@ public class WinryWrapperGenerator implements IWrapperGenerator {
 
         DynamicType.Builder<?> builder = BYTE_BUDDY.subclass(this.toWrap.getElement(), ConstructorStrategy.Default.NO_CONSTRUCTORS)
                 .annotateType(this.toWrap.getElement().getAnnotations())
+                .implement(IWinryTransformed.class)
                 .defineMethod("isWinryWrapped", Boolean.TYPE, Modifier.PUBLIC | Modifier.STATIC)
                 .intercept(FixedValue.value(true));
 
