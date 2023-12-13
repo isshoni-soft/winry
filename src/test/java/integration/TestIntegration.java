@@ -56,7 +56,7 @@ public class TestIntegration {
         TestService service = new TestService();
 
         try {
-            Winry.bootstrap(this.bootstrapped, service);
+            Winry.bootstrap(this.bootstrapped, new Object[] { service });
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             fail("Bootstrap method threw an exception!");
