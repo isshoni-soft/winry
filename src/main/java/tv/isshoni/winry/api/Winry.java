@@ -20,6 +20,14 @@ import java.util.stream.Stream;
 
 public class Winry {
 
+    public static IWinryContext bootstrap(Class<?> clazz) throws ExecutionException, InterruptedException {
+        return bootstrap(clazz, new Object[0]);
+    }
+
+    public static IWinryContext bootstrap(Class<?> clazz, String[] args) throws ExecutionException, InterruptedException {
+        return bootstrap(clazz, args, new Object[0]);
+    }
+
     public static IWinryContext bootstrap(Class<?> clazz, Object[] provided) throws ExecutionException, InterruptedException {
         return bootstrap(clazz, new String[0], provided);
     }
