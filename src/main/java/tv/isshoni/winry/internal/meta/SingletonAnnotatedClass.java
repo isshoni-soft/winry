@@ -48,9 +48,4 @@ public class SingletonAnnotatedClass extends AnnotatedClass implements ISingleto
 
         return Objects.equals(this.instance, other.instance);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.instance);
-    }
 }

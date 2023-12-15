@@ -54,7 +54,7 @@ features are:
 * Event based, winry is backed by an event bus that can be configured to fire specific events during the lifecycle.
 * Integer-based weighting system, to keep things running smoothly and in order, all "executables" in the winry bootstrapping lifecycle are integer weighted.
 * Built to be extended, register new annotations, add more functionality to pre-existing ones, or add new lifecycle events.
-    * Import libraries that add their own lifecycle events and gain specialized functionality, i.e. game engine, or, REST webserver.
+    * Import libraries that add their own lifecycle events and gain specialized functionality, i.e. game engine, or, [REST webserver](https://github.com/isshoni-soft/mishima).
   
 TODO  
   
