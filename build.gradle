@@ -35,6 +35,10 @@ dependencies {
 group = 'tv.isshoni'
 version = "$winry_version"
 
+test {
+    environment "TEST", "true"
+}
+
 processResources {
     filesMatching("**/winry_version.properties") {
         expand(
