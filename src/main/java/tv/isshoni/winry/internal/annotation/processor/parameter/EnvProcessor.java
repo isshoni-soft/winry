@@ -18,7 +18,7 @@ public class EnvProcessor implements IWinryAdvancedAnnotationProcessor<Env, Stri
 
     public EnvProcessor(@Context IWinryContext context) {
         this.context = new Constant<>(context);
-        LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
+        LOGGER = context.getLoggerFactory().createLogger("EnvProcessor");
     }
 
     @Override
