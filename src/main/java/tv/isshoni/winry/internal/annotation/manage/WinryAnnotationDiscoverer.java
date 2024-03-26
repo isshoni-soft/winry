@@ -4,16 +4,13 @@ import tv.isshoni.araragi.annotation.Depends;
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
-import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.meta.Transformer;
-import tv.isshoni.winry.api.context.IContextual;
-import tv.isshoni.winry.api.context.ILoggerFactory;
-import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 
@@ -26,21 +23,14 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implements IContextual {
+public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
 
     private final AraragiLogger LOGGER;
-
-    private final Constant<IWinryContext> context;
 
     public WinryAnnotationDiscoverer(IWinryAnnotationManager annotationManager, ILoggerFactory loggerFactory) {
         super(annotationManager);
 
-        this.context = new Constant<>();
         this.LOGGER = loggerFactory.createLogger(this.getClass());
-    }
-
-    public void setContext(IWinryContext context) {
-        this.context.set(context);
     }
 
     @Override
@@ -144,10 +134,5 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer implem
         }
 
         getAnnotationManager().discoverAnnotation(clazz);
-    }
-
-    @Override
-    public Constant<IWinryContext> getContext() {
-        return this.context;
     }
 }

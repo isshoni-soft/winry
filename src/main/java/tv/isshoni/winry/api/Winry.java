@@ -1,11 +1,11 @@
 package tv.isshoni.winry.api;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.BootstrapContext;
 import tv.isshoni.winry.internal.async.WinryAsyncManager;

@@ -6,6 +6,7 @@ import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.araragi.exception.Exceptions;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
@@ -14,7 +15,6 @@ import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcess
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.bootstrap.WinryEventsProvider;
 import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.annotation.processor.parameter.WinryContextProcessor;
@@ -56,10 +56,6 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
         register(IWinryAdvancedAnnotationProcessor.class, (annotation, element, processor, manager) -> new WinryPreparedAdvancedAnnotationProcessor(annotation, element, (IWinryAdvancedAnnotationProcessor<Annotation, Object>) processor, manager));
     }
 
-    public void setAnnotationDiscovererContext(IWinryContext context) {
-        this.annotationDiscoverer.setContext(context);
-    }
-
     @Override
     public <T> T winryConstruct(IWinryContext context, Class<T> clazz, Object... parameters) {
         IAnnotatedClass annotatedClass = context.getMetaManager().findMeta(clazz);
@@ -96,13 +92,13 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
     }
 
     @Override
-    public void initialize() {
+    public void initialize(IWinryContext context) {
         LOGGER.debug("Initializing...");
         LOGGER.debug("Configuring annotation discoverer...");
         this.annotationDiscoverer.withPackages(getAllLoadedPackages(this.bootstrap));
 
         LOGGER.debug("Performing annotation discovery...");
-        this.discoverProcessor(new WinryContextProcessor(this.annotationDiscoverer.getContext().get())); // TODO: remove techdebt, just move context up to annotation manager.
+        this.discoverProcessor(new WinryContextProcessor(context));
         this.annotationDiscoverer.discoverAnnotations();
 
         LOGGER.debug("Attaching requested processors...");

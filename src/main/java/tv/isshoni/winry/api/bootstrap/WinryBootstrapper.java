@@ -2,6 +2,7 @@ package tv.isshoni.winry.api.bootstrap;
 
 import tv.isshoni.araragi.concurrent.collection.ConcurrentLinkedList;
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
@@ -10,7 +11,6 @@ import tv.isshoni.winry.api.bootstrap.executable.BackloadExecutable;
 import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IExceptionManager;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.ISingletonAnnotatedClass;
@@ -69,7 +69,6 @@ public class WinryBootstrapper implements IBootstrapper {
                 .eventBus(eventBus)
                 .build();
 
-        annotationManager.setAnnotationDiscovererContext(this.context);
         exceptionManager.getContext().set(this.context);
 
         LOGGER = this.context.getLoggerFactory().createLogger("WinryBootstrapper");
@@ -105,7 +104,7 @@ public class WinryBootstrapper implements IBootstrapper {
         });
 
         LOGGER.debug("${a:dashes%50} Bootstrapping ${a:dashes%50}");
-        this.context.getAnnotationManager().initialize();
+        this.context.getAnnotationManager().initialize(this.context);
         LOGGER.debug("Finished class discovery and instantiation...");
 
         LOGGER.debug("Recompiling annotations of provided bootstrapped classes...");

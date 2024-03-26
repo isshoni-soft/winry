@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.logging;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.logging.model.level.ILevel;
 import tv.isshoni.araragi.logging.model.level.Level;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 
 public class LoggerFactory implements ILoggerFactory {
 

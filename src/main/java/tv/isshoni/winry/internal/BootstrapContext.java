@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal;
 
 import tv.isshoni.araragi.functional.ObjHelpers;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 
 public class BootstrapContext implements IBootstrapContext {
 

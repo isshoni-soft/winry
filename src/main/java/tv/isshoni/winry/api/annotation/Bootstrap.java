@@ -2,10 +2,10 @@ package tv.isshoni.winry.api.annotation;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
+import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.annotation.meta.SingletonHolder;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.api.context.ILoggerFactory;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.logging.LoggerFactory;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;

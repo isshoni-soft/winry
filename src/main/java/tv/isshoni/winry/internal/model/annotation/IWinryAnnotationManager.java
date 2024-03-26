@@ -14,7 +14,7 @@ import java.lang.annotation.Annotation;
 
 public interface IWinryAnnotationManager extends IAnnotationManager {
 
-    void initialize();
+    void initialize(IWinryContext context);
 
     Bootstrap getBootstrap();
 
