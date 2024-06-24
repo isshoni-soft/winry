@@ -2,8 +2,11 @@ package tv.isshoni.winry.api;
 
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import tv.isshoni.araragi.logging.model.level.ILevel;
+import tv.isshoni.araragi.logging.model.level.SimpleLevel;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -19,6 +22,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Winry {
+
+    public static final String STDOUT_NAME = "STDOUT";
+    public static final int STDOUT_WEIGHT = 2500;
+    public static final ILevel STDOUT = new SimpleLevel(STDOUT_NAME, STDOUT_WEIGHT);
 
     public static IWinryContext bootstrap(Class<?> clazz) throws ExecutionException, InterruptedException {
         return bootstrap(clazz, new Object[0]);
@@ -43,8 +50,10 @@ public class Winry {
             return null;
         }
 
+        LogLevel logLevel = bootstrap.defaultLevel();
+
         ILoggerFactory loggerFactory = ReflectionUtil.construct(bootstrap.loggerFactory());
-        loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        loggerFactory.setDefaultLoggerLevel(new SimpleLevel(logLevel.name(), logLevel.weight()));
         IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap, loggerFactory);
         IBootstrapContext bootstrapContext = BootstrapContext.builder()
                 .arguments(arguments)

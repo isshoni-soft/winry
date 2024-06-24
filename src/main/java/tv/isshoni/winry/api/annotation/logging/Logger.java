@@ -1,8 +1,9 @@
-package tv.isshoni.winry.api.annotation;
+package tv.isshoni.winry.api.annotation.logging;
 
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.araragi.logging.model.level.Level;
+import tv.isshoni.araragi.logging.model.level.ILevel;
+import tv.isshoni.winry.api.Winry;
 import tv.isshoni.winry.internal.annotation.processor.field.LoggerProcessor;
 
 import java.lang.annotation.ElementType;
@@ -18,11 +19,11 @@ public @interface Logger {
 
     String DEFAULT = "[DEFAULT]";
 
-    Level DEFAULT_LEVEL = Level.ERROR;
+    ILevel DEFAULT_LEVEL = Winry.STDOUT;
 
     String value() default DEFAULT;
 
-    Level level() default Level.ERROR;
+    LogLevel level() default @LogLevel(name = Winry.STDOUT_NAME, weight = Winry.STDOUT_WEIGHT);
 
     boolean useDefault() default true;
 }

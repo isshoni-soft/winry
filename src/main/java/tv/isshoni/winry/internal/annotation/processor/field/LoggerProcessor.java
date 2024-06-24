@@ -3,8 +3,10 @@ package tv.isshoni.winry.internal.annotation.processor.field;
 import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.IAraragiLogger;
+import tv.isshoni.araragi.logging.model.level.SimpleLevel;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
-import tv.isshoni.winry.api.annotation.Logger;
+import tv.isshoni.winry.api.annotation.logging.LogLevel;
+import tv.isshoni.winry.api.annotation.logging.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -67,9 +69,11 @@ public class LoggerProcessor implements IWinryAdvancedAnnotationProcessor<Logger
         }
 
         AraragiLogger logger;
+        LogLevel level = annotation.level();
 
-        if (annotation.level() != Logger.DEFAULT_LEVEL || !annotation.useDefault()) {
-            logger = this.context.get().getLoggerFactory().createLogger(name, annotation.level());
+        if ((!level.name().equals(Logger.DEFAULT_LEVEL.getName()) || level.weight() != Logger.DEFAULT_LEVEL.getWeight())
+                || !annotation.useDefault()) {
+            logger = this.context.get().getLoggerFactory().createLogger(name, new SimpleLevel(level.name(), level.weight()));
         } else {
             logger = this.context.get().getLoggerFactory().createLogger(name);
         }

@@ -3,6 +3,7 @@ package tv.isshoni.winry.internal.event;
 import tv.isshoni.araragi.data.Pair;
 import tv.isshoni.araragi.data.collection.map.BucketMap;
 import tv.isshoni.araragi.data.collection.map.Maps;
+import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.stream.Streams;
@@ -24,7 +25,6 @@ import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.event.IEventHandler;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class WinryEventBus implements IEventBus {
         this.exceptionManager = exceptionManager;
         this.instanceManager = instanceManager;
         this.logger = loggerFactory.createLogger("EventBus");
-        this.handlers = Maps.bucket(new HashMap<>());
+        this.handlers = Maps.bucket(new TypeMap<>());
 
         registerListener(event -> asyncManager.shutdown(), WinryShutdownEvent.class, Integer.MIN_VALUE);
     }

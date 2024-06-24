@@ -4,10 +4,10 @@ import model.EventObject;
 import model.integration.TestBootstrapper;
 import model.integration.event.TestEvent;
 import model.integration.service.TestService;
-import tv.isshoni.araragi.logging.model.level.Level;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Listener;
+import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.context.IEventBus;
 import tv.isshoni.winry.api.event.WinryInitEvent;
 import tv.isshoni.winry.api.exception.EventExecutionException;
@@ -16,7 +16,7 @@ import tv.isshoni.winry.api.service.ObjectFactory;
 @Bootstrap(
         name = "Test Object Level Events",
         bootstrapper = TestBootstrapper.class,
-        defaultLevel = Level.DEBUG
+        defaultLevel = @LogLevel(name = "DEBUG", weight = 0)
 )
 public class TestObjectLevelEvents {
 

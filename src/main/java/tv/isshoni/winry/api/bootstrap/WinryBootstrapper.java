@@ -3,9 +3,11 @@ package tv.isshoni.winry.api.bootstrap;
 import tv.isshoni.araragi.concurrent.collection.ConcurrentLinkedList;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import tv.isshoni.araragi.logging.model.level.SimpleLevel;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
+import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.executable.BackloadExecutable;
 import tv.isshoni.winry.api.bootstrap.executable.IExecutable;
@@ -48,9 +50,10 @@ public class WinryBootstrapper implements IBootstrapper {
     public WinryBootstrapper(Bootstrap bootstrap, IBootstrapContext bootstrapContext) {
         this.executed = new ConcurrentLinkedList<>();
 
+        LogLevel level = bootstrap.defaultLevel();
         IWinryAsyncManager asyncManager = bootstrapContext.getAsyncManager();
         ILoggerFactory loggerFactory = bootstrapContext.getLoggerFactory();
-        loggerFactory.setDefaultLoggerLevel(bootstrap.defaultLevel());
+        loggerFactory.setDefaultLoggerLevel(new SimpleLevel(level.name(), level.weight()));
         WinryAnnotationManager annotationManager = new WinryAnnotationManager(bootstrap, loggerFactory, this);
         IExceptionManager exceptionManager = annotationManager.getExceptionManager();
         MetaManager metaManager = new MetaManager(loggerFactory);

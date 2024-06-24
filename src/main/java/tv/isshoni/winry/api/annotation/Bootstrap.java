@@ -3,7 +3,8 @@ package tv.isshoni.winry.api.annotation;
 import tv.isshoni.araragi.annotation.Processor;
 import tv.isshoni.araragi.annotation.Weight;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.logging.model.level.Level;
+import tv.isshoni.winry.api.Winry;
+import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.annotation.meta.SingletonHolder;
 import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
@@ -29,8 +30,7 @@ public @interface Bootstrap {
     Class<? extends IBootstrapper> bootstrapper() default WinryBootstrapper.class;
 
     // todo: come up with a good quickhand way to configure this; it shouldn't require a specific logger factory everytime.
-    @Deprecated // move this into the logger factory?
-    Level defaultLevel() default Level.ERROR;
+    LogLevel defaultLevel() default @LogLevel(name = Winry.STDOUT_NAME, weight = Winry.STDOUT_WEIGHT);
 
     Class<? extends ILoggerFactory> loggerFactory() default LoggerFactory.class;
 
