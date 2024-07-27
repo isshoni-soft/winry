@@ -34,7 +34,6 @@ public class TestBackload {
 
         this.logger.info("Triggering backload...");
         context.backload();
-        Thread.sleep(1000);
         this.logger.info("Checking backlogged...");
         if (!this.backlogged) {
             this.logger.error("Backlogged is false!");

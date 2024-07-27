@@ -7,6 +7,10 @@ public class TestEvent {
 
     private int data;
 
+    public TestEvent() {
+        this.data = 0;
+    }
+
     public TestEvent(int data) {
         this.data = data;
     }

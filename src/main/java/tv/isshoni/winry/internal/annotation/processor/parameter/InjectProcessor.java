@@ -36,6 +36,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
 
         LOGGER = context.getLoggerFactory().createLogger("BasicFieldProcessor");
 
+        this.basicSuppliers.put(IWinryContext.class, this.context::get);
         this.basicSuppliers.put(ILoggerFactory.class, this.context.get()::getLoggerFactory);
         this.basicSuppliers.put(IExceptionManager.class, this.context.get()::getExceptionManager);
         this.basicSuppliers.put(IEventBus.class, this.context.get()::getEventBus);
@@ -87,12 +88,6 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
         Object injected;
 
         LOGGER.debug("Getting injected for type: " + clazz);
-        if (IWinryContext.class.isAssignableFrom(clazz) || clazz.equals(IWinryContext.class)) {
-            LOGGER.debug("Injecting context...");
-            return this.context.get();
-        }
-        LOGGER.debug("Injecting other....");
-
         if (annotation.value().equals(Inject.DEFAULT)) { // No perceivable change in initial functionality
             injected = getInjected(clazz);
         } else {

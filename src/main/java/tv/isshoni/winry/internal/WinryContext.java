@@ -109,6 +109,7 @@ public class WinryContext implements IWinryContext {
         registerToContext(this.exceptionManager);
         registerToContext(this.metaManager);
         registerToContext(this.instanceManager);
+        registerToContext(this);
 
         CONTEXT_BY_ID.put(this.id, this);
 
@@ -170,7 +171,7 @@ public class WinryContext implements IWinryContext {
     }
 
     @Override
-    public void backload() throws InterruptedException {
+    public void backload() {
         this.logger.info("Backloading ...");
         this.bootstrapper.backload();
     }

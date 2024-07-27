@@ -31,7 +31,12 @@ public interface IWinryContext {
 
     void registerExecutable(IExecutable... executable);
 
-    void backload() throws InterruptedException;
+    /**
+     * Triggers a backload; reloads the accumulated "backlog" that is amassed through registration.
+     * Generally used when you register a new annotation or service that you want to immediately use within
+     * that same method
+     */
+    void backload();
 
     void reprocess(Class<? extends Annotation>... annotation);
 

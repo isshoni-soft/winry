@@ -1,5 +1,6 @@
 package integration;
 
+import integration.test.TestEventExecution;
 import model.integration.TestBootstrapper;
 import model.integration.service.TestService;
 import org.junit.Test;
@@ -21,6 +22,11 @@ import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class TestIntegration {
+
+    // run specific bootstrapper for debugging
+    public static void main(String... args) {
+        new TestIntegration(TestEventExecution.class, "").testBootstrapper();
+    }
 
     @Parameterized.Parameters(name = "{index} : {1}")
     public static Object[][] testClasses() {
@@ -71,8 +77,12 @@ public class TestIntegration {
         }
 
         WinryContext.getContextFor(service).ifPresentOrElse(context -> {
-            if (!((TestBootstrapper) context.getBootstrapper()).hasRun()) {
-                fail("Bootstrapper didn't run.");
+            try {
+                if (!((TestBootstrapper) context.getBootstrapper()).hasRun()) {
+                    fail("Bootstrapper didn't run.");
+                }
+            } catch (ClassCastException e) {
+                fail("Bootstrapper is not TestBootstrapper!");
             }
         }, () -> fail("Cannot get WinryContext from provided service object!"));
     }

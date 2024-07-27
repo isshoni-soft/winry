@@ -333,4 +333,8 @@ public class WinryEventBus implements IEventBus {
 
         return false;
     }
+
+    private TypeMap<Class<?>, List<IEventHandler<?>>> getUnwrappedHandlers() {
+        return (TypeMap<Class<?>, List<IEventHandler<?>>>) this.handlers.getWrapped();
+    }
 }
