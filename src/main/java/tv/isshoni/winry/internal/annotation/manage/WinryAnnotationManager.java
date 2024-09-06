@@ -64,6 +64,11 @@ public class WinryAnnotationManager extends AnnotationManager implements IWinryA
             annotatedClass = context.getMetaManager().generateMeta(clazz);
         }
 
+        return winryConstruct(context, annotatedClass, parameters);
+    }
+
+    @Override
+    public <T> T winryConstruct(IWinryContext context, IAnnotatedClass annotatedClass, Object... parameters) {
         if (!annotatedClass.isTransformed()) {
             annotatedClass.transform(new WinryWrapperGenerator(context, annotatedClass));
         }

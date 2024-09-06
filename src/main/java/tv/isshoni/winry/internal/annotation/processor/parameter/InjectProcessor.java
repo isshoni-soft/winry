@@ -97,7 +97,7 @@ public class InjectProcessor implements IWinryAdvancedAnnotationProcessor<Inject
             if (Objects.isNull(injected)) {
                 LOGGER.debug("Generating new instance...");
                 try {
-                    injected = classMeta.newInstance();
+                    injected = this.context.get().getAnnotationManager().winryConstruct(this.context.get(), classMeta);
                 } catch (Throwable e) {
                     this.context.get().getExceptionManager().toss(e);
                     return null;

@@ -6,6 +6,7 @@ import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.context.IWinryContext;
+import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.internal.model.bootstrap.IBootstrapper;
 import tv.isshoni.winry.internal.model.bootstrap.IExecutableProvider;
 import tv.isshoni.winry.api.context.IExceptionManager;
@@ -41,6 +42,8 @@ public interface IWinryAnnotationManager extends IAnnotationManager {
     boolean isWinry(IPreparedAnnotationProcessor processor);
 
     <T> T winryConstruct(IWinryContext context, Class<T> clazz, Object... parameters);
+
+    <T> T winryConstruct(IWinryContext context, IAnnotatedClass annotatedClass, Object... parameters);
 
     boolean hasAnnotationWithMarker(Object target);
 }
