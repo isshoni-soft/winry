@@ -62,7 +62,7 @@ TODO
 
 How it Works
 ------------
-TODO  
+TODO, while I'm working on a good basic tutorial, check out the [integration tests](src/test/java/integration).  
   
 [Return to Table of Contents](#table-of-contents)
 
