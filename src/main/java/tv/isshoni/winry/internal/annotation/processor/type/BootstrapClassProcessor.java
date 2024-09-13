@@ -4,7 +4,7 @@ import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
 import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.winry.api.annotation.meta.Transformer;
+import tv.isshoni.winry.api.annotation.meta.BeforeInjections;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
@@ -80,7 +80,7 @@ public class BootstrapClassProcessor implements IWinryAnnotationProcessor<Annota
         IWinryAnnotationManager annotationManager = this.context.get().getAnnotationManager();
 
         Set<Class<? extends Annotation>> transformers = Streams.to(annotationManager.getAllAnnotationsIn(clazz))
-                .filter(ac -> ac.isAnnotationPresent(Transformer.class))
+                .filter(ac -> ac.isAnnotationPresent(BeforeInjections.class))
                 .collect(Collectors.toSet());
 
         for (Class<? extends Annotation> transformer : transformers) {

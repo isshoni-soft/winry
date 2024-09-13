@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface Transformer {
+public @interface BeforeInjections {
     // MARKER CLASS; INTENTIONALLY NO PROCESSOR
 }

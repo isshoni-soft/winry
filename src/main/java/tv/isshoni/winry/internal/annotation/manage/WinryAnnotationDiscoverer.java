@@ -10,7 +10,7 @@ import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Injected;
-import tv.isshoni.winry.api.annotation.meta.Transformer;
+import tv.isshoni.winry.api.annotation.meta.BeforeInjections;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 
@@ -41,9 +41,12 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
     @Override
     public IAnnotationDiscoverer discoverAnnotations() {
         Set<Class<? extends Annotation>> all = findProcessorAnnotations();
+        Set<Class<? extends Annotation>> beforeInjections = all.stream()
+                .filter(e -> e.isAnnotationPresent(BeforeInjections.class))
+                .collect(Collectors.toSet());
         List<Class<? extends Annotation>> ordered = new LinkedList<>(all);
         ordered.sort((first, second) -> {
-            int simple = ComparatorUtil.simpleCompare(first, second, e -> e.isAnnotationPresent(Transformer.class));
+            int simple = ComparatorUtil.simpleCompare(first, second, e -> e.isAnnotationPresent(BeforeInjections.class));
 
             if (simple != 2) {
                 return simple;
@@ -51,8 +54,9 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
 
             return -1;
         });
+        LOGGER.debug("Sorted discovered annotations: ${0}", ordered.toString());
 
-        ordered.forEach(ac -> safelyRecursiveDiscover(ac, all, new Stack<>()));
+        ordered.forEach(ac -> safelyRecursiveDiscover(ac, all, beforeInjections, new Stack<>()));
 
         return this;
     }
@@ -78,11 +82,16 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
         return result;
     }
 
-    @Override
-    public void safelyRecursiveDiscover(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> all, Stack<Class<? extends Annotation>> levels) {
-        if (getAnnotationManager().isManagedAnnotation(clazz)) {
+    public void safelyRecursiveDiscover(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> all,
+                                        Set<Class<? extends Annotation>> beforeInjections,
+                                        Stack<Class<? extends Annotation>> levels) {
+        beforeInjections = beforeInjections.stream().filter(c -> !c.equals(clazz)).collect(Collectors.toSet());
+
+        if (getAnnotationManager().isManagedAnnotation(clazz)) { // already discovered
             return;
         }
+
+        LOGGER.debug("Discovering: ${0}", clazz.getSimpleName());
 
         Processor processor = clazz.getAnnotation(Processor.class);
 
@@ -117,7 +126,16 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
             return;
         }
 
-        List<Class<? extends Annotation>> unregistered = Streams.to(annotations)
+        List<Class<? extends Annotation>> unregistered = new LinkedList<>();
+
+        if (annotations.contains(Injected.class)) {
+            unregistered.addAll(beforeInjections);
+            unregistered.addAll(annotations);
+        } else {
+            unregistered.addAll(annotations);
+        }
+
+        unregistered = Streams.to(unregistered)
                 .filterInverted(getAnnotationManager()::isManagedAnnotation)
                 .toList();
 
@@ -128,11 +146,16 @@ public class WinryAnnotationDiscoverer extends SimpleAnnotationDiscoverer {
 
             if (all.contains(uclazz)) {
                 levels.add(clazz);
-                safelyRecursiveDiscover(uclazz, all, levels);
+                safelyRecursiveDiscover(uclazz, all, beforeInjections, levels);
                 levels.pop();
             }
         }
 
         getAnnotationManager().discoverAnnotation(clazz);
+    }
+
+    @Override
+    public void safelyRecursiveDiscover(Class<? extends Annotation> clazz, Set<Class<? extends Annotation>> all, Stack<Class<? extends Annotation>> levels) {
+        safelyRecursiveDiscover(clazz, all, new HashSet<>(), levels);
     }
 }
