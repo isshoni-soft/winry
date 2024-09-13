@@ -51,11 +51,10 @@ public class Winry {
         }
 
         LogLevel logLevel = bootstrap.defaultLevel();
-
         ILoggerFactory loggerFactory = ReflectionUtil.construct(bootstrap.loggerFactory());
         loggerFactory.setDefaultLoggerLevel(new SimpleLevel(logLevel.name(), logLevel.weight()));
         IWinryAsyncManager asyncManager = new WinryAsyncManager(bootstrap, loggerFactory);
-        IBootstrapContext bootstrapContext = BootstrapContext.builder()
+        IBootstrapContext bootstrapContext = BootstrapContext.builder(clazz)
                 .arguments(arguments)
                 .asyncManager(asyncManager)
                 .loggerFactory(loggerFactory)

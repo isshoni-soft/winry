@@ -12,4 +12,6 @@ public interface IBootstrapContext {
     ILoggerFactory getLoggerFactory();
 
     boolean isForked();
+
+    Class<?> getBootstrappedClass();
 }

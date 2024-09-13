@@ -9,6 +9,8 @@ public class BootstrapContext implements IBootstrapContext {
 
     private final String[] arguments;
 
+    private final Class<?> bootstrappedClass;
+
     private final IWinryAsyncManager asyncManager;
     private final ILoggerFactory loggerFactory;
 
@@ -19,6 +21,7 @@ public class BootstrapContext implements IBootstrapContext {
         this.asyncManager = builder.asyncManager;
         this.loggerFactory = builder.loggerFactory;
         this.forked = builder.forked;
+        this.bootstrappedClass = builder.bootstrappedClass;
     }
 
     @Override
@@ -41,15 +44,26 @@ public class BootstrapContext implements IBootstrapContext {
         return this.forked;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public Class<?> getBootstrappedClass() {
+        return this.bootstrappedClass;
+    }
+
+    public static Builder builder(Class<?> bootstrappedClass) {
+        return new Builder(bootstrappedClass);
     }
 
     public static class Builder {
+        private final Class<?> bootstrappedClass;
+
         private String[] arguments;
         private IWinryAsyncManager asyncManager;
         private ILoggerFactory loggerFactory;
         private boolean forked;
+
+        private Builder(Class<?> bootstrappedClass) {
+            this.bootstrappedClass = bootstrappedClass;
+        }
 
         public Builder arguments(String[] arguments) {
             this.arguments = arguments;
