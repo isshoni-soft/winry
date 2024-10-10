@@ -27,7 +27,7 @@ public class ListenerProcessor implements IWinryAnnotationProcessor<Listener> {
                 && !(target instanceof IListener)) {
             LOGGER.error("Cannot register listener for ${0}!", method.getDisplay());
             throw new IllegalStateException(method.getDeclaringClass().getElement().getName() +
-                    " must have an annotation marked with @SingletonHolder or implement IListenerObject");
+                    " must have an annotation marked with @SingletonHolder or implement IListener");
         }
 
         LOGGER.debug("Register listener for: " + annotation.value().getName() + " - " + method.getDisplay());
