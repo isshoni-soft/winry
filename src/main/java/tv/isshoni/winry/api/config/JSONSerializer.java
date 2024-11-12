@@ -17,6 +17,11 @@ public class JSONSerializer implements IConfigSerializer<JsonObject> {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
+    public JsonObject convert(Object value) {
+        return GSON.toJsonTree(value).getAsJsonObject();
+    }
+
+    @Override
     public void serialize(String path, JsonObject object) throws IOException {
         Files.writeString(Paths.get(path), GSON.toJson(object));
     }
@@ -36,5 +41,10 @@ public class JSONSerializer implements IConfigSerializer<JsonObject> {
         }
 
         return GSON.fromJson(new InputStreamReader(stream), target);
+    }
+
+    @Override
+    public Class<? extends JsonObject> getType() {
+        return JsonObject.class;
     }
 }

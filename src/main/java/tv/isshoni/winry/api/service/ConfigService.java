@@ -27,8 +27,25 @@ public class ConfigService {
         this.serializers = new HashMap<>();
     }
 
-    public <S> void save(S config, String path, Class<? extends IConfigSerializer<S>> serializerClass) {
-        IConfigSerializer<S> serializer = (IConfigSerializer<S>) findSerializer(serializerClass);
+    public void save(Object config) {
+        if (!config.getClass().isAnnotationPresent(Config.class)) {
+            return;
+        }
+
+        Config configAnnotation = config.getClass().getAnnotation(Config.class);
+        String path = configAnnotation.value();
+        Class<? extends IConfigSerializer<?>> serializerClass = configAnnotation.serializer();
+
+        save(config, path, serializerClass);
+    }
+
+    public void save(Object config, String path, Class<? extends IConfigSerializer<?>> serializerClass) {
+        IConfigSerializer<Object> serializer = (IConfigSerializer<Object>) findSerializer(serializerClass);
+
+        // if input type does not match serializer type, utilize the object conversion method.
+        if (!serializer.getType().isAssignableFrom(config.getClass())) {
+            config = serializer.convert(config);
+        }
 
         try {
             serializer.serialize(path, config);
