@@ -27,8 +27,8 @@ public class ConfigService {
         this.serializers = new HashMap<>();
     }
 
-    public void save(Object config, String path, Class<? extends IConfigSerializer<?>> serializerClass) {
-        IConfigSerializer<Object> serializer = (IConfigSerializer<Object>) findSerializer(serializerClass);
+    public <S> void save(S config, String path, Class<? extends IConfigSerializer<S>> serializerClass) {
+        IConfigSerializer<S> serializer = (IConfigSerializer<S>) findSerializer(serializerClass);
 
         try {
             serializer.serialize(path, config);
