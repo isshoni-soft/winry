@@ -22,7 +22,7 @@ public class ConfigClassProcessor implements IWinryAnnotationProcessor<Config> {
 
     @Override
     public void executeClass(IAnnotatedClass clazz, Object target, Config annotation) {
-        this.configService.loadSingletonConfig(annotation.value(), target, annotation.serializer(), annotation.internal());
+        this.configService.loadSingletonConfig(clazz.getElement(), target);
     }
 
     @Override

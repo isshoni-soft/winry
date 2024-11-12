@@ -33,7 +33,7 @@ public class LoggerProcessor implements IWinryAdvancedAnnotationProcessor<Logger
             return null;
         }
 
-        return makeLogger(annotation, parameter.getName()); // todo: use jstack to determine method name & use that.
+        return makeLogger(annotation, parameter.getDeclaringExecutable().getDeclaringClass().getName()); // todo: use jstack to determine method name & use that.
     }
 
     @Override
