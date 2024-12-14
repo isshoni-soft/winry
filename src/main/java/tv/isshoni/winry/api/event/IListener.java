@@ -15,6 +15,10 @@ public interface IListener extends AutoCloseable, IContextual, Closeable {
         getEventBus().registerListeners(this);
     }
 
+    default void reregister(Class<?> event) {
+        getEventBus().registerListeners(this, event);
+    }
+
     default void unregister(Class<?> event) {
         getEventBus().unregisterListeners(this, event);
     }

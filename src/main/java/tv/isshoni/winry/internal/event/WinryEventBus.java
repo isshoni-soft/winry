@@ -251,6 +251,11 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public void registerListeners(Object target) {
+        this.registerListeners(target, Object.class);
+    }
+
+    @Override
+    public void registerListeners(Object target, Class<?> event) {
         Optional<Object> singleton = this.instanceManager.hasSingletonFor(target.getClass());
 
         IAnnotatedClass annotatedClass;
@@ -262,7 +267,13 @@ public class WinryEventBus implements IEventBus {
 
         annotatedClass.getMethods().forEach(method -> {
             if (method.hasAnnotations(Listener.class)) {
-                this.registerListener(method, target, method.getAnnotationByType(Listener.class));
+                Listener listener = method.getAnnotationByType(Listener.class);
+
+                if (!event.isAssignableFrom(listener.value())) {
+                    return;
+                }
+
+                this.registerListener(method, target, listener);
             }
         });
     }

@@ -37,6 +37,8 @@ public interface IEventBus {
 
     void registerListeners(Object target);
 
+    void registerListeners(Object target, Class<?> event);
+
     void unregisterListeners(Object target);
 
     void unregisterListeners(Object target, Class<?> event);
