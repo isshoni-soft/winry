@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    api 'tv.isshoni:winry:0.65.3'
+    api 'tv.isshoni:winry:0.65.4'
 }
 ```
 

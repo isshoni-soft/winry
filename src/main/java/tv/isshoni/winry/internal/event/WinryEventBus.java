@@ -7,6 +7,7 @@ import tv.isshoni.araragi.data.collection.map.TypeMap;
 import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.stream.Streams;
+import tv.isshoni.winry.api.WReflect;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
@@ -40,6 +41,8 @@ public class WinryEventBus implements IEventBus {
 
     private final BucketMap<Class<?>, IEventHandler<?>> handlers;
 
+    private final Set<Class<?>> blockRegistration;
+
     private final IWinryAnnotationManager annotationManager;
 
     private final IWinryAsyncManager asyncManager;
@@ -62,6 +65,7 @@ public class WinryEventBus implements IEventBus {
         this.instanceManager = instanceManager;
         this.logger = loggerFactory.createLogger("EventBus");
         this.handlers = Maps.bucket(new TypeMap<>());
+        this.blockRegistration = new HashSet<>();
 
         registerListener(event -> asyncManager.shutdown(), WinryShutdownEvent.class, Integer.MIN_VALUE);
     }
@@ -241,11 +245,19 @@ public class WinryEventBus implements IEventBus {
 
     @Override
     public <T> void registerListener(Consumer<T> handler, Class<T> type, int weight) {
+        if (this.isRegistrationBlocked(type)) {
+            return;
+        }
+
         this.handlers.add(type, new WinryLambdaEventHandler<>(handler, type, weight));
     }
 
     @Override
     public void registerListener(IAnnotatedMethod method, Object target, Listener listener) {
+        if (this.isRegistrationBlocked(target.getClass())) {
+            return;
+        }
+
         this.handlers.add(listener.value(), new EventHandlerMeta(method, target, listener));
     }
 
@@ -260,7 +272,7 @@ public class WinryEventBus implements IEventBus {
 
         IAnnotatedClass annotatedClass;
         if (singleton.isPresent()) {
-            annotatedClass = this.metaManager.getMeta(singleton.get());
+            annotatedClass = this.metaManager.getSingletonMeta(singleton.get());
         } else {
             annotatedClass = this.metaManager.getMeta(target);
         }
@@ -329,6 +341,21 @@ public class WinryEventBus implements IEventBus {
         Collections.sort(result);
 
         return result;
+    }
+
+    @Override
+    public void blockRegistration(Class<?> clazz) {
+        this.blockRegistration.add(WReflect.getClass(clazz));
+    }
+
+    @Override
+    public void unblockRegistration(Class<?> clazz) {
+        this.blockRegistration.remove(WReflect.getClass(clazz));
+    }
+
+    @Override
+    public boolean isRegistrationBlocked(Class<?> clazz) {
+        return this.blockRegistration.contains(WReflect.getClass(clazz));
     }
 
     private boolean cancelEvent(Object event, IEventHandler<?> h) {

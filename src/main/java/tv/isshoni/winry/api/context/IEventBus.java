@@ -44,4 +44,10 @@ public interface IEventBus {
     void unregisterListeners(Object target, Class<?> event);
 
     List<IEventHandler<Object>> getHandlersFor(Object event);
+
+    void blockRegistration(Class<?> clazz);
+
+    void unblockRegistration(Class<?> clazz);
+
+    boolean isRegistrationBlocked(Class<?> clazz);
 }
