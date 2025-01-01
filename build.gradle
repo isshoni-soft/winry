@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'koyomi-araragi' version '1.1.2'
+    id 'koyomi-araragi' version '1.1.4'
 }
 
 repositories {
