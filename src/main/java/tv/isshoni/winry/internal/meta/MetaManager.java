@@ -5,6 +5,7 @@ import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.araragi.reflect.ReflectionUtil;
+import tv.isshoni.winry.api.WReflect;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
@@ -154,7 +155,7 @@ public class MetaManager implements IMetaManager {
         Class<?> clazz = element.getClass();
 
         if (Class.class.isAssignableFrom(element.getClass())) {
-            clazz = (Class<?>) element;
+            clazz = WReflect.getClass((Class<?>) element);
         }
 
         return clazz;
