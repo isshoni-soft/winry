@@ -20,7 +20,7 @@ public interface IEventHandler<T> extends Comparable<IEventHandler<T>> {
         int weight = Integer.compare(this.getWeight(), o.getWeight());
 
         if (!this.getTargetEvent().equals(o.getTargetEvent())) {
-            weight -= 1000;
+            weight += 1000;
         }
 
         return weight;
