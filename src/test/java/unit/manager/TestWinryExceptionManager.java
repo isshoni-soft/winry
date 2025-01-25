@@ -1,5 +1,6 @@
 package unit.manager;
 
+import institute.isshoni.araragi.logging.AraragiLogger;
 import model.RuntimeExceptionHandler;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
 import tv.isshoni.winry.internal.exception.WinryExceptionManager;
 import tv.isshoni.winry.internal.logging.LoggerFactory;

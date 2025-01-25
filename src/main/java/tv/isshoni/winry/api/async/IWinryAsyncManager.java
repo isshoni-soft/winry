@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.async;
 
-import tv.isshoni.araragi.concurrent.async.IAsyncManager;
+import institute.isshoni.araragi.concurrent.async.IAsyncManager;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

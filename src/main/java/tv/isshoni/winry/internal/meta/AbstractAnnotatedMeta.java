@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.meta;
 
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.internal.model.annotation.IWinryAnnotationManager;
 import tv.isshoni.winry.internal.model.meta.IAnnotatedMeta;

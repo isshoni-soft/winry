@@ -1,10 +1,10 @@
 package tv.isshoni.winry.api.bootstrap;
 
-import tv.isshoni.araragi.concurrent.collection.ConcurrentLinkedList;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.reflect.ReflectionUtil;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.concurrent.collection.ConcurrentLinkedList;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.reflect.ReflectionUtil;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.executable.BackloadExecutable;

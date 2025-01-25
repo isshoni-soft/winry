@@ -1,6 +1,6 @@
 package model.exception;
 
-import tv.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;

@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'koyomi-araragi' version '1.1.4'
+    id 'koyomi-araragi' version '1.1.5'
 }
 
 repositories {
@@ -19,9 +19,9 @@ java {
 dependencies {
     compileOnly "javax.xml.bind:jaxb-api:$jaxb_version"
 
-    api "tv.isshoni.araragi:core:$araragi_version"
-    api "tv.isshoni.araragi:annotation:$araragi_version"
-    api "tv.isshoni.araragi:logging:$araragi_version"
+    api "institute.isshoni.araragi:core:$araragi_version"
+    api "institute.isshoni.araragi:annotation:$araragi_version"
+    api "institute.isshoni.araragi:logging:$araragi_version"
     api "com.google.code.gson:gson:$gson_version"
 
     implementation "net.oneandone.reflections8:reflections8:$reflections8_version"

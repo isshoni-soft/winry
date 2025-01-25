@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor;
 
-import tv.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;
 

@@ -1,10 +1,10 @@
 package tv.isshoni.winry.api;
 
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.logging.model.level.ILevel;
-import tv.isshoni.araragi.logging.model.level.SimpleLevel;
-import tv.isshoni.araragi.reflect.ReflectionUtil;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.logging.model.level.ILevel;
+import institute.isshoni.araragi.logging.model.level.SimpleLevel;
+import institute.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;

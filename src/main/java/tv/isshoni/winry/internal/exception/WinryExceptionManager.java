@@ -1,15 +1,15 @@
 package tv.isshoni.winry.internal.exception;
 
-import tv.isshoni.araragi.data.Constant;
-import tv.isshoni.araragi.data.collection.map.BucketMap;
-import tv.isshoni.araragi.data.collection.map.Maps;
-import tv.isshoni.araragi.data.collection.map.SubMap;
-import tv.isshoni.araragi.data.collection.map.TypeMap;
-import tv.isshoni.araragi.exception.Exceptions;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.reflect.JStack;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.data.collection.map.BucketMap;
+import institute.isshoni.araragi.data.collection.map.Maps;
+import institute.isshoni.araragi.data.collection.map.SubMap;
+import institute.isshoni.araragi.data.collection.map.TypeMap;
+import institute.isshoni.araragi.exception.Exceptions;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.reflect.JStack;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.context.IExceptionManager;

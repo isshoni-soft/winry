@@ -1,10 +1,10 @@
 package integration.test;
 
+import institute.isshoni.araragi.logging.AraragiLogger;
 import model.integration.TestBootstrapper;
 import model.integration.event.SuperTestEvent;
 import model.integration.event.TestEvent;
 import model.integration.service.TestService;
-import tv.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Inject;

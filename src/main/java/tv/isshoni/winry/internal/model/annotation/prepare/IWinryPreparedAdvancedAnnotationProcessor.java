@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.model.annotation.prepare;
 
-import tv.isshoni.araragi.annotation.processor.prepared.IPreparedParameterSupplier;
+import institute.isshoni.araragi.annotation.processor.prepared.IPreparedParameterSupplier;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 
 import java.lang.annotation.Annotation;

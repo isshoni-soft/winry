@@ -1,7 +1,7 @@
 package model;
 
+import institute.isshoni.araragi.data.Constant;
 import model.integration.event.TestEvent;
-import tv.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.Listener;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;

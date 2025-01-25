@@ -1,7 +1,7 @@
 package tv.isshoni.winry.api.annotation.transformer;
 
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.Weight;
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.Weight;
 import tv.isshoni.winry.api.annotation.meta.BeforeInjections;
 import tv.isshoni.winry.internal.annotation.processor.method.ProfileProcessor;
 

@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.meta;
 
-import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import institute.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 
 public interface ISingletonAnnotatedClass extends IAnnotatedClass {
 

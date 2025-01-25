@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.meta;
 
-import tv.isshoni.araragi.data.Pair;
-import tv.isshoni.araragi.data.collection.map.SubMap;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.data.Pair;
+import institute.isshoni.araragi.data.collection.map.SubMap;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.winry.api.context.IInstanceManager;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IMetaManager;

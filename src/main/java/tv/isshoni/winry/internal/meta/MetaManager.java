@@ -1,10 +1,10 @@
 package tv.isshoni.winry.internal.meta;
 
-import tv.isshoni.araragi.data.collection.map.TypeMap;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.reflect.ReflectedModifier;
-import tv.isshoni.araragi.reflect.ReflectionUtil;
+import institute.isshoni.araragi.data.collection.map.TypeMap;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.reflect.ReflectedModifier;
+import institute.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.WReflect;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;

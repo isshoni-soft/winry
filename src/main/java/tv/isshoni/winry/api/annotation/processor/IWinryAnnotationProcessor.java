@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.annotation.processor;
 
-import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
+import institute.isshoni.araragi.annotation.processor.IAnnotationProcessor;
 import tv.isshoni.winry.api.context.IContextual;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;

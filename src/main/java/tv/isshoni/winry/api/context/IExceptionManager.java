@@ -1,6 +1,6 @@
 package tv.isshoni.winry.api.context;
 
-import tv.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.exception.ExceptionHandler;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.exception.IExceptionHandler;

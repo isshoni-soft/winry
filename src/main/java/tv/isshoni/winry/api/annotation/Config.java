@@ -1,10 +1,10 @@
 package tv.isshoni.winry.api.annotation;
 
-import tv.isshoni.araragi.annotation.Depends;
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.winry.api.config.IConfigSerializer;
+import institute.isshoni.araragi.annotation.Depends;
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.Weight;
 import tv.isshoni.winry.api.annotation.meta.SingletonHolder;
+import tv.isshoni.winry.api.config.IConfigSerializer;
 import tv.isshoni.winry.api.config.JSONSerializer;
 import tv.isshoni.winry.internal.annotation.processor.type.BootstrapClassProcessor;
 import tv.isshoni.winry.internal.annotation.processor.type.ConfigClassProcessor;

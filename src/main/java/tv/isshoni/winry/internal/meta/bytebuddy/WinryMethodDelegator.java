@@ -1,5 +1,6 @@
 package tv.isshoni.winry.internal.meta.bytebuddy;
 
+import institute.isshoni.araragi.stream.Streams;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -8,7 +9,6 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
-import tv.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IMethodDelegator;

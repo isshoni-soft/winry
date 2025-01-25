@@ -1,6 +1,7 @@
 package tv.isshoni.winry.api.context;
 
-import tv.isshoni.araragi.data.Constant;
+
+import institute.isshoni.araragi.data.Constant;
 
 public interface IContextual {
 

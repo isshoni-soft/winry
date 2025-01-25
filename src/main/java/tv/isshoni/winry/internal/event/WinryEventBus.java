@@ -1,12 +1,12 @@
 package tv.isshoni.winry.internal.event;
 
-import tv.isshoni.araragi.data.Pair;
-import tv.isshoni.araragi.data.collection.map.BucketMap;
-import tv.isshoni.araragi.data.collection.map.Maps;
-import tv.isshoni.araragi.data.collection.map.TypeMap;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.data.Pair;
+import institute.isshoni.araragi.data.collection.map.BucketMap;
+import institute.isshoni.araragi.data.collection.map.Maps;
+import institute.isshoni.araragi.data.collection.map.TypeMap;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.WReflect;
 import tv.isshoni.winry.api.annotation.Event;
 import tv.isshoni.winry.api.annotation.Listener;

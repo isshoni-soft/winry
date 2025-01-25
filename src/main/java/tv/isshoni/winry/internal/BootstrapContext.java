@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal;
 
-import tv.isshoni.araragi.functional.ObjHelpers;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.functional.ObjHelpers;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.context.IBootstrapContext;
 

@@ -3,7 +3,7 @@ package tv.isshoni.winry.api.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import tv.isshoni.araragi.util.FileUtil;
+import institute.isshoni.araragi.util.FileUtil;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,13 +1,13 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
-import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
-import tv.isshoni.araragi.annotation.manager.AnnotationManager;
-import tv.isshoni.araragi.annotation.processor.IAnnotationProcessor;
-import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
-import tv.isshoni.araragi.exception.Exceptions;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
+import institute.isshoni.araragi.annotation.manager.AnnotationManager;
+import institute.isshoni.araragi.annotation.processor.IAnnotationProcessor;
+import institute.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import institute.isshoni.araragi.exception.Exceptions;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.annotation.Loader;
 import tv.isshoni.winry.api.annotation.meta.SingletonHolder;

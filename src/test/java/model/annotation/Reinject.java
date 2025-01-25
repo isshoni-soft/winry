@@ -1,8 +1,8 @@
 package model.annotation;
 
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.Weight;
 import model.annotation.processer.ReinjectProcessor;
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.Weight;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

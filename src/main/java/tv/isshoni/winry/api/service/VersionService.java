@@ -1,7 +1,7 @@
 package tv.isshoni.winry.api.service;
 
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.util.FileUtil;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.util.FileUtil;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.context.IWinryContext;

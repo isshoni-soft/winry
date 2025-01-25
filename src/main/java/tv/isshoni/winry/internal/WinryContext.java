@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal;
 
-import tv.isshoni.araragi.functional.ObjHelpers;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.functional.ObjHelpers;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 import tv.isshoni.winry.api.bootstrap.executable.EventExecutable;

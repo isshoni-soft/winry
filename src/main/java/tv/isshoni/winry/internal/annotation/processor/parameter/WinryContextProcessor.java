@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.annotation.processor.parameter;
 
-import tv.isshoni.araragi.annotation.AttachTo;
-import tv.isshoni.araragi.data.Constant;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.reflect.ReflectionUtil;
+import institute.isshoni.araragi.annotation.AttachTo;
+import institute.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.reflect.ReflectionUtil;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 import tv.isshoni.winry.api.context.IWinryContext;

@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.annotation.processor.parameter;
 
-import tv.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.data.Constant;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.parameter.New;

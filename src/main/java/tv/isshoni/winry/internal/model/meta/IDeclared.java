@@ -1,6 +1,6 @@
 package tv.isshoni.winry.internal.model.meta;
 
-import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import institute.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 
 import java.lang.reflect.AnnotatedElement;

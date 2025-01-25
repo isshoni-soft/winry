@@ -1,8 +1,8 @@
 package tv.isshoni.winry.api.annotation;
 
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.Weight;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.Weight;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.winry.api.Winry;
 import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.annotation.meta.SingletonHolder;

@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.annotation.processor.type;
 
-import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
-import tv.isshoni.araragi.data.Constant;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
+import institute.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.annotation.meta.BeforeInjections;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;

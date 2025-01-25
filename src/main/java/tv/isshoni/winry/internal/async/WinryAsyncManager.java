@@ -1,9 +1,9 @@
 package tv.isshoni.winry.internal.async;
 
-import tv.isshoni.araragi.concurrent.async.AsyncManager;
-import tv.isshoni.araragi.exception.Exceptions;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.concurrent.async.AsyncManager;
+import institute.isshoni.araragi.exception.Exceptions;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
 import tv.isshoni.winry.api.annotation.Bootstrap;
 import tv.isshoni.winry.api.async.IWinryAsyncManager;
 

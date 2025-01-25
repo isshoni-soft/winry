@@ -1,13 +1,13 @@
 package tv.isshoni.winry.internal.annotation.manage;
 
-import tv.isshoni.araragi.annotation.Depends;
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
-import tv.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.ILoggerFactory;
-import tv.isshoni.araragi.stream.Streams;
-import tv.isshoni.araragi.util.ComparatorUtil;
+import institute.isshoni.araragi.annotation.Depends;
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.discovery.IAnnotationDiscoverer;
+import institute.isshoni.araragi.annotation.discovery.SimpleAnnotationDiscoverer;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.ILoggerFactory;
+import institute.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.util.ComparatorUtil;
 import tv.isshoni.winry.api.annotation.Inject;
 import tv.isshoni.winry.api.annotation.Injected;
 import tv.isshoni.winry.api.annotation.meta.BeforeInjections;

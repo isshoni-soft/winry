@@ -1,7 +1,7 @@
 package tv.isshoni.winry.api.annotation.parameter;
 
-import tv.isshoni.araragi.annotation.Processor;
-import tv.isshoni.araragi.annotation.Weight;
+import institute.isshoni.araragi.annotation.Processor;
+import institute.isshoni.araragi.annotation.Weight;
 import tv.isshoni.winry.internal.annotation.processor.parameter.NewProcessor;
 
 import java.lang.annotation.ElementType;

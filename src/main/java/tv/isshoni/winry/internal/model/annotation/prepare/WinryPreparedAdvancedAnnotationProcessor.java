@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.model.annotation.prepare;
 
-import tv.isshoni.araragi.annotation.manager.IAnnotationManager;
-import tv.isshoni.araragi.annotation.processor.prepared.SimplePreparedAnnotationProcessor;
+import institute.isshoni.araragi.annotation.manager.IAnnotationManager;
+import institute.isshoni.araragi.annotation.processor.prepared.SimplePreparedAnnotationProcessor;
 import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
 
 import java.lang.annotation.Annotation;

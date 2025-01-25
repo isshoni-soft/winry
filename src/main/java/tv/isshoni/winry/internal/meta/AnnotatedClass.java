@@ -1,14 +1,14 @@
 package tv.isshoni.winry.internal.meta;
 
-import tv.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
-import tv.isshoni.araragi.data.Pair;
-import tv.isshoni.araragi.reflect.ReflectedModifier;
-import tv.isshoni.araragi.stream.Streams;
+import institute.isshoni.araragi.annotation.processor.prepared.IPreparedAnnotationProcessor;
+import institute.isshoni.araragi.data.Pair;
+import institute.isshoni.araragi.reflect.ReflectedModifier;
+import institute.isshoni.araragi.stream.Streams;
 import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.api.meta.IAnnotatedClass;
 import tv.isshoni.winry.api.meta.IAnnotatedField;
 import tv.isshoni.winry.api.meta.IAnnotatedMethod;
+import tv.isshoni.winry.internal.model.annotation.prepare.IWinryPreparedAnnotationProcessor;
 import tv.isshoni.winry.internal.model.meta.ITransformable;
 import tv.isshoni.winry.internal.model.meta.bytebuddy.IWrapperGenerator;
 

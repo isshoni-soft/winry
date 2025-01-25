@@ -1,10 +1,10 @@
 package tv.isshoni.winry.internal.annotation.processor.field;
 
-import tv.isshoni.araragi.data.Constant;
-import tv.isshoni.araragi.logging.AraragiLogger;
-import tv.isshoni.araragi.logging.model.IAraragiLogger;
-import tv.isshoni.araragi.logging.model.level.SimpleLevel;
-import tv.isshoni.araragi.reflect.ReflectedModifier;
+import institute.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.logging.model.IAraragiLogger;
+import institute.isshoni.araragi.logging.model.level.SimpleLevel;
+import institute.isshoni.araragi.reflect.ReflectedModifier;
 import tv.isshoni.winry.api.annotation.logging.LogLevel;
 import tv.isshoni.winry.api.annotation.logging.Logger;
 import tv.isshoni.winry.api.annotation.parameter.Context;

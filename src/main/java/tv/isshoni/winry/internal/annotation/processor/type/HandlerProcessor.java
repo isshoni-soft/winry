@@ -1,7 +1,7 @@
 package tv.isshoni.winry.internal.annotation.processor.type;
 
-import tv.isshoni.araragi.data.Constant;
-import tv.isshoni.araragi.logging.AraragiLogger;
+import institute.isshoni.araragi.data.Constant;
+import institute.isshoni.araragi.logging.AraragiLogger;
 import tv.isshoni.winry.api.annotation.exception.Handler;
 import tv.isshoni.winry.api.annotation.parameter.Context;
 import tv.isshoni.winry.api.annotation.processor.IWinryAnnotationProcessor;
