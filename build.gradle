@@ -33,7 +33,7 @@ dependencies {
     testImplementation "org.powermock:powermock-module-junit4:$powermock_version"
 }
 
-group = 'tv.isshoni'
+group = 'institute.isshoni'
 version = "$winry_version"
 
 test {

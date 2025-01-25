@@ -1,7 +1,7 @@
 package model.config;
 
 import com.google.gson.annotations.SerializedName;
-import tv.isshoni.winry.api.annotation.Config;
+import institute.isshoni.winry.api.annotation.Config;
 
 @Config("test.json")
 public class TestConfig {

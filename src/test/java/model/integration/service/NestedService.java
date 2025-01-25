@@ -1,7 +1,7 @@
 package model.integration.service;
 
-import tv.isshoni.winry.api.annotation.Inject;
-import tv.isshoni.winry.api.annotation.Injected;
+import institute.isshoni.winry.api.annotation.Inject;
+import institute.isshoni.winry.api.annotation.Injected;
 
 @Injected
 public class NestedService {

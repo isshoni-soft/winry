@@ -2,10 +2,10 @@ package model.annotation.processer;
 
 import institute.isshoni.araragi.data.Constant;
 import model.annotation.Reinject;
-import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
-import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.api.meta.IAnnotatedField;
+import institute.isshoni.winry.api.annotation.parameter.Context;
+import institute.isshoni.winry.api.annotation.processor.IWinryAdvancedAnnotationProcessor;
+import institute.isshoni.winry.api.context.IWinryContext;
+import institute.isshoni.winry.api.meta.IAnnotatedField;
 
 public class ReinjectProcessor implements IWinryAdvancedAnnotationProcessor<Reinject, Integer> {
 

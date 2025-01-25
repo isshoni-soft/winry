@@ -1,6 +1,6 @@
 package model.integration.event;
 
-import tv.isshoni.winry.api.annotation.Event;
+import institute.isshoni.winry.api.annotation.Event;
 
 @Event("TestEvent")
 public class TestEvent {

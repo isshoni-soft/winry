@@ -1,8 +1,8 @@
 package model.integration;
 
-import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.bootstrap.WinryBootstrapper;
-import tv.isshoni.winry.api.context.IBootstrapContext;
+import institute.isshoni.winry.api.annotation.Bootstrap;
+import institute.isshoni.winry.api.bootstrap.WinryBootstrapper;
+import institute.isshoni.winry.api.context.IBootstrapContext;
 
 import java.util.Map;
 

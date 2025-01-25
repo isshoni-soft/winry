@@ -1,8 +1,8 @@
 package model.integration.service;
 
-import tv.isshoni.winry.api.annotation.Injected;
-import tv.isshoni.winry.api.annotation.transformer.Async;
-import tv.isshoni.winry.api.annotation.transformer.OnMain;
+import institute.isshoni.winry.api.annotation.Injected;
+import institute.isshoni.winry.api.annotation.transformer.Async;
+import institute.isshoni.winry.api.annotation.transformer.OnMain;
 
 @Injected
 public class AsyncTester {

@@ -2,10 +2,10 @@ package model;
 
 import institute.isshoni.araragi.data.Constant;
 import model.integration.event.TestEvent;
-import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.api.event.IListener;
+import institute.isshoni.winry.api.annotation.Listener;
+import institute.isshoni.winry.api.annotation.parameter.Context;
+import institute.isshoni.winry.api.context.IWinryContext;
+import institute.isshoni.winry.api.event.IListener;
 
 public class EventObject implements IListener {
 

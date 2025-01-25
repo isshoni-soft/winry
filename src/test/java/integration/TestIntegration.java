@@ -11,9 +11,9 @@ import org.reflections8.scanners.SubTypesScanner;
 import org.reflections8.scanners.TypeAnnotationsScanner;
 import org.reflections8.util.ConfigurationBuilder;
 import org.reflections8.util.FilterBuilder;
-import tv.isshoni.winry.api.Winry;
-import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.internal.WinryContext;
+import institute.isshoni.winry.api.Winry;
+import institute.isshoni.winry.api.annotation.Bootstrap;
+import institute.isshoni.winry.internal.WinryContext;
 
 import java.util.Set;
 import java.util.concurrent.ExecutionException;

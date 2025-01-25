@@ -4,15 +4,15 @@ import institute.isshoni.araragi.logging.AraragiLogger;
 import model.integration.TestBootstrapper;
 import model.integration.event.TestExecutableEvent;
 import model.integration.service.TestService;
-import tv.isshoni.winry.api.annotation.Bootstrap;
-import tv.isshoni.winry.api.annotation.Inject;
-import tv.isshoni.winry.api.annotation.Listener;
-import tv.isshoni.winry.api.annotation.logging.LogLevel;
-import tv.isshoni.winry.api.annotation.logging.Logger;
-import tv.isshoni.winry.api.annotation.parameter.Context;
-import tv.isshoni.winry.api.context.IEventBus;
-import tv.isshoni.winry.api.context.IWinryContext;
-import tv.isshoni.winry.api.event.WinryInitEvent;
+import institute.isshoni.winry.api.annotation.Bootstrap;
+import institute.isshoni.winry.api.annotation.Inject;
+import institute.isshoni.winry.api.annotation.Listener;
+import institute.isshoni.winry.api.annotation.logging.LogLevel;
+import institute.isshoni.winry.api.annotation.logging.Logger;
+import institute.isshoni.winry.api.annotation.parameter.Context;
+import institute.isshoni.winry.api.context.IEventBus;
+import institute.isshoni.winry.api.context.IWinryContext;
+import institute.isshoni.winry.api.event.WinryInitEvent;
 
 @Bootstrap(name = "Test Backload",
            bootstrapper = TestBootstrapper.class,

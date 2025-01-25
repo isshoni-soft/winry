@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import tv.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
-import tv.isshoni.winry.internal.exception.WinryExceptionManager;
-import tv.isshoni.winry.internal.logging.LoggerFactory;
+import institute.isshoni.winry.internal.annotation.manage.WinryAnnotationManager;
+import institute.isshoni.winry.internal.exception.WinryExceptionManager;
+import institute.isshoni.winry.internal.logging.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
